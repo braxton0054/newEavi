@@ -148,6 +148,17 @@ export default function AdminDashboard() {
                             </button>
                           </div>
                         )}
+                        {app.status === "APPROVED" && (
+                          <div className="flex gap-2">
+                            <a
+                              href={`/api/admin/admission-letter?studentId=${student.id}`}
+                              target="_blank"
+                              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                            >
+                              Admission Letter
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
