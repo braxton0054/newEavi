@@ -23,14 +23,20 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, minGrade, feePdf } = body;
+    const { name, qualificationType, qualificationLevel, minGrade, feePdf } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const course = await prisma.course.create({
-      data: { name, minGrade: minGrade || null, feePdf: feePdf || null },
+      data: {
+        name,
+        qualificationType: qualificationType || null,
+        qualificationLevel: qualificationLevel || null,
+        minGrade: minGrade || null,
+        feePdf: feePdf || null,
+      },
     });
 
     return NextResponse.json({ data: course }, { status: 201 });

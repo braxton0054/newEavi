@@ -94,12 +94,14 @@ model Verification {
 }
 
 model Course {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  minGrade  String?
-  feePdf    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  name               String    @unique
+  qualificationType  String?   // Artisan, Certificate, Diploma, Higher Diploma
+  qualificationLevel String?   // Level 4, Level 5, Level 6
+  minGrade           String?
+  feePdf             String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@map("courses")
 }

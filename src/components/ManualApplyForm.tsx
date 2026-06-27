@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 interface Course {
   id: string;
   name: string;
+  qualificationType: string | null;
+  qualificationLevel: string | null;
   minGrade: string | null;
   feePdf: string | null;
 }
@@ -141,7 +143,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
                   <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                     <option value="">Select course</option>
                     {courses.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}{c.minGrade ? ` (Min: ${c.minGrade})` : ""}</option>
+                      <option key={c.id} value={c.id}>{c.name}{c.qualificationType ? ` (${c.qualificationType}` : ""}{c.qualificationLevel ? ` - ${c.qualificationLevel})` : c.qualificationType ? ")" : ""}{c.minGrade ? ` (Min: ${c.minGrade})` : ""}</option>
                     ))}
                   </select>
                 </div>
