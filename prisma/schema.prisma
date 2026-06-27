@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Campus {
+  MAIN
+  WEST
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(ADMIN)
+  campus        Campus?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  reviews  Application[]
+
+  @@map("users")
+}
+
+model Account {
+  id           String   @id @default(cuid())
+  accountId    String
+  providerId   String
+  userId       String
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  password     String?
+  expiresAt    Int?
+  type         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, providerId])
+  @@map("accounts")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  minGrade  String?
+  feePdf    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("courses")
+}
+
+model CampusSetting {
+  id                  String   @id @default(cuid())
+  campus              Campus   @unique
+  settings            Json     @default("{}")
+  admissionFormat     String   @default("")
+  admissionStart      Int      @default(1)
+  lastAdmissionNumber Int      @default(0)
+  reportingDates      Json     @default("[]")
+  bursaryFormPdf      Bytes?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("campus_settings")
+}
+
+model Student {
+  id              String             @id @default(cuid())
+  firstName       String
+  middleName      String?
+  lastName        String
+  gender          Gender?
+  phone           String?
+  email           String?            @unique
+  kcseGrade       String?
+  preferredCampus Campus?
+  status          ApplicationStatus  @default(PENDING)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  applications Application[]
+
+  @@map("students")
+}
+
+model Application {
+  id           String             @id @default(cuid())
+  studentId    String
+  course       String
+  academicYear String
+  status       ApplicationStatus  @default(PENDING)
+  reviewedBy   String?
+  notes        String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  student  Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  reviewer User?   @relation(fields: [reviewedBy], references: [id])
+
+  @@map("applications")
+}
+
+model AdmissionPdfTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  pdfData   Bytes
+  mimeType  String   @default("application/pdf")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admission_pdf_templates")
+}

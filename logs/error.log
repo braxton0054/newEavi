@@ -1,0 +1,55 @@
+2026-06-27 22:21:50: 2026-06-27T19:21:50.243Z ERROR [Better Auth]: Invalid origin: http://5.189.191.35:4000
+2026-06-27 22:22:13: 2026-06-27T19:22:13.618Z ERROR [Better Auth]: Invalid origin: http://5.189.191.35:4000
+2026-06-27 22:23:00: 2026-06-27T19:23:00.213Z ERROR [Better Auth]: Invalid origin: http://5.189.191.35:4000
+2026-06-27 22:23:01: 2026-06-27T19:23:01.286Z ERROR [Better Auth]: Invalid origin: http://5.189.191.35:4000
+2026-06-27 22:23:03: 2026-06-27T19:23:03.303Z ERROR [Better Auth]: Invalid origin: http://5.189.191.35:4000
+2026-06-28 00:03:08: Error [PrismaClientKnownRequestError]: 
+2026-06-28 00:03:08: Invalid `prisma.campusSetting.findMany()` invocation:
+2026-06-28 00:03:08: 
+2026-06-28 00:03:08: 
+2026-06-28 00:03:08: The column `campus_settings.busRoutePdf` does not exist in the current database.
+2026-06-28 00:03:08:     at async _ (src/app/api/admin/settings/route.ts:22:22) {
+2026-06-28 00:03:08:   code: 'P2022',
+2026-06-28 00:03:08:   clientVersion: '5.22.0',
+2026-06-28 00:03:08:   meta: { modelName: 'CampusSetting', column: 'campus_settings.busRoutePdf' }
+2026-06-28 00:03:08: }
+2026-06-28 00:03:35: Error [PrismaClientKnownRequestError]: 
+2026-06-28 00:03:35: Invalid `prisma.campusSetting.findMany()` invocation:
+2026-06-28 00:03:35: 
+2026-06-28 00:03:35: 
+2026-06-28 00:03:35: The column `campus_settings.busRoutePdf` does not exist in the current database.
+2026-06-28 00:03:35:     at async _ (src/app/api/admin/settings/route.ts:22:22) {
+2026-06-28 00:03:35:   code: 'P2022',
+2026-06-28 00:03:35:   clientVersion: '5.22.0',
+2026-06-28 00:03:35:   meta: { modelName: 'CampusSetting', column: 'campus_settings.busRoutePdf' }
+2026-06-28 00:03:35: }
+2026-06-28 00:03:46: Error [PrismaClientKnownRequestError]: 
+2026-06-28 00:03:46: Invalid `prisma.campusSetting.findMany()` invocation:
+2026-06-28 00:03:46: 
+2026-06-28 00:03:46: 
+2026-06-28 00:03:46: The column `campus_settings.busRoutePdf` does not exist in the current database.
+2026-06-28 00:03:46:     at async _ (src/app/api/admin/settings/route.ts:22:22) {
+2026-06-28 00:03:46:   code: 'P2022',
+2026-06-28 00:03:46:   clientVersion: '5.22.0',
+2026-06-28 00:03:46:   meta: { modelName: 'CampusSetting', column: 'campus_settings.busRoutePdf' }
+2026-06-28 00:03:46: }
+2026-06-28 00:04:16: Error [PrismaClientKnownRequestError]: 
+2026-06-28 00:04:16: Invalid `prisma.campusSetting.findMany()` invocation:
+2026-06-28 00:04:16: 
+2026-06-28 00:04:16: 
+2026-06-28 00:04:16: The column `campus_settings.busRoutePdf` does not exist in the current database.
+2026-06-28 00:04:16:     at async _ (src/app/api/admin/settings/route.ts:22:22) {
+2026-06-28 00:04:16:   code: 'P2022',
+2026-06-28 00:04:16:   clientVersion: '5.22.0',
+2026-06-28 00:04:16:   meta: { modelName: 'CampusSetting', column: 'campus_settings.busRoutePdf' }
+2026-06-28 00:04:16: }
+2026-06-28 00:04:24: Error [PrismaClientKnownRequestError]: 
+2026-06-28 00:04:24: Invalid `prisma.campusSetting.findMany()` invocation:
+2026-06-28 00:04:24: 
+2026-06-28 00:04:24: 
+2026-06-28 00:04:24: The column `campus_settings.busRoutePdf` does not exist in the current database.
+2026-06-28 00:04:24:     at async _ (src/app/api/admin/settings/route.ts:22:22) {
+2026-06-28 00:04:24:   code: 'P2022',
+2026-06-28 00:04:24:   clientVersion: '5.22.0',
+2026-06-28 00:04:24:   meta: { modelName: 'CampusSetting', column: 'campus_settings.busRoutePdf' }
+2026-06-28 00:04:24: }
