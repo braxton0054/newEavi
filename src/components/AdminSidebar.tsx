@@ -42,10 +42,10 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
       {/* Mobile hamburger */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-4 left-4 z-40 lg:hidden bg-white rounded-xl shadow-md border border-gray-200 p-2.5"
+        className="fixed top-4 left-4 z-40 lg:hidden bg-white rounded-lg border border-zinc-200 p-2"
         aria-label="Open menu"
       >
-        <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
@@ -57,38 +57,38 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[260px] bg-white border-r border-gray-200/80 z-50 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed top-0 left-0 h-full w-48 bg-white border-r border-zinc-200 z-50 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Brand */}
-        <div className="px-5 py-5 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0066ff] to-[#00c9a7] flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-sm">EAVI</span>
+        <div className="px-4 py-4 border-b border-zinc-200">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center">
+              <span className="text-white font-medium text-xs">EAVI</span>
             </div>
             <div>
-              <h2 className="font-bold text-sm text-gray-900">{title}</h2>
-              <p className="text-[11px] text-gray-400 truncate max-w-[160px]">{email || ""}</p>
+              <h2 className="font-medium text-sm text-zinc-900">{title}</h2>
+              <p className="text-[11px] text-zinc-400 truncate max-w-[140px]">{email || ""}</p>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
           {links.map((link) => {
             const isActive = pathname === link.href;
             return (
               <button
                 key={link.href}
                 onClick={() => { router.push(link.href); setOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150 ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${
                   isActive
-                    ? "bg-[#0066ff] text-white shadow-sm"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-blue-50 text-blue-700 font-medium"
+                    : "text-zinc-500 hover:bg-zinc-100"
                 }`}
               >
-                <svg className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? "text-white" : "text-gray-400"}`} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d={link.icon} />
                 </svg>
                 <span>{link.label}</span>
@@ -98,15 +98,15 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
         </nav>
 
         {/* Bottom */}
-        <div className="px-3 py-4 border-t border-gray-100">
+        <div className="px-3 py-3 border-t border-zinc-200">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium text-red-600 hover:bg-red-50 transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 text-sm"
           >
-            <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            <span>Sign Out</span>
+            <span>Sign out</span>
           </button>
         </div>
       </aside>

@@ -123,8 +123,8 @@ export default function AdminDashboard() {
   });
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
-      <div className="w-8 h-8 border-3 border-[#0066ff] border-t-transparent rounded-full animate-spin"></div>
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+      <div className="w-7 h-7 border-2 border-blue-700 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
 
@@ -132,21 +132,21 @@ export default function AdminDashboard() {
   const approvedCount = students.filter(s => s.status === "APPROVED").length;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex">
+    <div className="min-h-screen bg-zinc-50 flex">
       <AdminSidebar role="ADMIN" campus={user?.campus} email={user?.email} />
-      <div className="flex-1 min-w-0 lg:ml-[260px]">
+      <div className="flex-1 min-w-0 lg:ml-48">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200/80 px-6 lg:px-8 py-4 sticky top-0 z-30">
+        <header className="bg-white border-b border-zinc-200 px-6 lg:px-8 py-3.5 sticky top-0 z-30">
           <div className="flex items-center justify-between">
-            <div className="lg:pl-0 pl-12">
-              <h1 className="text-lg font-bold text-gray-900">
+            <div className="lg:pl-0 pl-10">
+              <h1 className="text-base font-medium text-zinc-900">
                 {user?.campus === "WEST" ? "West Campus" : "Main Campus"} Dashboard
               </h1>
-              <p className="text-xs text-gray-400 mt-0.5">Student applications for your campus</p>
+              <p className="text-xs text-zinc-400 mt-0.5">Student applications for your campus</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-sm text-zinc-400 w-44">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg w-48 focus:outline-none focus:ring-2 focus:ring-[#0066ff]/20 focus:border-[#0066ff] transition-all"
+                  className="bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 outline-none w-full"
                 />
               </div>
               <ManualApplyForm defaultCampus={user?.campus} onSuccess={() => fetchStudents(user)} />
