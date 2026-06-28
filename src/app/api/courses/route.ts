@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, qualifications } = body;
+    const { name, feePdf, qualifications } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Course name is required" }, { status: 400 });
@@ -48,12 +48,12 @@ export async function POST(req: NextRequest) {
     const course = await prisma.course.create({
       data: {
         name,
+        feePdf: feePdf || null,
         qualifications: {
-          create: qualifications.map((q: { qualificationType: string; qualificationLevel: string; minGrade: string; feePdf?: string }) => ({
-            qualificationType: q.qualificationType,
-            qualificationLevel: q.qualificationLevel,
+          create: qualifications.map((q: { qualificationType?: string; qualificationLevel?: string; minGrade: string }) => ({
+            qualificationType: q.qualificationType || null,
+            qualificationLevel: q.qualificationLevel || null,
             minGrade: q.minGrade,
-            feePdf: q.feePdf || null,
           })),
         },
       },
@@ -81,7 +81,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, name, qualifications } = body;
+    const { id, name, feePdf, qualifications } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing course id" }, { status: 400 });
@@ -105,18 +105,17 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    // Delete old qualifications and create new ones in a transaction
     const course = await prisma.course.update({
       where: { id },
       data: {
         name: name !== undefined ? name : undefined,
+        feePdf: feePdf !== undefined ? (feePdf || null) : undefined,
         qualifications: {
           deleteMany: {},
-          create: qualifications.map((q: { qualificationType: string; qualificationLevel: string; minGrade: string; feePdf?: string }) => ({
-            qualificationType: q.qualificationType,
-            qualificationLevel: q.qualificationLevel,
+          create: qualifications.map((q: { qualificationType?: string; qualificationLevel?: string; minGrade: string }) => ({
+            qualificationType: q.qualificationType || null,
+            qualificationLevel: q.qualificationLevel || null,
             minGrade: q.minGrade,
-            feePdf: q.feePdf || null,
           })),
         },
       },

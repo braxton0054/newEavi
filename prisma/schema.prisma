@@ -96,6 +96,7 @@ model Verification {
 model Course {
   id        String   @id @default(cuid())
   name      String   @unique
+  feePdf    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -107,10 +108,9 @@ model Course {
 model CourseQualification {
   id                 String   @id @default(cuid())
   courseId           String
-  qualificationType  String   // Artisan, Certificate, Diploma, Higher Diploma
-  qualificationLevel String   // Level 4, Level 5, Level 6
-  minGrade           String   // e.g. C plain, D+, etc.
-  feePdf             String?  // each qualification track has its own fee structure
+  qualificationType  String?
+  qualificationLevel String?
+  minGrade           String
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

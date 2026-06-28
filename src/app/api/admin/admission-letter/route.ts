@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
         );
         if (qualRecord) {
           // Use the qualification record details if needed
-          courseType = qualRecord.qualificationType;
+          courseType = qualRecord.qualificationType || courseType;
         }
       }
     }

@@ -23,7 +23,6 @@ interface QualRow {
   category: string;
   level: string;
   minGrade: string;
-  feeFile: File | null;
 }
 
 let counter = 0;
@@ -33,7 +32,6 @@ function makeRow(existing?: { category: string; level: string; minGrade: string 
     category: existing?.category || "",
     level: existing?.level || "",
     minGrade: existing?.minGrade || "",
-    feeFile: null,
   };
 }
 
@@ -42,11 +40,13 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
+  const [feeFile, setFeeFile] = useState<File | null>(null);
   const [rows, setRows] = useState<QualRow[]>([makeRow()]);
   const [uploading, setUploading] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [editFeeFile, setEditFeeFile] = useState<File | null>(null);
   const [editRows, setEditRows] = useState<QualRow[]>([makeRow()]);
   const [saving, setSaving] = useState(false);
 
@@ -81,19 +81,19 @@ export default function CoursesPage() {
 
     setUploading(true);
     try {
-      const qualifications = await Promise.all(valid.map(async q => ({
-        qualificationType: q.category || "",
-        qualificationLevel: q.level || "",
+      const feePdf = feeFile ? await uploadFeePdf(feeFile) : null;
+      const qualifications = valid.map(q => ({
+        qualificationType: q.category || null,
+        qualificationLevel: q.level || null,
         minGrade: q.minGrade,
-        feePdf: q.feeFile ? await uploadFeePdf(q.feeFile) : null,
-      })));
+      }));
 
       const res = await fetch("/api/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, qualifications }),
+        body: JSON.stringify({ name, feePdf, qualifications }),
       });
-      if (res.ok) { setName(""); setRows([makeRow()]); fetchCourses(); }
+      if (res.ok) { setName(""); setFeeFile(null); setRows([makeRow()]); fetchCourses(); }
       else { const d = await res.json(); alert(d.error || "Failed"); }
     } catch (e) { console.error(e); }
     finally { setUploading(false); }
@@ -116,17 +116,17 @@ export default function CoursesPage() {
 
     setSaving(true);
     try {
-      const qualifications = await Promise.all(valid.map(async q => ({
-        qualificationType: q.category || "",
-        qualificationLevel: q.level || "",
+      const feePdf = editFeeFile ? await uploadFeePdf(editFeeFile) : null;
+      const qualifications = valid.map(q => ({
+        qualificationType: q.category || null,
+        qualificationLevel: q.level || null,
         minGrade: q.minGrade,
-        feePdf: q.feeFile ? await uploadFeePdf(q.feeFile) : null,
-      })));
+      }));
 
       const res = await fetch("/api/courses", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, name: editName, qualifications }),
+        body: JSON.stringify({ id, name: editName, feePdf, qualifications }),
       });
       if (res.ok) { cancelEdit(); fetchCourses(); }
       else { const d = await res.json(); alert(d.error || "Failed"); }
@@ -144,7 +144,7 @@ export default function CoursesPage() {
       <div className="space-y-2">
         {list.map(r => (
           <div key={r.uid} className="rounded-lg border border-zinc-200 p-3 bg-zinc-50/50">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
               <div>
                 <label className="block text-[11px] text-zinc-500 mb-1">Qualification category</label>
                 <select value={r.category} onChange={e => setList(list.map(x => x.uid === r.uid ? { ...x, category: e.target.value } : x))} className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
@@ -163,15 +163,9 @@ export default function CoursesPage() {
                 <label className="block text-[11px] text-zinc-500 mb-1">Min grade *</label>
                 <input value={r.minGrade} onChange={e => setList(list.map(x => x.uid === r.uid ? { ...x, minGrade: e.target.value } : x))} placeholder="e.g. C plain" className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
               </div>
-              <div className="flex gap-2 items-end">
-                <div className="flex-1">
-                  <label className="block text-[11px] text-zinc-500 mb-1">Fee structure (PDF)</label>
-                  <input type="file" accept=".pdf" onChange={e => setList(list.map(x => x.uid === r.uid ? { ...x, feeFile: e.target.files?.[0] || null } : x))} className="w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-                </div>
-                <button type="button" onClick={() => { if (list.length > 1) setList(list.filter(x => x.uid !== r.uid)); }} disabled={list.length <= 1} className="w-8 h-8 rounded-lg border border-zinc-200 bg-white flex items-center justify-center text-zinc-400 hover:bg-zinc-100 hover:text-red-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0" title="Remove">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
+              <button type="button" onClick={() => { if (list.length > 1) setList(list.filter(x => x.uid !== r.uid)); }} disabled={list.length <= 1} className="w-8 h-8 rounded-lg border border-zinc-200 bg-white flex items-center justify-center text-zinc-400 hover:bg-zinc-100 hover:text-red-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0" title="Remove">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
             </div>
           </div>
         ))}
@@ -215,6 +209,10 @@ export default function CoursesPage() {
               <p className="text-[11px] text-zinc-400 mb-2">Pick a category (Diploma/Certificate/Artisan) or a level (4/5/6) — each is independent</p>
               {renderRows(rows, setRows)}
             </div>
+            <div className="mb-4">
+              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Fee structure (PDF)</label>
+              <input type="file" accept=".pdf" onChange={e => setFeeFile(e.target.files?.[0] || null)} className="w-full text-sm text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+            </div>
             <button type="submit" disabled={uploading} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
               {uploading ? "Adding..." : "Add course"}
             </button>
@@ -239,6 +237,10 @@ export default function CoursesPage() {
                       <div className="mb-4">
                         <label className="block text-[11px] font-medium text-zinc-500 mb-2">Qualifications *</label>
                         {renderRows(editRows, setEditRows)}
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-[11px] font-medium text-zinc-500 mb-1">Fee structure (PDF)</label>
+                        <input type="file" accept=".pdf" onChange={e => setEditFeeFile(e.target.files?.[0] || null)} className="w-full text-sm text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => handleEditSave(course.id)} disabled={saving} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
