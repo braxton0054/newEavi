@@ -135,7 +135,7 @@ export default function SuperAdminDashboard() {
   return (
     <div className="min-h-screen bg-zinc-50 flex">
       <AdminSidebar role="SUPER_ADMIN" email={user?.email} />
-      <div className="flex-1 min-w-0 lg:ml-48">
+      <div className="flex-1 min-w-0">
         {/* Header */}
         <header className="bg-white border-b border-zinc-200 px-6 lg:px-8 py-3.5 sticky top-0 z-30">
           <div className="flex items-center justify-between">
