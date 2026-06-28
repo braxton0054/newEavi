@@ -17,23 +17,34 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Look up the qualification record (course is a CourseQualification ID)
-    const courseQual = await prisma.courseQualification.findUnique({
+    // Look up the course with all its qualification tracks
+    const courseRecord = await prisma.course.findUnique({
       where: { id: course },
-      include: { course: true },
+      include: { qualifications: true },
     });
-    const courseName = courseQual ? `${courseQual.course.name} (${courseQual.qualificationType})` : course;
 
-    // Validate education qualification against course minimum grade
-    if (courseQual?.minGrade && educationQualification) {
-      const { meetsQualification } = await import("@/lib/education-qualifications");
-      if (!meetsQualification(educationQualification, courseQual.minGrade)) {
-        return NextResponse.json(
-          { error: `Your qualification (${educationQualification}) does not meet the minimum requirement (${courseQual.minGrade}) for this course.` },
-          { status: 400 }
-        );
+    if (!courseRecord) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    // Find qualification tracks the student meets (educationQualification >= minGrade)
+    const { meetsQualification } = await import("@/lib/education-qualifications");
+    let matchedQual = null;
+
+    if (educationQualification) {
+      for (const q of courseRecord.qualifications) {
+        if (q.minGrade && meetsQualification(educationQualification, q.minGrade)) {
+          matchedQual = q;
+          break; // pick the first match
+        }
       }
     }
+
+    // If student has no educationQualification or doesn't meet any track, still allow apply (pending review)
+    // Store the course name + matched qualification type
+    const courseName = matchedQual
+      ? `${courseRecord.name} (${matchedQual.qualificationType})`
+      : courseRecord.name;
 
     const student = await prisma.student.create({
       data: {

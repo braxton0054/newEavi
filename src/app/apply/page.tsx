@@ -3,18 +3,9 @@
 import { useState, useEffect } from "react";
 import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
-interface CourseQualification {
-  id: string;
-  qualificationType: string;
-  qualificationLevel: string;
-  minGrade: string;
-  feePdf: string | null;
-}
-
 interface Course {
   id: string;
   name: string;
-  qualifications: CourseQualification[];
 }
 
 export default function ApplyPage() {
@@ -28,10 +19,9 @@ export default function ApplyPage() {
     email: "",
     educationQualification: "",
     preferredCampus: "",
-    course: "",         // CourseQualification ID
+    course: "",
     academicYear: "",
   });
-  const [selectedCourseId, setSelectedCourseId] = useState(""); // Course ID (first dropdown)
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -43,13 +33,7 @@ export default function ApplyPage() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name: elName, value } = e.target;
-    if (elName === "selectedCourse") {
-      setSelectedCourseId(value);
-      setForm({ ...form, course: "" });
-    } else {
-      setForm({ ...form, [elName]: value, ...(elName === "preferredCampus" ? { course: "" } : {}) });
-    }
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +54,6 @@ export default function ApplyPage() {
           firstName: "", middleName: "", lastName: "", gender: "", phone: "",
           email: "", educationQualification: "", preferredCampus: "", course: "", academicYear: "",
         });
-        setSelectedCourseId("");
       } else {
         setMessage({ type: "error", text: data.error || "Something went wrong." });
       }
@@ -80,9 +63,6 @@ export default function ApplyPage() {
       setSubmitting(false);
     }
   };
-
-  const selectedCourse = courses.find(c => c.id === selectedCourseId);
-  const selectedQualification = selectedCourse?.qualifications.find(q => q.id === form.course);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -149,7 +129,7 @@ export default function ApplyPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Course *</label>
-              <select name="selectedCourse" value={selectedCourseId} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
+              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
                 <option value="">Select course</option>
                 {courses.map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
@@ -157,24 +137,6 @@ export default function ApplyPage() {
               </select>
             </div>
           </div>
-          {selectedCourse && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Qualification track *</label>
-              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
-                <option value="">Select qualification</option>
-                {selectedCourse.qualifications.map(q => (
-                  <option key={q.id} value={q.id}>
-                    {q.qualificationType} — {q.qualificationLevel} — Min: {q.minGrade}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          {selectedQualification?.feePdf && (
-            <p className="text-xs text-blue-600">
-              <a href={selectedQualification.feePdf} target="_blank" rel="noopener noreferrer" className="hover:underline">View Fee Structure for {selectedCourse?.name} ({selectedQualification.qualificationType})</a>
-            </p>
-          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Academic Year *</label>
             <select name="academicYear" value={form.academicYear} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
