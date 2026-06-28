@@ -18,21 +18,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Look up the qualification record (course is a CourseQualification ID)
-    const courseRecord = await prisma.courseQualification.findUnique({
+    const courseQual = await prisma.courseQualification.findUnique({
       where: { id: course },
       include: { course: true },
     });
+    const courseName = courseQual ? `${courseQual.course.name} (${courseQual.qualificationType})` : course;
 
-    const courseName = courseRecord
-      ? `${courseRecord.course.name} (${courseRecord.qualificationType})`
-      : course;
-
-    // Check if course has a minimum grade requirement and validate
-    if (courseRecord?.minGrade && educationQualification) {
+    // Validate education qualification against course minimum grade
+    if (courseQual?.minGrade && educationQualification) {
       const { meetsQualification } = await import("@/lib/education-qualifications");
-      if (!meetsQualification(educationQualification, courseRecord.minGrade)) {
+      if (!meetsQualification(educationQualification, courseQual.minGrade)) {
         return NextResponse.json(
-          { error: `Your qualification (${educationQualification}) does not meet the minimum requirement (${courseRecord.minGrade}) for this course.` },
+          { error: `Your qualification (${educationQualification}) does not meet the minimum requirement (${courseQual.minGrade}) for this course.` },
           { status: 400 }
         );
       }

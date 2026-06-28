@@ -8,12 +8,12 @@ interface CourseQualification {
   qualificationType: string;
   qualificationLevel: string;
   minGrade: string;
+  feePdf: string | null;
 }
 
 interface Course {
   id: string;
   name: string;
-  feePdf: string | null;
   qualifications: CourseQualification[];
 }
 
@@ -82,7 +82,7 @@ export default function ApplyPage() {
   };
 
   const selectedCourse = courses.find(c => c.id === selectedCourseId);
-  const selectedQual = selectedCourse?.qualifications.find(q => q.id === form.course);
+  const selectedQualification = selectedCourse?.qualifications.find(q => q.id === form.course);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -170,9 +170,9 @@ export default function ApplyPage() {
               </select>
             </div>
           )}
-          {selectedCourse?.feePdf && (
+          {selectedQualification?.feePdf && (
             <p className="text-xs text-blue-600">
-              <a href={selectedCourse.feePdf} target="_blank" rel="noopener noreferrer" className="hover:underline">View Fee Structure for {selectedCourse.name}</a>
+              <a href={selectedQualification.feePdf} target="_blank" rel="noopener noreferrer" className="hover:underline">View Fee Structure for {selectedCourse?.name} ({selectedQualification.qualificationType})</a>
             </p>
           )}
           <div>
