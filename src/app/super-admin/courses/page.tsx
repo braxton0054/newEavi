@@ -126,6 +126,12 @@ export default function CoursesPage() {
                 <input value={name} onChange={e => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. Education (Secondary)" />
               </div>
               <div>
+                <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min grade</label>
+                <input value={minGrade} onChange={e => setMinGrade(e.target.value)} placeholder="e.g. C+" className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div>
                 <label className="block text-[11px] font-medium text-zinc-500 mb-1">Qualification type</label>
                 <select value={qualificationType} onChange={e => setQualificationType(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
                   <option value="">Select type</option>
@@ -135,8 +141,6 @@ export default function CoursesPage() {
                   <option value="Higher Diploma">Higher Diploma</option>
                 </select>
               </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-[11px] font-medium text-zinc-500 mb-1">Qualification level</label>
                 <select value={qualificationLevel} onChange={e => setQualificationLevel(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
@@ -145,10 +149,6 @@ export default function CoursesPage() {
                   <option value="Level 5">Level 5</option>
                   <option value="Level 6">Level 6</option>
                 </select>
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min grade</label>
-                <input value={minGrade} onChange={e => setMinGrade(e.target.value)} placeholder="e.g. C+" className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
               </div>
             </div>
             <div className="mb-4">
@@ -176,11 +176,17 @@ export default function CoursesPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <div>
                           <label className="block text-[11px] font-medium text-zinc-500 mb-1">Course name</label>
-                          <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066ff]/20 focus:border-[#0066ff]" />
+                          <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-medium text-gray-500 mb-1">Qualification Type</label>
-                          <select value={editQualificationType} onChange={e => setEditQualificationType(e.target.value)} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066ff]/20 focus:border-[#0066ff]">
+                          <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min grade</label>
+                          <input value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. C+" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        <div>
+                          <label className="block text-[11px] font-medium text-zinc-500 mb-1">Qualification type</label>
+                          <select value={editQualificationType} onChange={e => setEditQualificationType(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
                             <option value="">Select type</option>
                             <option value="Artisan">Artisan</option>
                             <option value="Certificate">Certificate</option>
@@ -188,20 +194,14 @@ export default function CoursesPage() {
                             <option value="Higher Diploma">Higher Diploma</option>
                           </select>
                         </div>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                         <div>
-                          <label className="block text-[11px] font-medium text-gray-500 mb-1">Qualification Level</label>
-                          <select value={editQualificationLevel} onChange={e => setEditQualificationLevel(e.target.value)} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066ff]/20 focus:border-[#0066ff]">
+                          <label className="block text-[11px] font-medium text-zinc-500 mb-1">Qualification level</label>
+                          <select value={editQualificationLevel} onChange={e => setEditQualificationLevel(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
                             <option value="">Select level</option>
                             <option value="Level 4">Level 4</option>
                             <option value="Level 5">Level 5</option>
                             <option value="Level 6">Level 6</option>
                           </select>
-                        </div>
-                        <div>
-                          <label className="block text-[11px] font-medium text-gray-500 mb-1">Min Grade</label>
-                          <input value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066ff]/20 focus:border-[#0066ff]" placeholder="e.g. C+" />
                         </div>
                       </div>
                       <div className="flex gap-2">
