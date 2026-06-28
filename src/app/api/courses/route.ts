@@ -49,6 +49,50 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || user.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { id, name, qualificationType, qualificationLevel, minGrade, feePdf } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing course id" }, { status: 400 });
+    }
+
+    const existing = await prisma.course.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (qualificationType !== undefined) updateData.qualificationType = qualificationType || null;
+    if (qualificationLevel !== undefined) updateData.qualificationLevel = qualificationLevel || null;
+    if (minGrade !== undefined) updateData.minGrade = minGrade || null;
+    if (feePdf !== undefined) updateData.feePdf = feePdf || null;
+
+    const course = await prisma.course.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return NextResponse.json({ data: course }, { status: 200 });
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      return NextResponse.json({ error: "A course with this name already exists" }, { status: 409 });
+    }
+    console.error(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });

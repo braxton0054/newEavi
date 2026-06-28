@@ -23,6 +23,12 @@ export default function CoursesPage() {
   const [qualificationLevel, setQualificationLevel] = useState("");
   const [feeFile, setFeeFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editQualificationType, setEditQualificationType] = useState("");
+  const [editQualificationLevel, setEditQualificationLevel] = useState("");
+  const [editMinGrade, setEditMinGrade] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -72,8 +78,53 @@ export default function CoursesPage() {
     }
   }
 
+  function startEdit(course: Course) {
+    setEditingId(course.id);
+    setEditName(course.name);
+    setEditQualificationType(course.qualificationType || "");
+    setEditQualificationLevel(course.qualificationLevel || "");
+    setEditMinGrade(course.minGrade || "");
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditName("");
+    setEditQualificationType("");
+    setEditQualificationLevel("");
+    setEditMinGrade("");
+  }
+
+  async function handleEditSave(id: string) {
+    if (!editName) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/courses", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id,
+          name: editName,
+          qualificationType: editQualificationType || null,
+          qualificationLevel: editQualificationLevel || null,
+          minGrade: editMinGrade || null,
+        }),
+      });
+      if (res.ok) {
+        cancelEdit();
+        fetchCourses();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to update course");
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function handleDelete(id: string) {
-    if (!confirm("Delete this course?")) return;
+    if (!confirm("Delete this course? This cannot be undone.")) return;
     await fetch(`/api/courses?id=${id}`, { method: "DELETE" });
     fetchCourses();
   }
@@ -132,21 +183,68 @@ export default function CoursesPage() {
 
         <div className="space-y-3">
           {courses.map(course => (
-            <div key={course.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-gray-900">{course.name}</h3>
-                <p className="text-sm text-gray-500">
-                  {course.qualificationType ? `${course.qualificationType}` : ""}
-                  {course.qualificationType && course.qualificationLevel ? " • " : ""}
-                  {course.qualificationLevel || ""}
-                  {((course.qualificationType || course.qualificationLevel) && course.minGrade) ? " • " : ""}
-                  {course.minGrade ? `Min: ${course.minGrade}` : ""}
-                </p>
-                {course.feePdf && (
-                  <a href={course.feePdf} target="_blank" className="text-xs text-blue-600 hover:underline">View Fee Structure</a>
-                )}
-              </div>
-              <button onClick={() => handleDelete(course.id)} className="text-sm text-red-600 hover:underline">Delete</button>
+            <div key={course.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              {editingId === course.id ? (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Course Name</label>
+                    <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Qualification Type</label>
+                      <select value={editQualificationType} onChange={e => setEditQualificationType(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
+                        <option value="">Select type</option>
+                        <option value="Artisan">Artisan</option>
+                        <option value="Certificate">Certificate</option>
+                        <option value="Diploma">Diploma</option>
+                        <option value="Higher Diploma">Higher Diploma</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Qualification Level</label>
+                      <select value={editQualificationLevel} onChange={e => setEditQualificationLevel(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
+                        <option value="">Select level</option>
+                        <option value="Level 4">Level 4</option>
+                        <option value="Level 5">Level 5</option>
+                        <option value="Level 6">Level 6</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Grade</label>
+                    <input value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="e.g. B+" />
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleEditSave(course.id)} disabled={saving} className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50">
+                      {saving ? "Saving..." : "Save"}
+                    </button>
+                    <button onClick={cancelEdit} className="rounded-lg bg-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{course.name}</h3>
+                    <p className="text-sm text-gray-500">
+                      {course.qualificationType ? `${course.qualificationType}` : ""}
+                      {course.qualificationType && course.qualificationLevel ? " • " : ""}
+                      {course.qualificationLevel || ""}
+                      {((course.qualificationType || course.qualificationLevel) && course.minGrade) ? " • " : ""}
+                      {course.minGrade ? `Min: ${course.minGrade}` : ""}
+                    </p>
+                    {course.feePdf && (
+                      <a href={course.feePdf} target="_blank" className="text-xs text-blue-600 hover:underline">View Fee Structure</a>
+                    )}
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => startEdit(course)} className="text-sm text-blue-600 hover:underline">Edit</button>
+                    <button onClick={() => handleDelete(course.id)} className="text-sm text-red-600 hover:underline">Delete</button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           {courses.length === 0 && <p className="text-gray-500 text-center py-8">No courses added yet.</p>}

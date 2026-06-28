@@ -36,3 +36,80 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { id, firstName, middleName, lastName, gender, phone, email, educationQualification, preferredCampus, status } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: "Student ID is required" }, { status: 400 });
+    }
+
+    const existing = await prisma.student.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Student not found" }, { status: 404 });
+    }
+
+    const updateData: any = {};
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (middleName !== undefined) updateData.middleName = middleName || null;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (gender !== undefined) updateData.gender = gender || null;
+    if (phone !== undefined) updateData.phone = phone || null;
+    if (email !== undefined) updateData.email = email || null;
+    if (educationQualification !== undefined) updateData.educationQualification = educationQualification || null;
+    if (preferredCampus !== undefined) updateData.preferredCampus = preferredCampus;
+    if (status !== undefined) updateData.status = status;
+
+    const student = await prisma.student.update({
+      where: { id },
+      data: updateData,
+      include: { applications: true },
+    });
+
+    return NextResponse.json({ data: student }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || user.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+
+    // Delete applications first (foreign key constraint)
+    await prisma.application.deleteMany({ where: { studentId: id } });
+    await prisma.student.delete({ where: { id } });
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

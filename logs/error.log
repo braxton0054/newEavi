@@ -53,3 +53,24 @@
 2026-06-28 00:04:24:   clientVersion: '5.22.0',
 2026-06-28 00:04:24:   meta: { modelName: 'CampusSetting', column: 'campus_settings.busRoutePdf' }
 2026-06-28 00:04:24: }
+2026-06-28 10:53:31: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 10:53:31: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 10:53:31:     at ignore-listed frames
+2026-06-28 16:10:22: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 16:10:22: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 16:10:22:     at ignore-listed frames
+2026-06-28 16:10:22: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 16:10:22: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 16:10:22:     at ignore-listed frames
+2026-06-28 16:10:23: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 16:10:23: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 16:10:23:     at ignore-listed frames
+2026-06-28 16:10:23: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 16:10:23: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 16:10:23:     at ignore-listed frames
+2026-06-28 16:10:23: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 16:10:23: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 16:10:23:     at ignore-listed frames
+2026-06-28 16:10:23: Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2026-06-28 16:10:23: Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
+2026-06-28 16:10:23:     at ignore-listed frames
