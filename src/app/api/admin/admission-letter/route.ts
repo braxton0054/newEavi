@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { generateAdmissionPdf, generateSimpleAdmissionLetter } from "@/lib/admission-pdf";
+import { fillAdmissionPdf } from "@/lib/admission-pdf";
+import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
 export async function GET(req: NextRequest) {
   try {
@@ -48,14 +49,21 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    // Build admission number
+    if (!template) {
+      return NextResponse.json(
+        { error: "No admission PDF template uploaded. Please upload one in Super Admin → Settings." },
+        { status: 404 }
+      );
+    }
+
+    // Build admission number from campus format
     const format = campusSetting?.admissionFormat || `EAVI/${student.preferredCampus}/2026/`;
     const lastNum = campusSetting?.lastAdmissionNumber || 0;
     const admissionNumber = `${format}${String(lastNum + 1).padStart(4, "0")}`;
 
-    // Get reporting date from settings
+    // Get reporting date from campus settings
     const reportingDates = (campusSetting?.reportingDates as any[]) || [];
-    const reportingDate = reportingDates.length > 0
+    const reportDate = reportingDates.length > 0
       ? (reportingDates[0]?.start || reportingDates[0] || "To be communicated")
       : "To be communicated";
 
@@ -73,44 +81,37 @@ export async function GET(req: NextRequest) {
       year: "numeric",
     });
 
-    const pdfData = {
+    // Get course type/level from the course record
+    const courseRecord = await prisma.course.findFirst({
+      where: { name: courseName },
+    });
+    const courseType = courseRecord?.qualificationType || "";
+    const campusName = student.preferredCampus === "MAIN" ? "Main Campus" : "West Campus";
+
+    // Fill the template PDF with real data
+    const templateBuffer = Buffer.from(template.pdfData);
+    const pdfBytes = await fillAdmissionPdf(templateBuffer, {
+      letterDate: currentDate,
       studentName,
-      course: courseName,
-      campus: student.preferredCampus || "MAIN",
+      courseType,
+      courseName,
       admissionNumber,
-      reportingDate: typeof reportingDate === "string" ? reportingDate : String(reportingDate),
+      reportDate: typeof reportDate === "string" ? reportDate : String(reportDate),
+      campus: campusName,
       academicYear,
-      currentDate,
-      educationQualification: student.educationQualification,
-      phone: student.phone,
-      email: student.email,
-    };
+      educationQualification: student.educationQualification || "",
+      studentPhone: student.phone || "",
+      studentEmail: student.email || "",
+    });
 
-    if (template) {
-      // Generate PDF from template
-      const templateBuffer = Buffer.from(template.pdfData);
-      const pdfBytes = await generateAdmissionPdf(templateBuffer, pdfData);
-
-      return new Response(new Blob([pdfBytes.slice()], { type: "application/pdf" }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": `inline; filename="admission-${admissionNumber}.pdf"`,
-          "Cache-Control": "no-cache",
-        },
-      });
-    } else {
-      // Fallback: generate HTML admission letter
-      const html = generateSimpleAdmissionLetter(pdfData);
-
-      return new NextResponse(html, {
-        status: 200,
-        headers: {
-          "Content-Type": "text/html",
-          "Content-Disposition": `inline; filename="admission-${admissionNumber}.html"`,
-        },
-      });
-    }
+    return new Response(new Blob([pdfBytes.slice()], { type: "application/pdf" }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `inline; filename="admission-${admissionNumber}.pdf"`,
+        "Cache-Control": "no-cache",
+      },
+    });
   } catch (error) {
     console.error("Error generating admission PDF:", error);
     return NextResponse.json({ error: "Failed to generate admission letter" }, { status: 500 });
