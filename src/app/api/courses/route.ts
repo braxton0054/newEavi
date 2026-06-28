@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
     }
 
     for (const q of qualifications) {
-      if (!q.qualificationType || !q.qualificationLevel || !q.minGrade) {
+      if ((!q.qualificationType && !q.qualificationLevel) || !q.minGrade) {
         return NextResponse.json(
-          { error: "Each qualification must have type, level, and min grade" },
+          { error: "Each qualification needs a category or level, plus min grade" },
           { status: 400 }
         );
       }
@@ -97,9 +97,9 @@ export async function PUT(req: NextRequest) {
     }
 
     for (const q of qualifications) {
-      if (!q.qualificationType || !q.qualificationLevel || !q.minGrade) {
+      if ((!q.qualificationType && !q.qualificationLevel) || !q.minGrade) {
         return NextResponse.json(
-          { error: "Each qualification must have type, level, and min grade" },
+          { error: "Each qualification needs a category or level, plus min grade" },
           { status: 400 }
         );
       }
