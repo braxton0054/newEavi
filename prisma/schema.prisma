@@ -94,16 +94,29 @@ model Verification {
 }
 
 model Course {
-  id                 String    @id @default(cuid())
-  name               String    @unique
-  qualificationType  String?   // Artisan, Certificate, Diploma, Higher Diploma
-  qualificationLevel String?   // Level 4, Level 5, Level 6
-  minGrade           String?
-  feePdf             String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  qualifications CourseQualification[]
 
   @@map("courses")
+}
+
+model CourseQualification {
+  id                 String   @id @default(cuid())
+  courseId           String
+  qualificationType  String   // Artisan, Certificate, Diploma, Higher Diploma
+  qualificationLevel String   // Level 4, Level 5, Level 6
+  minGrade           String   // e.g. C plain, D+, etc.
+  feePdf             String?  // each qualification track has its own fee structure
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("course_qualifications")
 }
 
 model CampusSetting {

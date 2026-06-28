@@ -3,13 +3,18 @@
 import { useState, useEffect } from "react";
 import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
+interface CourseQualification {
+  id: string;
+  qualificationType: string;
+  qualificationLevel: string;
+  minGrade: string;
+}
+
 interface Course {
   id: string;
   name: string;
-  qualificationType: string | null;
-  qualificationLevel: string | null;
-  minGrade: string | null;
   feePdf: string | null;
+  qualifications: CourseQualification[];
 }
 
 export default function ApplyPage() {
@@ -23,9 +28,10 @@ export default function ApplyPage() {
     email: "",
     educationQualification: "",
     preferredCampus: "",
-    course: "",
+    course: "",         // CourseQualification ID
     academicYear: "",
   });
+  const [selectedCourseId, setSelectedCourseId] = useState(""); // Course ID (first dropdown)
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -37,7 +43,13 @@ export default function ApplyPage() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value, ...(e.target.name === "preferredCampus" ? { course: "" } : {}) });
+    const { name: elName, value } = e.target;
+    if (elName === "selectedCourse") {
+      setSelectedCourseId(value);
+      setForm({ ...form, course: "" });
+    } else {
+      setForm({ ...form, [elName]: value, ...(elName === "preferredCampus" ? { course: "" } : {}) });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,6 +70,7 @@ export default function ApplyPage() {
           firstName: "", middleName: "", lastName: "", gender: "", phone: "",
           email: "", educationQualification: "", preferredCampus: "", course: "", academicYear: "",
         });
+        setSelectedCourseId("");
       } else {
         setMessage({ type: "error", text: data.error || "Something went wrong." });
       }
@@ -68,7 +81,8 @@ export default function ApplyPage() {
     }
   };
 
-  const selectedCourse = courses.find(c => c.id === form.course);
+  const selectedCourse = courses.find(c => c.id === selectedCourseId);
+  const selectedQual = selectedCourse?.qualifications.find(q => q.id === form.course);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -135,14 +149,27 @@ export default function ApplyPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Course *</label>
-              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
+              <select name="selectedCourse" value={selectedCourseId} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
                 <option value="">Select course</option>
                 {courses.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}{c.qualificationType ? ` (${c.qualificationType}` : ""}{c.qualificationLevel ? ` - ${c.qualificationLevel})` : c.qualificationType ? ")" : ""}{c.minGrade ? ` (Min: ${c.minGrade})` : ""}</option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
           </div>
+          {selectedCourse && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Qualification track *</label>
+              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
+                <option value="">Select qualification</option>
+                {selectedCourse.qualifications.map(q => (
+                  <option key={q.id} value={q.id}>
+                    {q.qualificationType} — {q.qualificationLevel} — Min: {q.minGrade}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {selectedCourse?.feePdf && (
             <p className="text-xs text-blue-600">
               <a href={selectedCourse.feePdf} target="_blank" rel="noopener noreferrer" className="hover:underline">View Fee Structure for {selectedCourse.name}</a>

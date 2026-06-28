@@ -81,17 +81,40 @@ export async function GET(req: NextRequest) {
       year: "numeric",
     });
 
-    // Get course type/level from the course record
-    const courseRecord = await prisma.course.findFirst({
-      where: { name: courseName },
-    });
-    const courseType = courseRecord?.qualificationType || "";
-    // Strip qualification type prefix to avoid "Diploma in Diploma in..."
-    // Also strip "in " suffix that follows the type in template layout
+    // Extract course type from stored course name (format: "ICT (Diploma)")
+    // The qualification type is in parentheses
+    let courseType = "";
     let courseDisplayName = courseName;
-    if (courseType && courseName.startsWith(courseType + " ")) {
-      courseDisplayName = courseName.substring(courseType.length + 1);
+    const qualMatch = courseName.match(/\(([^)]+)\)\s*$/);
+    if (qualMatch) {
+      courseType = qualMatch[1]; // e.g. "Diploma"
+      // Strip the qualification suffix for display: "ICT (Diploma)" → "ICT"
+      courseDisplayName = courseName.replace(/\s*\([^)]+\)\s*$/, "").trim();
     }
+
+    // Also try to find the qualification record for additional details
+    if (qualMatch) {
+      const courseBaseName = courseDisplayName;
+      const existingCourse = await prisma.course.findFirst({
+        where: { name: courseBaseName },
+        include: { qualifications: true },
+      });
+      if (existingCourse) {
+        const qualRecord = existingCourse.qualifications.find(
+          q => q.qualificationType === courseType
+        );
+        if (qualRecord) {
+          // Use the qualification record details if needed
+          courseType = qualRecord.qualificationType;
+        }
+      }
+    }
+
+    // Strip qualification type prefix to avoid "Diploma in Diploma in..."
+    if (courseType && courseDisplayName.startsWith(courseType + " ")) {
+      courseDisplayName = courseDisplayName.substring(courseType.length + 1);
+    }
+
     const campusName = student.preferredCampus === "MAIN" ? "Main Campus" : "West Campus";
 
     // Fill the template PDF with real data

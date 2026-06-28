@@ -4,13 +4,18 @@ import { useState, useEffect } from "react";
 
 import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
+interface CourseQualification {
+  id: string;
+  qualificationType: string;
+  qualificationLevel: string;
+  minGrade: string;
+}
+
 interface Course {
   id: string;
   name: string;
-  qualificationType: string | null;
-  qualificationLevel: string | null;
-  minGrade: string | null;
   feePdf: string | null;
+  qualifications: CourseQualification[];
 }
 
 interface Props {
@@ -29,13 +34,20 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
     preferredCampus: defaultCampus || "",
     course: "", academicYear: "",
   });
+  const [selectedCourseId, setSelectedCourseId] = useState("");
 
   useEffect(() => {
     fetch("/api/courses").then(r => r.json()).then(d => { if (d.data) setCourses(d.data); }).catch(() => {});
   }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value, ...(e.target.name === "preferredCampus" ? { course: "" } : {}) });
+    const { name: elName, value } = e.target;
+    if (elName === "selectedCourse") {
+      setSelectedCourseId(value);
+      setForm({ ...form, course: "" });
+    } else {
+      setForm({ ...form, [elName]: value, ...(elName === "preferredCampus" ? { course: "" } : {}) });
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -52,6 +64,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
       if (res.ok) {
         setMessage({ type: "success", text: "Application submitted successfully!" });
         setForm({ firstName: "", middleName: "", lastName: "", gender: "", phone: "", email: "", educationQualification: "", preferredCampus: defaultCampus || "", course: "", academicYear: "" });
+        setSelectedCourseId("");
         onSuccess?.();
       } else {
         setMessage({ type: "error", text: data.error || "Something went wrong." });
@@ -63,7 +76,8 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
     }
   }
 
-  const selectedCourse = courses.find(c => c.id === form.course);
+  const selectedCourse = courses.find(c => c.id === selectedCourseId);
+  const selectedQual = selectedCourse?.qualifications.find(q => q.id === form.course);
 
   return (
     <div className="w-full">
@@ -147,14 +161,27 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Course *</label>
-                  <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                  <select name="selectedCourse" value={selectedCourseId} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                     <option value="">Select course</option>
                     {courses.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}{c.qualificationType ? ` (${c.qualificationType}` : ""}{c.qualificationLevel ? ` - ${c.qualificationLevel})` : c.qualificationType ? ")" : ""}{c.minGrade ? ` (Min: ${c.minGrade})` : ""}</option>
+                      <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
                 </div>
               </div>
+              {selectedCourse && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Qualification track *</label>
+                  <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <option value="">Select qualification</option>
+                    {selectedCourse.qualifications.map(q => (
+                      <option key={q.id} value={q.id}>
+                        {q.qualificationType} — {q.qualificationLevel} — Min: {q.minGrade}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {selectedCourse?.feePdf && (
                 <p className="text-xs text-blue-600">
                   <a href={selectedCourse.feePdf} target="_blank" rel="noopener noreferrer" className="hover:underline">View Fee Structure →</a>

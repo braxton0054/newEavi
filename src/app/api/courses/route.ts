@@ -4,7 +4,10 @@ import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const courses = await prisma.course.findMany({ orderBy: { name: "asc" } });
+    const courses = await prisma.course.findMany({
+      orderBy: { name: "asc" },
+      include: { qualifications: { orderBy: { qualificationType: "asc" } } },
+    });
     return NextResponse.json({ data: courses }, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -23,20 +26,38 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, qualificationType, qualificationLevel, minGrade, feePdf } = body;
+    const { name, qualifications } = body;
 
     if (!name) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ error: "Course name is required" }, { status: 400 });
+    }
+
+    if (!qualifications || !Array.isArray(qualifications) || qualifications.length === 0) {
+      return NextResponse.json({ error: "At least one qualification is required" }, { status: 400 });
+    }
+
+    for (const q of qualifications) {
+      if (!q.qualificationType || !q.qualificationLevel || !q.minGrade) {
+        return NextResponse.json(
+          { error: "Each qualification must have type, level, and min grade" },
+          { status: 400 }
+        );
+      }
     }
 
     const course = await prisma.course.create({
       data: {
         name,
-        qualificationType: qualificationType || null,
-        qualificationLevel: qualificationLevel || null,
-        minGrade: minGrade || null,
-        feePdf: feePdf || null,
+        qualifications: {
+          create: qualifications.map((q: { qualificationType: string; qualificationLevel: string; minGrade: string; feePdf?: string }) => ({
+            qualificationType: q.qualificationType,
+            qualificationLevel: q.qualificationLevel,
+            minGrade: q.minGrade,
+            feePdf: q.feePdf || null,
+          })),
+        },
       },
+      include: { qualifications: true },
     });
 
     return NextResponse.json({ data: course }, { status: 201 });
@@ -60,7 +81,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, name, qualificationType, qualificationLevel, minGrade, feePdf } = body;
+    const { id, name, qualifications } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing course id" }, { status: 400 });
@@ -71,16 +92,35 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    const updateData: any = {};
-    if (name !== undefined) updateData.name = name;
-    if (qualificationType !== undefined) updateData.qualificationType = qualificationType || null;
-    if (qualificationLevel !== undefined) updateData.qualificationLevel = qualificationLevel || null;
-    if (minGrade !== undefined) updateData.minGrade = minGrade || null;
-    if (feePdf !== undefined) updateData.feePdf = feePdf || null;
+    if (!qualifications || !Array.isArray(qualifications) || qualifications.length === 0) {
+      return NextResponse.json({ error: "At least one qualification is required" }, { status: 400 });
+    }
 
+    for (const q of qualifications) {
+      if (!q.qualificationType || !q.qualificationLevel || !q.minGrade) {
+        return NextResponse.json(
+          { error: "Each qualification must have type, level, and min grade" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Delete old qualifications and create new ones in a transaction
     const course = await prisma.course.update({
       where: { id },
-      data: updateData,
+      data: {
+        name: name !== undefined ? name : undefined,
+        qualifications: {
+          deleteMany: {},
+          create: qualifications.map((q: { qualificationType: string; qualificationLevel: string; minGrade: string; feePdf?: string }) => ({
+            qualificationType: q.qualificationType,
+            qualificationLevel: q.qualificationLevel,
+            minGrade: q.minGrade,
+            feePdf: q.feePdf || null,
+          })),
+        },
+      },
+      include: { qualifications: true },
     });
 
     return NextResponse.json({ data: course }, { status: 200 });

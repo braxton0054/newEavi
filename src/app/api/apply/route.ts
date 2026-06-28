@@ -17,9 +17,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Validate education qualification against course minimum grade
-    const courseRecord = await prisma.course.findUnique({ where: { id: course } });
-    const courseName = courseRecord?.name || course;
+    // Look up the qualification record (course is a CourseQualification ID)
+    const courseRecord = await prisma.courseQualification.findUnique({
+      where: { id: course },
+      include: { course: true },
+    });
+
+    const courseName = courseRecord
+      ? `${courseRecord.course.name} (${courseRecord.qualificationType})`
+      : course;
 
     // Check if course has a minimum grade requirement and validate
     if (courseRecord?.minGrade && educationQualification) {
