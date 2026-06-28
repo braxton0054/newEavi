@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
+
 interface Course {
   id: string;
   name: string;
@@ -23,7 +25,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [form, setForm] = useState({
     firstName: "", middleName: "", lastName: "", gender: "",
-    phone: "", email: "", kcseGrade: "",
+    phone: "", email: "", educationQualification: "",
     preferredCampus: defaultCampus || "",
     course: "", academicYear: "",
   });
@@ -49,7 +51,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: "success", text: "Application submitted successfully!" });
-        setForm({ firstName: "", middleName: "", lastName: "", gender: "", phone: "", email: "", kcseGrade: "", preferredCampus: defaultCampus || "", course: "", academicYear: "" });
+        setForm({ firstName: "", middleName: "", lastName: "", gender: "", phone: "", email: "", educationQualification: "", preferredCampus: defaultCampus || "", course: "", academicYear: "" });
         onSuccess?.();
       } else {
         setMessage({ type: "error", text: data.error || "Something went wrong." });
@@ -126,8 +128,13 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Academic Details</p>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">KCSE/KCPE Grade</label>
-                <input name="kcseGrade" value={form.kcseGrade} onChange={handleChange} placeholder="e.g. B+" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Education Qualification *</label>
+                <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                  <option value="">Select qualification</option>
+                  {EDUCATION_QUALIFICATIONS.map(q => (
+                    <option key={q} value={q}>{q}</option>
+                  ))}
+                </select>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

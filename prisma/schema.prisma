@@ -129,7 +129,7 @@ model Student {
   gender          Gender?
   phone           String?
   email           String?            @unique
-  kcseGrade       String?
+  educationQualification String? @default("")
   preferredCampus Campus?
   status          ApplicationStatus  @default(PENDING)
   createdAt       DateTime           @default(now())

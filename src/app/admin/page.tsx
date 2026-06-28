@@ -13,7 +13,7 @@ interface Student {
   gender: string | null;
   phone: string | null;
   email: string | null;
-  kcseGrade: string | null;
+  educationQualification: string | null;
   preferredCampus: string;
   status: string;
   createdAt: string;
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
                         {student.email ? ` | ${student.email}` : ""}
                       </p>
                       <p className="text-sm text-gray-500">
-                        KCSE: {student.kcseGrade || "N/A"}
+                        Education: {student.educationQualification || "N/A"}
                       </p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${

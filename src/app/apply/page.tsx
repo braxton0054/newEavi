@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
 interface Course {
   id: string;
@@ -20,7 +21,7 @@ export default function ApplyPage() {
     gender: "",
     phone: "",
     email: "",
-    kcseGrade: "",
+    educationQualification: "",
     preferredCampus: "",
     course: "",
     academicYear: "",
@@ -55,7 +56,7 @@ export default function ApplyPage() {
         setMessage({ type: "success", text: "Application submitted successfully! You will be contacted soon." });
         setForm({
           firstName: "", middleName: "", lastName: "", gender: "", phone: "",
-          email: "", kcseGrade: "", preferredCampus: "", course: "", academicYear: "",
+          email: "", educationQualification: "", preferredCampus: "", course: "", academicYear: "",
         });
       } else {
         setMessage({ type: "error", text: data.error || "Something went wrong." });
@@ -115,8 +116,13 @@ export default function ApplyPage() {
             <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">KCSE/KCPE Grade</label>
-            <input name="kcseGrade" value={form.kcseGrade} onChange={handleChange} placeholder="e.g. B+, A-, 350 marks" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Education Qualification *</label>
+            <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
+              <option value="">Select qualification</option>
+              {EDUCATION_QUALIFICATIONS.map(q => (
+                <option key={q} value={q}>{q}</option>
+              ))}
+            </select>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

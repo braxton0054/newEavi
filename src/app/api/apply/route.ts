@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { firstName, middleName, lastName, gender, phone, email, kcseGrade, preferredCampus, course, academicYear } = body;
+    const { firstName, middleName, lastName, gender, phone, email, educationQualification, preferredCampus, course, academicYear } = body;
 
     if (!firstName || !lastName || !phone || !preferredCampus || !course || !academicYear) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -17,8 +17,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Validate education qualification against course minimum grade
     const courseRecord = await prisma.course.findUnique({ where: { id: course } });
     const courseName = courseRecord?.name || course;
+
+    // Check if course has a minimum grade requirement and validate
+    if (courseRecord?.minGrade && educationQualification) {
+      const { meetsQualification } = await import("@/lib/education-qualifications");
+      if (!meetsQualification(educationQualification, courseRecord.minGrade)) {
+        return NextResponse.json(
+          { error: `Your qualification (${educationQualification}) does not meet the minimum requirement (${courseRecord.minGrade}) for this course.` },
+          { status: 400 }
+        );
+      }
+    }
 
     const student = await prisma.student.create({
       data: {
@@ -28,7 +40,7 @@ export async function POST(req: NextRequest) {
         gender: gender || null,
         phone,
         email: email || null,
-        kcseGrade: kcseGrade || null,
+        educationQualification: educationQualification || null,
         preferredCampus: preferredCampus as "MAIN" | "WEST",
         applications: {
           create: {

@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
       reportingDate: typeof reportingDate === "string" ? reportingDate : String(reportingDate),
       academicYear,
       currentDate,
-      kcseGrade: student.kcseGrade,
+      educationQualification: student.educationQualification,
       phone: student.phone,
       email: student.email,
     };

@@ -8,7 +8,7 @@ export interface AdmissionPdfData {
   reportingDate: string;
   academicYear: string;
   currentDate: string;
-  kcseGrade?: string | null;
+  educationQualification?: string | null;
   phone?: string | null;
   email?: string | null;
 }
@@ -101,8 +101,8 @@ export async function generateAdmissionPdf(
   });
 
   // Optional fields
-  if (data.kcseGrade) {
-    firstPage.drawText(data.kcseGrade, {
+  if (data.educationQualification) {
+    firstPage.drawText(data.educationQualification, {
       x: 72,
       y: height - 290,
       size: fontSize,
@@ -189,7 +189,7 @@ export function generateSimpleAdmissionLetter(data: AdmissionPdfData): string {
       <div class="value">${data.campus} Campus</div>
       <div class="label">Reporting Date:</div>
       <div class="value">${data.reportingDate}</div>
-      ${data.kcseGrade ? `<div class="label">KCSE Grade:</div><div class="value">${data.kcseGrade}</div>` : ""}
+      ${data.educationQualification ? `<div class="label">Education:</div><div class="value">${data.educationQualification}</div>` : ""}
       ${data.phone ? `<div class="label">Phone:</div><div class="value">${data.phone}</div>` : ""}
       ${data.email ? `<div class="label">Email:</div><div class="value">${data.email}</div>` : ""}
     </div>
