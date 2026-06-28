@@ -25,7 +25,7 @@ export interface AdmissionPdfFields {
  * 
  * The template PDF must have text fields with these exact names:
  * - letter_date
- * - student_name
+ * - student_name (can appear twice — one for letter body, one for M-Pesa account name)
  * - course_type
  * - course_name
  * - admission_number
@@ -48,28 +48,46 @@ export async function fillAdmissionPdf(
   const pdfDoc = await PDFDocument.load(templateBytes);
   const form = pdfDoc.getForm();
 
-  // Helper to safely fill a field — skips if field doesn't exist in template
-  function fillField(name: string, value: string) {
+  // Helper to fill ALL fields with a given name (handles duplicates like student_name)
+  function fillAllFields(name: string, value: string) {
+    const allFields = form.getFields();
+    const matching = allFields.filter(f => f.getName() === name);
+    matching.forEach(f => {
+      try {
+        if ('setText' in f) {
+          (f as any).setText(value);
+        }
+      } catch {
+        // skip
+      }
+    });
+  }
+
+  // Helper to fill only the first occurrence of a field name
+  function fillFirstField(name: string, value: string) {
     try {
       const field = form.getTextField(name);
       field.setText(value);
     } catch {
-      // Field not found in template — skip silently
+      // Field not found — skip silently
     }
   }
 
-  fillField("letter_date", fields.letterDate);
-  fillField("student_name", fields.studentName);
-  fillField("course_type", fields.courseType);
-  fillField("course_name", fields.courseName);
-  fillField("admission_number", fields.admissionNumber);
-  fillField("report_date", fields.reportDate);
+  // Fill fields that may appear multiple times (like student_name)
+  fillAllFields("student_name", fields.studentName);
 
-  if (fields.campus) fillField("campus", fields.campus);
-  if (fields.academicYear) fillField("academic_year", fields.academicYear);
-  if (fields.educationQualification) fillField("education_qualification", fields.educationQualification);
-  if (fields.studentPhone) fillField("student_phone", fields.studentPhone);
-  if (fields.studentEmail) fillField("student_email", fields.studentEmail);
+  // Fill unique fields
+  fillFirstField("letter_date", fields.letterDate);
+  fillFirstField("course_type", fields.courseType);
+  fillFirstField("course_name", fields.courseName);
+  fillFirstField("admission_number", fields.admissionNumber);
+  fillFirstField("report_date", fields.reportDate);
+
+  if (fields.campus) fillFirstField("campus", fields.campus);
+  if (fields.academicYear) fillFirstField("academic_year", fields.academicYear);
+  if (fields.educationQualification) fillFirstField("education_qualification", fields.educationQualification);
+  if (fields.studentPhone) fillFirstField("student_phone", fields.studentPhone);
+  if (fields.studentEmail) fillFirstField("student_email", fields.studentEmail);
 
   // Flatten so the values are baked in and can't be edited
   form.flatten();
@@ -79,10 +97,19 @@ export async function fillAdmissionPdf(
 
 /**
  * Get the list of text field names in a PDF template.
- * Useful for verifying template has the right fields.
+ * Useful for verifying template has the right fields before upload.
  */
-export async function getTemplateFieldNames(templateBytes: Buffer): Promise<string[]> {
+export async function getTemplateFieldNames(templateBytes: Buffer): Promise<{ name: string; count: number }[]> {
   const pdfDoc = await PDFDocument.load(templateBytes);
   const form = pdfDoc.getForm();
-  return form.getFields().map(f => f.getName());
+  const allFields = form.getFields();
+  
+  // Count occurrences of each field name
+  const counts: Record<string, number> = {};
+  allFields.forEach(f => {
+    const name = f.getName();
+    counts[name] = (counts[name] || 0) + 1;
+  });
+
+  return Object.entries(counts).map(([name, count]) => ({ name, count }));
 }

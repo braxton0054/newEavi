@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     }
 
     const templateBuffer = Buffer.from(template.pdfData);
-    const fieldNames = await getTemplateFieldNames(templateBuffer);
+    const fieldData = await getTemplateFieldNames(templateBuffer);
 
     // Expected fields the system looks for
     const expectedFields = [
@@ -41,15 +41,17 @@ export async function GET(req: NextRequest) {
       "student_email",
     ];
 
-    const found = expectedFields.filter(f => fieldNames.includes(f));
-    const missing = expectedFields.filter(f => !fieldNames.includes(f));
+    const found = expectedFields.filter(f => fieldData.some(d => d.name === f));
+    const missing = expectedFields.filter(f => !fieldData.some(d => d.name === f));
+    const duplicates = fieldData.filter(d => d.count > 1);
 
     return NextResponse.json({
       data: {
         templateName: template.name,
-        allFieldsInPdf: fieldNames,
+        allFieldsInPdf: fieldData,
         expectedFieldsFound: found,
         expectedFieldsMissing: missing,
+        duplicates,
         ready: missing.length === 0,
       },
     });

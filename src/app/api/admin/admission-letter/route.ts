@@ -86,6 +86,12 @@ export async function GET(req: NextRequest) {
       where: { name: courseName },
     });
     const courseType = courseRecord?.qualificationType || "";
+    // Strip qualification type prefix to avoid "Diploma in Diploma in..."
+    // Also strip "in " suffix that follows the type in template layout
+    let courseDisplayName = courseName;
+    if (courseType && courseName.startsWith(courseType + " ")) {
+      courseDisplayName = courseName.substring(courseType.length + 1);
+    }
     const campusName = student.preferredCampus === "MAIN" ? "Main Campus" : "West Campus";
 
     // Fill the template PDF with real data
@@ -94,7 +100,7 @@ export async function GET(req: NextRequest) {
       letterDate: currentDate,
       studentName,
       courseType,
-      courseName,
+      courseName: courseDisplayName,
       admissionNumber,
       reportDate: typeof reportDate === "string" ? reportDate : String(reportDate),
       campus: campusName,
