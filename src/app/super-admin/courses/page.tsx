@@ -6,8 +6,8 @@ import { QUALIFICATION_TYPES, QUALIFICATION_LEVELS } from "@/lib/course-constant
 
 interface CourseQualification {
   id: string;
-  qualificationType: string;
-  qualificationLevel: string;
+  qualificationCategory: string | null;
+  qualificationLevel: string | null;
   minGrade: string;
   feePdf: string | null;
 }
@@ -18,36 +18,38 @@ interface Course {
   qualifications: CourseQualification[];
 }
 
-interface QualRow {
+interface Entry {
   uid: string;
-  category: string;
-  level: string;
+  category: string; // for category entries
+  level: string;     // for level entries
   minGrade: string;
+  feeFile: File | null;
 }
 
 let counter = 0;
-function makeRow(existing?: { category: string; level: string; minGrade: string }): QualRow {
-  return {
-    uid: String(++counter),
-    category: existing?.category || "",
-    level: existing?.level || "",
-    minGrade: existing?.minGrade || "",
-  };
-}
+const mk = (category = "", level = ""): Entry => ({
+  uid: String(++counter),
+  category,
+  level,
+  minGrade: "",
+  feeFile: null,
+});
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Add form
   const [name, setName] = useState("");
-  const [feeFile, setFeeFile] = useState<File | null>(null);
-  const [rows, setRows] = useState<QualRow[]>([makeRow()]);
+  const [catEntries, setCatEntries] = useState<Entry[]>(QUALIFICATION_TYPES.map(t => mk(t, ""))); // each category is one row, toggled by minGrade
+  const [lvlEntries, setLvlEntries] = useState<Entry[]>(QUALIFICATION_LEVELS.map(l => mk("", l))); // each level is one row, toggled by minGrade
   const [uploading, setUploading] = useState(false);
 
+  // Edit form
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
-  const [editFeeFile, setEditFeeFile] = useState<File | null>(null);
-  const [editRows, setEditRows] = useState<QualRow[]>([makeRow()]);
+  const [editCatEntries, setEditCatEntries] = useState<Entry[]>([]);
+  const [editLvlEntries, setEditLvlEntries] = useState<Entry[]>([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { fetchCourses(); }, []);
@@ -61,76 +63,94 @@ export default function CoursesPage() {
     finally { setLoading(false); }
   }
 
-  async function uploadFeePdf(file: File): Promise<string | null> {
+  async function uploadPdf(file: File): Promise<string | null> {
     const fd = new FormData();
     fd.append("file", file);
-    const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
-    const uploadData = await uploadRes.json();
-    return uploadRes.ok ? uploadData.data.url : null;
+    const r = await fetch("/api/upload", { method: "POST", body: fd });
+    const d = await r.json();
+    return r.ok ? d.data.url : null;
   }
 
-  function validQuals(list: QualRow[]) {
-    return list.filter(r => (r.category || r.level) && r.minGrade);
-  }
+  function validCats(entries: Entry[]) { return entries.filter(e => e.category && e.minGrade); }
+  function validLvls(entries: Entry[]) { return entries.filter(e => e.level && e.minGrade); }
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     if (!name) return;
-    const valid = validQuals(rows);
-    if (valid.length === 0) return alert("Add at least one qualification with min grade");
+    const allQuals = [...validCats(catEntries), ...validLvls(lvlEntries)];
+    if (allQuals.length === 0) return alert("Add at least one qualification with min grade");
 
     setUploading(true);
     try {
-      const feePdf = feeFile ? await uploadFeePdf(feeFile) : null;
-      const qualifications = valid.map(q => ({
-        qualificationType: q.category || null,
+      const qualifications = await Promise.all(allQuals.map(async q => ({
+        qualificationCategory: q.category || null,
         qualificationLevel: q.level || null,
         minGrade: q.minGrade,
-      }));
+        feePdf: q.feeFile ? await uploadPdf(q.feeFile) : null,
+      })));
 
       const res = await fetch("/api/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, feePdf, qualifications }),
+        body: JSON.stringify({ name, qualifications }),
       });
-      if (res.ok) { setName(""); setFeeFile(null); setRows([makeRow()]); fetchCourses(); }
-      else { const d = await res.json(); alert(d.error || "Failed"); }
-    } catch (e) { console.error(e); }
+      if (res.ok) {
+        setName("");
+        setCatEntries(QUALIFICATION_TYPES.map(t => mk(t, "")));
+        setLvlEntries(QUALIFICATION_LEVELS.map(l => mk("", "")));
+        fetchCourses();
+      } else { const d = await res.json(); alert(d.error || "Failed"); }
+    } catch (err) { console.error(err); }
     finally { setUploading(false); }
   }
 
-  function startEdit(c: Course) {
-    setEditingId(c.id);
-    setEditName(c.name);
-    setEditRows(c.qualifications.length > 0
-      ? c.qualifications.map(q => makeRow({ category: q.qualificationType, level: q.qualificationLevel, minGrade: q.minGrade }))
-      : [makeRow()]);
+  function startEdit(course: Course) {
+    setEditingId(course.id);
+    setEditName(course.name);
+
+    const eCats = QUALIFICATION_TYPES.map(t => mk(t, ""));
+    const eLvls = QUALIFICATION_LEVELS.map(l => mk("", l));
+
+    // Fill in existing data
+    for (const q of course.qualifications) {
+      if (q.qualificationCategory) {
+        const cat = eCats.find(c => c.category === q.qualificationCategory);
+        if (cat) { cat.minGrade = q.minGrade; }
+      }
+      if (q.qualificationLevel) {
+        const lvl = eLvls.find(l => l.level === q.qualificationLevel);
+        if (lvl) { lvl.minGrade = q.minGrade; }
+      }
+    }
+
+    setEditCatEntries(eCats);
+    setEditLvlEntries(eLvls);
   }
 
   function cancelEdit() { setEditingId(null); }
 
   async function handleEditSave(id: string) {
     if (!editName) return;
-    const valid = validQuals(editRows);
-    if (valid.length === 0) return alert("Add at least one qualification with min grade");
+    const allQuals = [...validCats(editCatEntries), ...validLvls(editLvlEntries)];
+    if (allQuals.length === 0) return alert("Add at least one qualification with min grade");
 
     setSaving(true);
     try {
-      const feePdf = editFeeFile ? await uploadFeePdf(editFeeFile) : null;
-      const qualifications = valid.map(q => ({
-        qualificationType: q.category || null,
+      const qualifications = await Promise.all(allQuals.map(async q => ({
+        qualificationCategory: q.category || null,
         qualificationLevel: q.level || null,
         minGrade: q.minGrade,
-      }));
+        feePdf: q.feeFile ? await uploadPdf(q.feeFile) : null,
+      })));
 
       const res = await fetch("/api/courses", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, name: editName, feePdf, qualifications }),
+        body: JSON.stringify({ id, name: editName, qualifications }),
       });
       if (res.ok) { cancelEdit(); fetchCourses(); }
       else { const d = await res.json(); alert(d.error || "Failed"); }
-    } catch (e) { console.error(e); }
+    } catch (err) { console.error(err); }
     finally { setSaving(false); }
   }
 
@@ -139,40 +159,71 @@ export default function CoursesPage() {
     fetch(`/api/courses?id=${id}`, { method: "DELETE" }).then(() => fetchCourses());
   }
 
-  function renderRows(list: QualRow[], setList: (r: QualRow[]) => void) {
+  // Reusable row renderer
+  function CategorySection({ entries, setEntries }: { entries: Entry[]; setEntries: (e: Entry[]) => void }) {
     return (
       <div className="space-y-2">
-        {list.map(r => (
-          <div key={r.uid} className="rounded-lg border border-zinc-200 p-3 bg-zinc-50/50">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
-              <div>
-                <label className="block text-[11px] text-zinc-500 mb-1">Qualification category</label>
-                <select value={r.category} onChange={e => setList(list.map(x => x.uid === r.uid ? { ...x, category: e.target.value } : x))} className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
-                  <option value="">None</option>
-                  {QUALIFICATION_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+        <h3 className="text-xs font-medium text-zinc-700">Categories</h3>
+        {entries.map(entry => {
+          const enabled = !!entry.minGrade;
+          return (
+            <div key={entry.uid} className={`rounded-lg border p-3 transition-colors ${enabled ? "border-blue-200 bg-blue-50/30" : "border-zinc-200 bg-zinc-50/50"}`}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+                <div>
+                  <label className="block text-[11px] text-zinc-500 mb-1">Category</label>
+                  <input value={entry.category} readOnly className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-2.5 py-1.5 text-sm text-zinc-600 cursor-not-allowed" />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-zinc-500 mb-1">Min grade *</label>
+                  <input value={entry.minGrade} onChange={e => setEntries(entries.map(x => x.uid === entry.uid ? { ...x, minGrade: e.target.value } : x))} placeholder="e.g. C plain" className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                </div>
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <label className="block text-[11px] text-zinc-500 mb-1">Fee structure (PDF)</label>
+                    <input type="file" accept=".pdf" onChange={e => setEntries(entries.map(x => x.uid === entry.uid ? { ...x, feeFile: e.target.files?.[0] || null } : x))} className="w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                  </div>
+                  {!enabled && (
+                    <button type="button" onClick={() => setEntries(entries.map(x => x.uid === entry.uid ? { ...x, minGrade: " " } : x))} className="text-[10px] text-blue-700 hover:underline whitespace-nowrap">Enable</button>
+                  )}
+                </div>
               </div>
-              <div>
-                <label className="block text-[11px] text-zinc-500 mb-1">Level</label>
-                <select value={r.level} onChange={e => setList(list.map(x => x.uid === r.uid ? { ...x, level: e.target.value } : x))} className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
-                  <option value="">None</option>
-                  {QUALIFICATION_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[11px] text-zinc-500 mb-1">Min grade *</label>
-                <input value={r.minGrade} onChange={e => setList(list.map(x => x.uid === r.uid ? { ...x, minGrade: e.target.value } : x))} placeholder="e.g. C plain" className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
-              </div>
-              <button type="button" onClick={() => { if (list.length > 1) setList(list.filter(x => x.uid !== r.uid)); }} disabled={list.length <= 1} className="w-8 h-8 rounded-lg border border-zinc-200 bg-white flex items-center justify-center text-zinc-400 hover:bg-zinc-100 hover:text-red-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0" title="Remove">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
             </div>
-          </div>
-        ))}
-        <button type="button" onClick={() => setList([...list, makeRow()])} className="text-xs text-blue-700 hover:text-blue-800 font-medium flex items-center gap-1 mt-1">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Add qualification
-        </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  function LevelSection({ entries, setEntries }: { entries: Entry[]; setEntries: (e: Entry[]) => void }) {
+    return (
+      <div className="space-y-2">
+        <h3 className="text-xs font-medium text-zinc-700">Levels</h3>
+        {entries.map(entry => {
+          const enabled = !!entry.minGrade;
+          return (
+            <div key={entry.uid} className={`rounded-lg border p-3 transition-colors ${enabled ? "border-violet-200 bg-violet-50/30" : "border-zinc-200 bg-zinc-50/50"}`}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+                <div>
+                  <label className="block text-[11px] text-zinc-500 mb-1">Level</label>
+                  <input value={entry.level} readOnly className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-2.5 py-1.5 text-sm text-zinc-600 cursor-not-allowed" />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-zinc-500 mb-1">Min grade *</label>
+                  <input value={entry.minGrade} onChange={e => setEntries(entries.map(x => x.uid === entry.uid ? { ...x, minGrade: e.target.value } : x))} placeholder="e.g. C plain" className="w-full rounded-lg border border-zinc-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                </div>
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <label className="block text-[11px] text-zinc-500 mb-1">Fee structure (PDF)</label>
+                    <input type="file" accept=".pdf" onChange={e => setEntries(entries.map(x => x.uid === entry.uid ? { ...x, feeFile: e.target.files?.[0] || null } : x))} className="w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                  </div>
+                  {!enabled && (
+                    <button type="button" onClick={() => setEntries(entries.map(x => x.uid === entry.uid ? { ...x, minGrade: " " } : x))} className="text-[10px] text-blue-700 hover:underline whitespace-nowrap">Enable</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -204,16 +255,12 @@ export default function CoursesPage() {
               <label className="block text-[11px] font-medium text-zinc-500 mb-1">Course name *</label>
               <input value={name} onChange={e => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. ICT" />
             </div>
-            <div className="mb-4">
-              <label className="block text-[11px] font-medium text-zinc-500 mb-2">Qualifications *</label>
-              <p className="text-[11px] text-zinc-400 mb-2">Pick a category (Diploma/Certificate/Artisan) or a level (4/5/6) — each is independent</p>
-              {renderRows(rows, setRows)}
-            </div>
-            <div className="mb-4">
-              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Fee structure (PDF)</label>
-              <input type="file" accept=".pdf" onChange={e => setFeeFile(e.target.files?.[0] || null)} className="w-full text-sm text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-            </div>
-            <button type="submit" disabled={uploading} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
+
+            <CategorySection entries={catEntries} setEntries={setCatEntries} />
+            <div className="my-4 border-t border-zinc-100"></div>
+            <LevelSection entries={lvlEntries} setEntries={setLvlEntries} />
+
+            <button type="submit" disabled={uploading} className="mt-4 flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
               {uploading ? "Adding..." : "Add course"}
             </button>
           </form>
@@ -234,15 +281,10 @@ export default function CoursesPage() {
                         <label className="block text-[11px] font-medium text-zinc-500 mb-1">Course name</label>
                         <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
                       </div>
-                      <div className="mb-4">
-                        <label className="block text-[11px] font-medium text-zinc-500 mb-2">Qualifications *</label>
-                        {renderRows(editRows, setEditRows)}
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-[11px] font-medium text-zinc-500 mb-1">Fee structure (PDF)</label>
-                        <input type="file" accept=".pdf" onChange={e => setEditFeeFile(e.target.files?.[0] || null)} className="w-full text-sm text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-                      </div>
-                      <div className="flex gap-2">
+                      <CategorySection entries={editCatEntries} setEntries={setEditCatEntries} />
+                      <div className="my-4 border-t border-zinc-100"></div>
+                      <LevelSection entries={editLvlEntries} setEntries={setEditLvlEntries} />
+                      <div className="flex gap-2 mt-4">
                         <button onClick={() => handleEditSave(course.id)} disabled={saving} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
                           {saving ? "Saving..." : "Save"}
                         </button>
@@ -269,10 +311,10 @@ export default function CoursesPage() {
                           {course.qualifications.map(q => (
                             <div key={q.id} className="flex items-center gap-2 text-xs text-zinc-500">
                               <span className="w-1.5 h-1.5 rounded-full bg-blue-700/30 flex-shrink-0"></span>
-                              {q.qualificationType && <span className="font-medium text-zinc-700">{q.qualificationType}</span>}
-                              {q.qualificationType && q.qualificationLevel && <span className="text-zinc-300">·</span>}
-                              {q.qualificationLevel && <span>{q.qualificationLevel}</span>}
-                              {(q.qualificationType || q.qualificationLevel) && <span className="text-zinc-300">·</span>}
+                              {q.qualificationCategory && <span className="font-medium text-zinc-700">{q.qualificationCategory}</span>}
+                              {q.qualificationCategory && q.qualificationLevel && <span className="text-zinc-300">·</span>}
+                              {q.qualificationLevel && <span className="font-medium text-zinc-700">{q.qualificationLevel}</span>}
+                              <span className="text-zinc-300">·</span>
                               <span>Min: {q.minGrade}</span>
                               {q.feePdf && (<><span className="text-zinc-300">·</span><a href={q.feePdf} target="_blank" className="text-blue-700 hover:underline">Fee PDF</a></>)}
                             </div>

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     // If student has no educationQualification or doesn't meet any track, still allow apply (pending review)
     // Store the course name + matched qualification type
     const courseName = matchedQual
-      ? `${courseRecord.name} (${matchedQual.qualificationType})`
+      ? `${courseRecord.name} (${matchedQual.qualificationCategory || matchedQual.qualificationLevel})`
       : courseRecord.name;
 
     const student = await prisma.student.create({

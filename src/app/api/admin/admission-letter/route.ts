@@ -101,11 +101,11 @@ export async function GET(req: NextRequest) {
       });
       if (existingCourse) {
         const qualRecord = existingCourse.qualifications.find(
-          q => q.qualificationType === courseType
+          q => q.qualificationCategory === courseType
         );
         if (qualRecord) {
           // Use the qualification record details if needed
-          courseType = qualRecord.qualificationType || courseType;
+          courseType = qualRecord.qualificationCategory || courseType;
         }
       }
     }
