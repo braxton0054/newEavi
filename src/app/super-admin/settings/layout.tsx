@@ -22,7 +22,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
     <div className="min-h-screen bg-zinc-50 flex">
       <AdminSidebar role="SUPER_ADMIN" />
       <div className="flex-1 min-w-0 flex">
-        {/* Settings sidebar */}
+        {/* Settings sub-sidebar */}
         <aside className="w-52 border-r border-zinc-200 bg-white flex flex-col">
           <div className="px-4 py-4 border-b border-zinc-100">
             <h2 className="text-sm font-medium text-zinc-900">Settings</h2>
