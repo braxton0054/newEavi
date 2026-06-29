@@ -52,6 +52,24 @@ export async function PATCH(req: NextRequest) {
       data: { status },
     });
 
+    // If approved, send notifications in the background
+    if (status === "APPROVED") {
+      const { sendApprovalNotifications } = await import("@/lib/auto-notify");
+      sendApprovalNotifications(application.studentId)
+        .then((result) => {
+          console.log(
+            `Approval notifications for ${application.studentId}:`,
+            JSON.stringify(result)
+          );
+          if (result.errors.length > 0) {
+            console.error("Notification errors:", result.errors.join("; "));
+          }
+        })
+        .catch((err) => {
+          console.error("Notification failed:", err);
+        });
+    }
+
     return NextResponse.json({ data: updated }, { status: 200 });
   } catch (error) {
     console.error(error);

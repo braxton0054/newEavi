@@ -1,4 +1,4 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
+import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
 import * as QR from "qrcode";
 import * as fs from "fs";
 import * as path from "path";
@@ -9,6 +9,11 @@ function getAuthPath(campus: string) {
   return path.join(process.cwd(), ".wwebjs_auth", `session-${campus}`);
 }
 
+export function getClient(campus: string): Client | null {
+  const entry = clients.get(campus);
+  return entry?.ready ? entry.client : null;
+}
+
 export async function getStatus(campus: string) {
   const entry = clients.get(campus);
   return {
@@ -16,6 +21,75 @@ export async function getStatus(campus: string) {
     hasQr: !!entry?.qr,
     qr: entry?.qr || null,
   };
+}
+
+export async function checkNumber(
+  campus: string,
+  phone: string
+): Promise<boolean> {
+  const client = getClient(campus);
+  if (!client) return false;
+
+  try {
+    // whatsapp-web.js needs number in international format without +
+    const cleaned = phone.replace(/[^0-9]/g, "");
+    const result = await client.getNumberId(cleaned);
+    return !!result;
+  } catch {
+    return false;
+  }
+}
+
+export async function sendDocument(
+  campus: string,
+  phone: string,
+  pdfBuffer: Buffer,
+  filename: string,
+  caption: string
+): Promise<boolean> {
+  const client = getClient(campus);
+  if (!client) return false;
+
+  try {
+    const cleaned = phone.replace(/[^0-9]/g, "");
+    const chatId = await client.getNumberId(cleaned);
+    if (!chatId) return false;
+
+    const media = new MessageMedia(
+      "application/pdf",
+      pdfBuffer.toString("base64"),
+      filename
+    );
+
+    await client.sendMessage(chatId._serialized, media, {
+      caption,
+    });
+    return true;
+  } catch (err) {
+    console.error(`WhatsApp send error for ${campus}:`, err);
+    return false;
+  }
+}
+
+export async function sendText(
+  campus: string,
+  phone: string,
+  message: string
+): Promise<boolean> {
+  const client = getClient(campus);
+  if (!client) return false;
+
+  try {
+    const cleaned = phone.replace(/[^0-9]/g, "");
+    const chatId = await client.getNumberId(cleaned);
+    if (!chatId) return false;
+
+    await client.sendMessage(chatId._serialized, message);
+    return true;
+  } catch (err) {
+    console.error(`WhatsApp send error for ${campus}:`, err);
+    return false;
+  }
 }
 
 export async function connect(campus: string): Promise<{ qr: string }> {
