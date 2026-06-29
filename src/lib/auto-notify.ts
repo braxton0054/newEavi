@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { fillAdmissionPdf } from "@/lib/admission-pdf";
 import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
-import { sendDocument, sendText, checkNumber, getClient } from "@/lib/whatsapp";
+import { sendDocument, sendText, checkNumber, ensureReady } from "@/lib/whatsapp";
 
 interface NotifyResult {
   whatsapp: boolean;
@@ -163,7 +163,8 @@ export async function sendApprovalNotifications(
       }
     }
 
-    // 9. Check WhatsApp availability
+    // 9. Ensure WhatsApp sessions are restored, then check availability
+    await ensureReady();
     const whatsappAvailable = await checkNumber(campus, student.phone || "");
 
     // 10. Prepare common attachments

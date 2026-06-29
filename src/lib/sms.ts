@@ -8,6 +8,14 @@ export interface SmsConfig {
 export async function sendSms(config: SmsConfig, phone: string, message: string) {
   if (!config.enabled) return { error: "SMS not enabled" };
 
+  // Ensure phone is in international format with + prefix
+  let phoneClean = phone.replace(/[^0-9+]/g, "");
+  if (phoneClean.startsWith("0")) {
+    phoneClean = "+254" + phoneClean.slice(1);
+  } else if (!phoneClean.startsWith("+")) {
+    phoneClean = "+" + phoneClean;
+  }
+
   const res = await fetch(`${config.baseUrl}/message`, {
     method: "POST",
     headers: {
@@ -17,10 +25,14 @@ export async function sendSms(config: SmsConfig, phone: string, message: string)
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      recipients: [{ recipients: [phone] }],
-      message: [{ type: "auto", text: message }],
+      phoneNumbers: [phoneClean],
+      message: message,
     }),
   });
 
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || `SMS API error ${res.status}`);
+  }
+  return data;
 }

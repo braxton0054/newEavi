@@ -3,10 +3,25 @@ import * as QR from "qrcode";
 import * as fs from "fs";
 import * as path from "path";
 
-const clients = new Map<string, { client: Client; qr: string | null; ready: boolean }>();
+// Use process-level global so clients Map is shared across ALL module contexts
+// (instrumentation, API routes, edge runtime — same Node.js process)
+if (!(process as any).__eavi_wa_clients) {
+  (process as any).__eavi_wa_clients = new Map<string, { client: Client; qr: string | null; ready: boolean }>();
+}
+const clients = (process as any).__eavi_wa_clients;
 
 function getAuthPath(campus: string) {
   return path.join(process.cwd(), ".wwebjs_auth", `session-${campus}`);
+}
+
+/** Normalize phone to international format without + (whatsapp-web.js format) */
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/[^0-9]/g, "");
+  // Kenyan local 0xxx → 254xxx
+  if (digits.startsWith("0") && digits.length === 10) {
+    return "254" + digits.slice(1);
+  }
+  return digits;
 }
 
 export function getClient(campus: string): Client | null {
@@ -31,8 +46,7 @@ export async function checkNumber(
   if (!client) return false;
 
   try {
-    // whatsapp-web.js needs number in international format without +
-    const cleaned = phone.replace(/[^0-9]/g, "");
+    const cleaned = normalizePhone(phone);
     const result = await client.getNumberId(cleaned);
     return !!result;
   } catch {
@@ -51,7 +65,7 @@ export async function sendDocument(
   if (!client) return false;
 
   try {
-    const cleaned = phone.replace(/[^0-9]/g, "");
+    const cleaned = normalizePhone(phone);
     const chatId = await client.getNumberId(cleaned);
     if (!chatId) return false;
 
@@ -80,7 +94,7 @@ export async function sendText(
   if (!client) return false;
 
   try {
-    const cleaned = phone.replace(/[^0-9]/g, "");
+    const cleaned = normalizePhone(phone);
     const chatId = await client.getNumberId(cleaned);
     if (!chatId) return false;
 
@@ -177,3 +191,79 @@ export async function disconnect(campus: string) {
     fs.rmSync(authPath, { recursive: true, force: true });
   } catch {}
 }
+
+/**
+ * Auto-restore sessions that have saved auth data on disk.
+ * Call this once at server startup.
+ */
+export async function ensureReady(): Promise<void> {
+  console.log(`[WA] ensureReady called, clients.size=${clients.size}`);
+  // If we already have clients initialized in this context, skip
+  if (clients.size > 0) return;
+
+  const authBaseDir = path.join(process.cwd(), ".wwebjs_auth");
+  if (!fs.existsSync(authBaseDir)) {
+    console.log(`[WA] ensureReady: no auth dir found`);
+    return;
+  }
+  console.log(`[WA] ensureReady: auth dir found, scanning sessions...`);
+
+  const puppeteerOptions: any = {
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  };
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome";
+  puppeteerOptions.executablePath = executablePath;
+
+  const dirs = fs.readdirSync(authBaseDir);
+  for (const dir of dirs) {
+    if (!dir.startsWith("session-")) continue;
+    const campus = dir.replace("session-", "");
+    if (clients.has(campus)) continue;
+
+    const cookiesPath = path.join(authBaseDir, dir, "Default", "Cookies");
+    if (!fs.existsSync(cookiesPath)) continue;
+
+    try {
+      const client = new Client({
+        authStrategy: new LocalAuth({ clientId: campus }),
+        puppeteer: puppeteerOptions,
+      });
+
+      const entry = { client, qr: null as string | null, ready: false };
+      clients.set(campus, entry);
+
+      client.on("ready", () => {
+        entry.ready = true;
+        console.log(`[WA] READY for ${campus}`);
+      });
+
+      client.on("disconnected", () => {
+        entry.ready = false;
+        clients.delete(campus);
+      });
+
+      client.on("auth_failure", () => {
+        entry.ready = false;
+        clients.delete(campus);
+      });
+
+      await client.initialize();
+      // Wait briefly for event loop to fire ready event
+      await new Promise((r) => setTimeout(r, 100));
+    } catch (err: any) {
+      const msg = err.message || String(err);
+      // If browser is already running (e.g. another process started it),
+      // poll for readiness instead of failing
+      if (msg.includes("already running")) {
+        console.log(`[WA] Browser already running for ${campus}, will retry later`);
+        // Remove the failed entry — next ensureReady call will retry
+        clients.delete(campus);
+      } else {
+        console.error(`[WA] Init failed for ${campus}: ${msg}`);
+      }
+    }
+  }
+}
+
+
