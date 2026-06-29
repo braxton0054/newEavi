@@ -1,8 +1,8 @@
 import {
   makeWASocket,
-  useMultiFileAuthState,
   DisconnectReason,
   BaileysEventMap,
+  AuthenticationState,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -88,15 +88,10 @@ async function doConnect(campus: string) {
   try {
     const saved = await restoreSession(campus);
 
-    const auth: any = saved
+    // Build auth state entirely in-memory — no disk writes
+    const auth: AuthenticationState = saved
       ? { creds: saved.creds, keys: saved.keys }
-      : {};
-
-    const { state, saveCreds } = await useMultiFileAuthState(`baileys_auth_${campus}`);
-
-    // Merge saved creds if we have them
-    if (saved?.creds) state.creds = saved.creds;
-    if (saved?.keys) state.keys = saved.keys;
+      : { creds: {}, keys: {} as any };
 
     const sock = makeWASocket({
       auth,
@@ -110,7 +105,6 @@ async function doConnect(campus: string) {
     entry.sock = sock;
 
     sock.ev.on("creds.update", async () => {
-      await saveCreds();
       await persistSession(campus);
     });
 

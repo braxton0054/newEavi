@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ManualApplyForm from "@/components/ManualApplyForm";
-import AdminSidebar from "@/components/AdminSidebar";
 
 interface Student {
   id: string;
@@ -123,7 +122,7 @@ export default function AdminDashboard() {
   });
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+    <div className="flex items-center justify-center py-12">
       <div className="w-7 h-7 border-2 border-blue-700 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
@@ -134,10 +133,8 @@ export default function AdminDashboard() {
   const campusLabel = user?.campus === "WEST" ? "West" : "Main";
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex">
-      <AdminSidebar role="ADMIN" campus={user?.campus} email={user?.email} />
-      <div className="flex-1 min-w-0">
-        {/* Header */}
+    <>
+      {/* Header */}
         <header className="bg-white border-b border-zinc-200 px-6 lg:px-8 py-3.5 sticky top-0 z-30">
           <div className="flex items-center justify-between">
             <div className="lg:pl-0 pl-10">
@@ -344,7 +341,6 @@ export default function AdminDashboard() {
             </div>
           )}
         </main>
-      </div>
-    </div>
+      </>
   );
 }

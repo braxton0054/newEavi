@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import AdminSidebar from "@/components/AdminSidebar";
 import ReportingDatesEditor from "@/components/ReportingDatesEditor";
 
 export default function AdminSettingsPage() {
-  const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -45,12 +42,11 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/auth/me");
       const data = await res.json();
       if (res.ok && data.user) {
-        if (data.user.role === "SUPER_ADMIN") { router.push("/super-admin/settings"); return; }
         setUser(data.user);
         await fetchSettings(data.user);
         await fetchStatus();
-      } else { router.push("/login"); }
-    } catch { router.push("/login"); } finally { setLoading(false); }
+      } else { window.location.href = "/login"; }
+    } catch { window.location.href = "/login"; } finally { setLoading(false); }
   }
 
   async function fetchSettings(u: any) {
@@ -133,25 +129,16 @@ export default function AdminSettingsPage() {
     } catch { setMessage({ type: "error", text: "Failed to disconnect" }); }
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center py-12">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <AdminSidebar role="ADMIN" campus={user?.campus} email={user?.email} />
-      <div className="flex-1 min-w-0 lg:ml-72">
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex items-center justify-between gap-4 lg:pl-6">
-          <div className="lg:pl-0 pl-12">
-            <h1 className="text-xl font-bold text-gray-900">{user?.campus === "WEST" ? "West Campus" : "Main Campus"} — Settings</h1>
-            <p className="text-sm text-gray-500">{user?.email}</p>
-          </div>
-        </header>
-        <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {message && (
-          <div className={`p-4 rounded-lg ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>{message.text}</div>
-        )}
+    <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      {message && (
+        <div className={`p-4 rounded-lg ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>{message.text}</div>
+      )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Email Configuration</h2>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Email Configuration</h2>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gmail Address</label>
@@ -256,8 +243,6 @@ export default function AdminSettingsPage() {
             <p className="text-xs text-gray-400">Scan the QR code with WhatsApp to connect. Session stored locally.</p>
           </div>
         </div>
-        </main>
-      </div>
-    </div>
+    </main>
   );
 }

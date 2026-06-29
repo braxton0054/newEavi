@@ -61,6 +61,11 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
+    // ADMIN can only edit students from their own campus
+    if (user.role === "ADMIN" && user.campus && existing.preferredCampus !== user.campus) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const updateData: any = {};
     if (firstName !== undefined) updateData.firstName = firstName;
     if (middleName !== undefined) updateData.middleName = middleName || null;

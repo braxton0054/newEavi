@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ManualApplyForm from "@/components/ManualApplyForm";
-import AdminSidebar from "@/components/AdminSidebar";
 
 interface Student {
   id: string;
@@ -121,7 +120,7 @@ export default function SuperAdminDashboard() {
   });
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+    <div className="flex items-center justify-center py-12">
       <div className="w-7 h-7 border-2 border-blue-700 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
@@ -133,16 +132,14 @@ export default function SuperAdminDashboard() {
   const approvedCount = students.filter(s => s.status === "APPROVED").length;
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex">
-      <AdminSidebar role="SUPER_ADMIN" email={user?.email} />
-      <div className="flex-1 min-w-0">
-        {/* Header */}
-        <header className="bg-white border-b border-zinc-200 px-6 lg:px-8 py-3.5 sticky top-0 z-30">
-          <div className="flex items-center justify-between">
-            <div className="lg:pl-0 pl-10">
-              <h1 className="text-base font-medium text-zinc-900">Dashboard</h1>
-              <p className="text-xs text-zinc-400 mt-0.5">Manage student applications</p>
-            </div>
+    <>
+      {/* Header */}
+      <header className="bg-white border-b border-zinc-200 px-6 lg:px-8 py-3.5 sticky top-0 z-30">
+        <div className="flex items-center justify-between">
+          <div className="lg:pl-0 pl-10">
+            <h1 className="text-base font-medium text-zinc-900">Dashboard</h1>
+            <p className="text-xs text-zinc-400 mt-0.5">Manage student applications</p>
+          </div>
             <div className="flex items-center gap-2.5">
               <ManualApplyForm onSuccess={() => fetchStudents()} />
             </div>
@@ -376,7 +373,6 @@ export default function SuperAdminDashboard() {
             </div>
           )}
         </main>
-      </div>
-    </div>
+      </>
   );
 }

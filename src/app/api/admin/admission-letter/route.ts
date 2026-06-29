@@ -56,10 +56,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Build admission number from campus format
+    // Build admission number from campus format and increment
     const format = campusSetting?.admissionFormat || `EAVI/${student.preferredCampus}/2026/`;
     const lastNum = campusSetting?.lastAdmissionNumber || 0;
-    const admissionNumber = `${format}${String(lastNum + 1).padStart(4, "0")}`;
+    const nextNum = lastNum + 1;
+    const admissionNumber = `${format}${String(nextNum).padStart(4, "0")}`;
+
+    // Persist the incremented number to the DB
+    await prisma.campusSetting.update({
+      where: { campus: student.preferredCampus as "MAIN" | "WEST" },
+      data: { lastAdmissionNumber: nextNum },
+    });
 
     // Get reporting date from campus settings
     const reportingDates = (campusSetting?.reportingDates as any[]) || [];

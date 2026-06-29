@@ -28,8 +28,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Only PDF files are allowed" }, { status: 400 });
     }
 
+    // SIZE CHECK: max 5MB before reading into memory
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json({ error: "File too large. Maximum 5MB allowed." }, { status: 413 });
+    }
+    if (file.size === 0) {
+      return NextResponse.json({ error: "File is empty" }, { status: 400 });
+    }
+
     // Store OUTSIDE public/ so files are not directly accessible
-    const subDir = type === "bursary_form" ? "bursary-forms" : type === "bus_routes" ? "bus-routes" : "fees";
+    // Note: bursary forms are handled separately via base64 in settings API (stored in DB)
+    const subDir = type === "bus_routes" ? "bus-routes" : "fees";
     const uploadDir = path.join(process.cwd(), "storage", subDir);
     await mkdir(uploadDir, { recursive: true });
 

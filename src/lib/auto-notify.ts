@@ -109,9 +109,16 @@ export async function sendApprovalNotifications(
 
     // 7. Generate admission PDF if template exists
     let admissionPdfBuffer: Buffer | null = null;
+    let admissionNumber = "";
     if (template) {
       try {
-        const admissionNumber = `${campusSetting?.admissionFormat || `EAVI/${campus}/2026/`}${String((campusSetting as any)?.lastAdmissionNumber || 1).padStart(4, "0")}`;
+        // Atomically increment admission number in DB first
+        const incremented = await prisma.campusSetting.update({
+          where: { campus },
+          data: { lastAdmissionNumber: { increment: 1 } },
+        });
+        const nextNum = incremented.lastAdmissionNumber;
+        admissionNumber = `${campusSetting?.admissionFormat || `EAVI/${campus}/2026/`}${String(nextNum).padStart(4, "0")}`;
         const reportingDates = (campusSetting?.reportingDates as any[]) || [];
         const reportDate =
           reportingDates.length > 0
@@ -150,13 +157,19 @@ export async function sendApprovalNotifications(
       }
     }
 
-    // 8. Download fee structure PDF from URL
+    // 8. Download fee structure PDF from URL (SSRF guard — only allow same-origin)
     let feePdfBuffer: Buffer | null = null;
     if (feePdfUrl) {
       try {
-        const resp = await fetch(feePdfUrl);
-        if (resp.ok) {
-          feePdfBuffer = Buffer.from(await resp.arrayBuffer());
+        const allowedOrigin = process.env.NEXTAUTH_URL || "http://localhost:4000";
+        const parsed = new URL(feePdfUrl);
+        if (parsed.origin !== new URL(allowedOrigin).origin) {
+          result.errors.push(`Fee structure PDF URL rejected: not same-origin`);
+        } else {
+          const resp = await fetch(feePdfUrl);
+          if (resp.ok) {
+            feePdfBuffer = Buffer.from(await resp.arrayBuffer());
+          }
         }
       } catch (err) {
         result.errors.push(`Fee structure download failed: ${(err as Error).message}`);

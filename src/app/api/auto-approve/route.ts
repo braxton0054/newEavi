@@ -6,12 +6,11 @@ import { prisma } from "@/lib/prisma";
  * Finds PENDING applications older than 5 minutes, approves them,
  * and triggers the notification system.
  */
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    // Verify a simple secret key to prevent abuse
-    const { searchParams } = new URL(req.url);
-    const key = searchParams.get("key");
-    if (key !== process.env.CRON_SECRET) {
+    // Verify secret via Authorization header (not URL query param)
+    const authHeader = req.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
