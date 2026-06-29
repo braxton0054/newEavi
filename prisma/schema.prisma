@@ -180,3 +180,16 @@ model AdmissionPdfTemplate {
 
   @@map("admission_pdf_templates")
 }
+
+model WhatsAppSession {
+  id           String   @id @default(cuid())
+  campus       Campus   @unique
+  sessionData  String?  // encrypted Baileys session
+  qrCode       String?
+  status       String   @default("disconnected")
+  lastActive   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("whatsapp_sessions")
+}

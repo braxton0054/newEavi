@@ -44,3 +44,4 @@ next-env.d.ts
 .wwebjs_auth/
 .wwebjs_cache/
 .wwebjs_auth/
+baileys_auth_*/

@@ -1,54 +1,195 @@
-import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
-import * as QR from "qrcode";
-import * as fs from "fs";
-import * as path from "path";
+import {
+  makeWASocket,
+  useMultiFileAuthState,
+  DisconnectReason,
+  BaileysEventMap,
+} from "@whiskeysockets/baileys";
+import { Boom } from "@hapi/boom";
+import pino from "pino";
+import { prisma } from "@/lib/prisma";
+import { encrypt, decrypt } from "@/lib/encryption";
 
-// Use process-level global so clients Map is shared across ALL module contexts
-// (instrumentation, API routes, edge runtime — same Node.js process)
-if (!(process as any).__eavi_wa_clients) {
-  (process as any).__eavi_wa_clients = new Map<string, { client: Client; qr: string | null; ready: boolean }>();
+const logger = pino({ level: "warn" });
+const RECONNECT_DELAY = 5000;
+
+// ─── State ───
+
+interface WaEntry {
+  sock: any;
+  ready: boolean;
+  campus: string;
 }
-const clients = (process as any).__eavi_wa_clients;
 
-function getAuthPath(campus: string) {
-  return path.join(process.cwd(), ".wwebjs_auth", `session-${campus}`);
-}
+const sockets = new Map<string, WaEntry>();
+let reconnectTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
-/** Normalize phone to international format without + (whatsapp-web.js format) */
+// ─── Phone normalization ───
+
 function normalizePhone(phone: string): string {
-  const digits = phone.replace(/[^0-9]/g, "");
-  // Kenyan local 0xxx → 254xxx
-  if (digits.startsWith("0") && digits.length === 10) {
-    return "254" + digits.slice(1);
-  }
-  return digits;
+  let p = phone.replace(/[^0-9]/g, "");
+  if (p.length === 10 && p.startsWith("0")) p = "254" + p.slice(1);
+  else if (p.length === 9) p = "254" + p;
+  return p.split("@")[0];
 }
 
-export function getClient(campus: string): Client | null {
-  const entry = clients.get(campus);
-  return entry?.ready ? entry.client : null;
+function toJid(phone: string): string {
+  const n = normalizePhone(phone);
+  return n.endsWith("@s.whatsapp.net") ? n : `${n}@s.whatsapp.net`;
+}
+
+// ─── Session persistence ───
+
+async function persistSession(campus: string) {
+  const entry = sockets.get(campus);
+  if (!entry || !entry.sock?.authState) return;
+
+  const { creds, keys } = entry.sock.authState;
+  const data = JSON.stringify({ creds, keys });
+  const encrypted = encrypt(data);
+
+  const existing = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
+  if (existing) {
+    await prisma.whatsAppSession.update({
+      where: { id: existing.id },
+      data: { sessionData: encrypted, status: entry.ready ? "connected" : "disconnected", lastActive: new Date() },
+    });
+  } else {
+    await prisma.whatsAppSession.create({
+      data: { campus: campus as any, sessionData: encrypted, status: entry.ready ? "connected" : "disconnected" },
+    });
+  }
+}
+
+async function restoreSession(campus: string): Promise<{ creds?: any; keys?: any } | null> {
+  const session = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
+  if (!session?.sessionData) return null;
+  try {
+    const data = JSON.parse(decrypt(session.sessionData));
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Connect ───
+
+async function doConnect(campus: string) {
+  // Clean up existing
+  const existing = sockets.get(campus);
+  if (existing?.sock) {
+    try { existing.sock.end(new Error("Reconnect")); } catch {}
+  }
+  const existingTimer = reconnectTimers.get(campus);
+  if (existingTimer) { clearTimeout(existingTimer); reconnectTimers.delete(campus); }
+
+  const entry: WaEntry = { sock: null, ready: false, campus };
+  sockets.set(campus, entry);
+
+  try {
+    const saved = await restoreSession(campus);
+
+    const auth: any = saved
+      ? { creds: saved.creds, keys: saved.keys }
+      : {};
+
+    const { state, saveCreds } = await useMultiFileAuthState(`baileys_auth_${campus}`);
+
+    // Merge saved creds if we have them
+    if (saved?.creds) state.creds = saved.creds;
+    if (saved?.keys) state.keys = saved.keys;
+
+    const sock = makeWASocket({
+      auth,
+      logger,
+      printQRInTerminal: false,
+      syncFullHistory: false,
+      markOnlineOnConnect: true,
+      shouldSyncHistoryMessage: () => false,
+    });
+
+    entry.sock = sock;
+
+    sock.ev.on("creds.update", async () => {
+      await saveCreds();
+      await persistSession(campus);
+    });
+
+    sock.ev.on("connection.update", async (update: any) => {
+      const { connection, lastDisconnect, qr } = update;
+
+      if (qr) {
+        // Store QR in DB for admin to scan
+        await prisma.whatsAppSession.upsert({
+          where: { campus: campus as any },
+          create: { campus: campus as any, qrCode: qr, status: "waiting_qr" },
+          update: { qrCode: qr, status: "waiting_qr" },
+        });
+      }
+
+      if (connection === "open") {
+        entry.ready = true;
+        sockets.set(campus, entry);
+        await prisma.whatsAppSession.upsert({
+          where: { campus: campus as any },
+          create: { campus: campus as any, status: "connected", qrCode: null },
+          update: { status: "connected", qrCode: null, lastActive: new Date() },
+        });
+        console.log(`[WA] READY for ${campus}`);
+        await persistSession(campus);
+      }
+
+      if (connection === "close") {
+        entry.ready = false;
+        const isLoggedOut =
+          lastDisconnect?.error instanceof Boom &&
+          lastDisconnect.error.output.statusCode === DisconnectReason.loggedOut;
+
+        if (isLoggedOut) {
+          await prisma.whatsAppSession.upsert({
+            where: { campus: campus as any },
+            create: { campus: campus as any, status: "disconnected", sessionData: null },
+            update: { status: "disconnected", sessionData: null, qrCode: null },
+          });
+          sockets.delete(campus);
+        } else {
+          // Auto-reconnect
+          const timer = setTimeout(() => doConnect(campus).catch(() => {}), RECONNECT_DELAY);
+          reconnectTimers.set(campus, timer);
+        }
+      }
+    });
+
+  } catch (err: any) {
+    console.error(`[WA] Connect error for ${campus}:`, err.message);
+  }
+}
+
+// ─── Public API (same interface as before) ───
+
+export function getClient(campus: string): any {
+  const entry = sockets.get(campus);
+  return entry?.ready ? entry.sock : null;
 }
 
 export async function getStatus(campus: string) {
-  const entry = clients.get(campus);
+  const entry = sockets.get(campus);
+  const dbSession = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
   return {
     connected: entry?.ready || false,
-    hasQr: !!entry?.qr,
-    qr: entry?.qr || null,
+    hasQr: !!dbSession?.qrCode,
+    qr: dbSession?.qrCode || null,
+    status: dbSession?.status || "disconnected",
   };
 }
 
-export async function checkNumber(
-  campus: string,
-  phone: string
-): Promise<boolean> {
-  const client = getClient(campus);
-  if (!client) return false;
+export async function checkNumber(campus: string, phone: string): Promise<boolean> {
+  const sock = getClient(campus);
+  if (!sock) return false;
 
   try {
-    const cleaned = normalizePhone(phone);
-    const result = await client.getNumberId(cleaned);
-    return !!result;
+    const n = normalizePhone(phone);
+    const result = await sock.onWhatsApp(n);
+    return !!result && result.length > 0 && result[0].exists;
   } catch {
     return false;
   }
@@ -61,26 +202,20 @@ export async function sendDocument(
   filename: string,
   caption: string
 ): Promise<boolean> {
-  const client = getClient(campus);
-  if (!client) return false;
+  const sock = getClient(campus);
+  if (!sock) return false;
 
   try {
-    const cleaned = normalizePhone(phone);
-    const chatId = await client.getNumberId(cleaned);
-    if (!chatId) return false;
-
-    const media = new MessageMedia(
-      "application/pdf",
-      pdfBuffer.toString("base64"),
-      filename
-    );
-
-    await client.sendMessage(chatId._serialized, media, {
+    const jid = toJid(phone);
+    await sock.sendMessage(jid, {
+      document: pdfBuffer,
+      mimetype: "application/pdf",
+      fileName: filename,
       caption,
     });
     return true;
   } catch (err) {
-    console.error(`WhatsApp send error for ${campus}:`, err);
+    console.error(`[WA] Send error for ${campus}:`, err);
     return false;
   }
 }
@@ -90,180 +225,50 @@ export async function sendText(
   phone: string,
   message: string
 ): Promise<boolean> {
-  const client = getClient(campus);
-  if (!client) return false;
+  const sock = getClient(campus);
+  if (!sock) return false;
 
   try {
-    const cleaned = normalizePhone(phone);
-    const chatId = await client.getNumberId(cleaned);
-    if (!chatId) return false;
-
-    await client.sendMessage(chatId._serialized, message);
+    const jid = toJid(phone);
+    await sock.sendMessage(jid, { text: message });
     return true;
   } catch (err) {
-    console.error(`WhatsApp send error for ${campus}:`, err);
+    console.error(`[WA] Send error for ${campus}:`, err);
     return false;
   }
 }
 
-export async function connect(campus: string): Promise<{ qr: string }> {
-  const existing = clients.get(campus);
-  if (existing?.client) {
-    try { await existing.client.destroy(); } catch {}
-    clients.delete(campus);
-  }
-
-  const puppeteerOptions: any = {
-    headless: true,
-    args: ["--no-sandbox", "--disable-gpu", "--disable-setuid-sandbox"],
-  };
-
-  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-  if (executablePath) {
-    puppeteerOptions.executablePath = executablePath;
-  }
-
-  const client = new Client({
-    authStrategy: new LocalAuth({ clientId: campus }),
-    puppeteer: puppeteerOptions,
-  });
-
-  const entry = { client, qr: null as string | null, ready: false };
-  clients.set(campus, entry);
-
-  const result = await new Promise<{ qr: string }>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error("WhatsApp connection timed out"));
-    }, 60000);
-
-    client.on("qr", async (qrRaw: string) => {
-      try {
-        entry.qr = await QR.toDataURL(qrRaw);
-      } catch (e) {
-        console.error("QR generation error:", e);
-        entry.qr = null;
-      }
-      if (!entry.ready) {
-        clearTimeout(timeout);
-        resolve({ qr: entry.qr || "" });
-      }
-    });
-
-    client.on("ready", () => {
-      entry.ready = true;
-      entry.qr = null;
-      clearTimeout(timeout);
-      resolve({ qr: "" });
-    });
-
-    client.on("disconnected", (reason) => {
-      console.error(`WhatsApp disconnected for ${campus}:`, reason);
-      entry.ready = false;
-      entry.qr = null;
-      clients.delete(campus);
-    });
-
-    client.on("auth_failure", (msg) => {
-      console.error(`WhatsApp auth failure for ${campus}:`, msg);
-      entry.ready = false;
-      entry.qr = null;
-      clients.delete(campus);
-    });
-
-    client.initialize().catch((err) => {
-      clearTimeout(timeout);
-      reject(err);
-    });
-  });
-
-  return result;
+export async function connect(campus: string) {
+  await doConnect(campus);
 }
 
 export async function disconnect(campus: string) {
-  const entry = clients.get(campus);
-  if (entry?.client) {
-    try { await entry.client.destroy(); } catch {}
+  const timer = reconnectTimers.get(campus);
+  if (timer) { clearTimeout(timer); reconnectTimers.delete(campus); }
+  const entry = sockets.get(campus);
+  if (entry?.sock) {
+    try { entry.sock.end(new Error("Manual disconnect")); } catch {}
   }
-  clients.delete(campus);
-
-  const authPath = getAuthPath(campus);
-  try {
-    fs.rmSync(authPath, { recursive: true, force: true });
-  } catch {}
+  sockets.delete(campus);
+  await prisma.whatsAppSession.upsert({
+    where: { campus: campus as any },
+    create: { campus: campus as any, status: "disconnected" },
+    update: { status: "disconnected", qrCode: null },
+  });
 }
 
-/**
- * Auto-restore sessions that have saved auth data on disk.
- * Call this once at server startup.
- */
+// ─── Initialize all campuses ───
+
 export async function ensureReady(): Promise<void> {
-  console.log(`[WA] ensureReady called, clients.size=${clients.size}`);
-  // If we already have clients initialized in this context, skip
-  if (clients.size > 0) return;
+  if (sockets.size > 0) return;
 
-  const authBaseDir = path.join(process.cwd(), ".wwebjs_auth");
-  if (!fs.existsSync(authBaseDir)) {
-    console.log(`[WA] ensureReady: no auth dir found`);
-    return;
-  }
-  console.log(`[WA] ensureReady: auth dir found, scanning sessions...`);
+  // Connect all campuses that have sessions in DB
+  const sessions = await prisma.whatsAppSession.findMany({
+    where: { sessionData: { not: null } },
+  });
 
-  const puppeteerOptions: any = {
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  };
-  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome";
-  puppeteerOptions.executablePath = executablePath;
-
-  const dirs = fs.readdirSync(authBaseDir);
-  for (const dir of dirs) {
-    if (!dir.startsWith("session-")) continue;
-    const campus = dir.replace("session-", "");
-    if (clients.has(campus)) continue;
-
-    const cookiesPath = path.join(authBaseDir, dir, "Default", "Cookies");
-    if (!fs.existsSync(cookiesPath)) continue;
-
-    try {
-      const client = new Client({
-        authStrategy: new LocalAuth({ clientId: campus }),
-        puppeteer: puppeteerOptions,
-      });
-
-      const entry = { client, qr: null as string | null, ready: false };
-      clients.set(campus, entry);
-
-      client.on("ready", () => {
-        entry.ready = true;
-        console.log(`[WA] READY for ${campus}`);
-      });
-
-      client.on("disconnected", () => {
-        entry.ready = false;
-        clients.delete(campus);
-      });
-
-      client.on("auth_failure", () => {
-        entry.ready = false;
-        clients.delete(campus);
-      });
-
-      await client.initialize();
-      // Wait briefly for event loop to fire ready event
-      await new Promise((r) => setTimeout(r, 100));
-    } catch (err: any) {
-      const msg = err.message || String(err);
-      // If browser is already running (e.g. another process started it),
-      // poll for readiness instead of failing
-      if (msg.includes("already running")) {
-        console.log(`[WA] Browser already running for ${campus}, will retry later`);
-        // Remove the failed entry — next ensureReady call will retry
-        clients.delete(campus);
-      } else {
-        console.error(`[WA] Init failed for ${campus}: ${msg}`);
-      }
-    }
+  for (const session of sessions) {
+    console.log(`[WA] Restoring session for ${session.campus}...`);
+    await doConnect(session.campus as any);
   }
 }
-
-
