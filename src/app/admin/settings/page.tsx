@@ -240,7 +240,7 @@ export default function AdminSettingsPage() {
               {!waConnected && <button onClick={handleConnectWhatsApp} disabled={waConnecting} className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50">{waConnecting ? "Connecting..." : "Connect WhatsApp"}</button>}
               {waConnected && <button onClick={handleDisconnectWhatsApp} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Disconnect</button>}
             </div>
-            <p className="text-xs text-gray-400">Scan the QR code with WhatsApp to connect. Session stored locally.</p>
+            <p className="text-xs text-gray-400">Scan the QR code with WhatsApp to connect. Session encrypted and stored in the database.</p>
           </div>
         </div>
     </main>
