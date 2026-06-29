@@ -144,18 +144,6 @@ export default function SuperAdminDashboard() {
               <p className="text-xs text-zinc-400 mt-0.5">Manage student applications</p>
             </div>
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-sm text-zinc-400 w-44">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search students..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 outline-none w-full"
-                />
-              </div>
               <ManualApplyForm onSuccess={() => fetchStudents()} />
             </div>
           </div>
@@ -166,7 +154,7 @@ export default function SuperAdminDashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
             <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Total</span>
+                <span className="text-[11px] font-medium text-zinc-400">Total</span>
                 <div className="w-7 h-7 rounded-md bg-blue-50 text-blue-700 flex items-center justify-center">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 </div>
@@ -176,7 +164,7 @@ export default function SuperAdminDashboard() {
             </div>
             <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Approved</span>
+                <span className="text-[11px] font-medium text-zinc-400">Approved</span>
                 <div className="w-7 h-7 rounded-md bg-green-50 text-green-700 flex items-center justify-center">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
@@ -186,7 +174,7 @@ export default function SuperAdminDashboard() {
             </div>
             <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Pending</span>
+                <span className="text-[11px] font-medium text-zinc-400">Pending</span>
                 <div className="w-7 h-7 rounded-md bg-amber-50 text-amber-700 flex items-center justify-center">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
@@ -196,7 +184,7 @@ export default function SuperAdminDashboard() {
             </div>
             <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Campuses</span>
+                <span className="text-[11px] font-medium text-zinc-400">Campuses</span>
                 <div className="w-7 h-7 rounded-md bg-violet-50 text-violet-700 flex items-center justify-center">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                 </div>
@@ -206,22 +194,38 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center gap-2 mb-4">
-            {["all", "MAIN", "WEST"].map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={
-                  filter === f
-                    ? "px-3.5 py-1 rounded-full bg-blue-700 text-white text-xs font-medium border border-blue-700"
-                    : "px-3.5 py-1 rounded-full bg-white text-zinc-500 text-xs font-medium border border-zinc-200 hover:border-zinc-400 transition-colors"
-                }
-              >
-                {f === "all" ? "All campuses" : f === "MAIN" ? `Main campus (${mainCount})` : `West campus (${westCount})`}
-              </button>
-            ))}
-            <span className="ml-auto text-[11px] text-zinc-400">{filtered.length} student{filtered.length !== 1 ? "s" : ""}</span>
+          {/* Filter + Search */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              {["all", "MAIN", "WEST"].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={
+                    filter === f
+                      ? "px-3.5 py-1 rounded-full bg-blue-700 text-white text-xs font-medium border border-blue-700"
+                      : "px-3.5 py-1 rounded-full bg-white text-zinc-500 text-xs font-medium border border-zinc-200 hover:border-zinc-400 transition-colors"
+                  }
+                >
+                  {f === "all" ? "All campuses" : f === "MAIN" ? `Main campus (${mainCount})` : `West campus (${westCount})`}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 sm:ml-auto">
+              <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-sm text-zinc-400 w-full sm:w-56">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 outline-none w-full"
+                />
+              </div>
+              <span className="text-[11px] text-zinc-400 whitespace-nowrap">{filtered.length} student{filtered.length !== 1 ? "s" : ""}</span>
+            </div>
           </div>
 
           {/* Student List */}
