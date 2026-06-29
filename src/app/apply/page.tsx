@@ -59,7 +59,7 @@ export default function ApplyPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: "success", text: "Application submitted successfully! You will be contacted soon." });
+        setMessage({ type: "success", text: "Application submitted successfully! You have been admitted — check your email and WhatsApp for your admission letter." });
         setForm({
           firstName: "", middleName: "", lastName: "", gender: "", phone: "",
           email: "", educationQualification: "", preferredCampus: "", course: "", academicYear: "",

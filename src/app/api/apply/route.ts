@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { sendApprovalNotifications } from "@/lib/auto-notify";
 
 export async function POST(req: NextRequest) {
   try {
@@ -69,15 +70,22 @@ export async function POST(req: NextRequest) {
         email: email || null,
         educationQualification: educationQualification || null,
         preferredCampus: preferredCampus as "MAIN" | "WEST",
+        status: "APPROVED",
         applications: {
           create: {
             course: courseName,
             academicYear,
+            status: "APPROVED",
           },
         },
       },
       include: { applications: true },
     });
+
+    // Send notifications (WhatsApp + Email + SMS) — fire and forget
+    sendApprovalNotifications(student.id).catch(err =>
+      console.error("Auto-notify error:", err)
+    );
 
     return NextResponse.json({ data: student }, { status: 201 });
   } catch (error) {
