@@ -45,3 +45,4 @@ next-env.d.ts
 .wwebjs_cache/
 .wwebjs_auth/
 baileys_auth_*/
+storage/
