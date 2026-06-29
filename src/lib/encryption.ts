@@ -2,9 +2,12 @@ import crypto from "crypto";
 
 const ALGORITHM = "aes-256-gcm";
 
+if (!process.env.ENCRYPTION_KEY) {
+  throw new Error("FATAL: ENCRYPTION_KEY env var is required");
+}
 const KEY = crypto
   .createHash("sha256")
-  .update(process.env.ENCRYPTION_KEY || "eavi-default-key-change-me")
+  .update(process.env.ENCRYPTION_KEY)
   .digest();
 
 export function encrypt(text: string): string {
