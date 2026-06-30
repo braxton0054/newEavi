@@ -1,0 +1,59 @@
+# Dependencies
+node_modules
+.cache
+data:*
+!.next/cache
+env.local
+docker-compose.local.yml
+history
+logs
+*.log
+temp-dev
+next-env.d.ts
+transpiled
+
+# Build artifacts
+.next
+.DS_Store
+dist
+next-monorepo-release
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+
+# OS/System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# Misc
+*.pem
+*.key
+*.crt
+*.p12
+*.dmg
+*.exe
+*.msi
+*.app
+*.apk
+*.aab
+*.zip
+*.tar.gz
+*.gz
+
+# Runtime
+data/*
+*.log
+*.sqlite
+*.db
