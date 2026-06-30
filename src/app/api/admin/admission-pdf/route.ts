@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const template = await prisma.admissionPdfTemplate.findFirst({
@@ -46,7 +48,10 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Remove existing template, then insert new one
-    await prisma.admissionPdfTemplate.deleteMany();
+    const count = await prisma.admissionPdfTemplate.count();
+    if (count > 0) {
+      await prisma.admissionPdfTemplate.deleteMany();
+    }
 
     const template = await prisma.admissionPdfTemplate.create({
       data: {
@@ -68,7 +73,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE() {
   try {
     await prisma.admissionPdfTemplate.deleteMany();
-    return NextResponse.json({ data: { message: "Admission PDF template removed" } });
+    return NextResponse.json({ data: { message: "Admission PDF template removed" } }, { status: 200 });
   } catch (error) {
     console.error("Delete error:", error);
     return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
