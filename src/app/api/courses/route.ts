@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const courses = await prisma.course.findMany({
       orderBy: { name: "asc" },
-      include: { qualifications: { orderBy: { qualificationCategory: "asc" } } },
+      include: { feeStructure: true },
     });
     return NextResponse.json({ data: courses }, { status: 200 });
   } catch (error) {
@@ -27,38 +27,15 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, qualifications } = body;
+    const { name, minGrade, feeStructureId } = body;
 
-    if (!name) {
-      return NextResponse.json({ error: "Course name is required" }, { status: 400 });
-    }
-
-    if (!qualifications || !Array.isArray(qualifications) || qualifications.length === 0) {
-      return NextResponse.json({ error: "At least one qualification is required" }, { status: 400 });
-    }
-
-    for (const q of qualifications) {
-      if ((!q.qualificationCategory && !q.qualificationLevel) || !q.minGrade) {
-        return NextResponse.json(
-          { error: "Each qualification needs a category or level, plus min grade and fee PDF" },
-          { status: 400 }
-        );
-      }
+    if (!name || !minGrade) {
+      return NextResponse.json({ error: "Name and min grade are required" }, { status: 400 });
     }
 
     const course = await prisma.course.create({
-      data: {
-        name,
-        qualifications: {
-          create: qualifications.map((q: { qualificationCategory?: string; qualificationLevel?: string; minGrade: string; feePdf?: string }) => ({
-            qualificationCategory: q.qualificationCategory || null,
-            qualificationLevel: q.qualificationLevel || null,
-            minGrade: q.minGrade,
-            feePdf: q.feePdf || null,
-          })),
-        },
-      },
-      include: { qualifications: true },
+      data: { name, minGrade, feeStructureId: feeStructureId || null },
+      include: { feeStructure: true },
     });
 
     return NextResponse.json({ data: course }, { status: 201 });
@@ -82,7 +59,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, name, feePdf, qualifications } = body;
+    const { id, name, minGrade, feeStructureId } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing course id" }, { status: 400 });
@@ -93,34 +70,14 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    if (!qualifications || !Array.isArray(qualifications) || qualifications.length === 0) {
-      return NextResponse.json({ error: "At least one qualification is required" }, { status: 400 });
-    }
-
-    for (const q of qualifications) {
-      if ((!q.qualificationCategory && !q.qualificationLevel) || !q.minGrade) {
-        return NextResponse.json(
-          { error: "Each qualification needs a category or level, plus min grade and fee PDF" },
-          { status: 400 }
-        );
-      }
-    }
-
     const course = await prisma.course.update({
       where: { id },
       data: {
         name: name !== undefined ? name : undefined,
-        qualifications: {
-          deleteMany: {},
-          create: qualifications.map((q: { qualificationCategory?: string; qualificationLevel?: string; minGrade: string; feePdf?: string }) => ({
-            qualificationCategory: q.qualificationCategory || null,
-            qualificationLevel: q.qualificationLevel || null,
-            minGrade: q.minGrade,
-            feePdf: q.feePdf || null,
-          })),
-        },
+        minGrade: minGrade !== undefined ? minGrade : undefined,
+        feeStructureId: feeStructureId !== undefined ? feeStructureId : undefined,
       },
-      include: { qualifications: true },
+      include: { feeStructure: true },
     });
 
     return NextResponse.json({ data: course }, { status: 200 });
