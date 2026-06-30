@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       orderBy: { campus: "asc" },
     });
 
-    const sanitized = settings.map(s => ({
+    const sanitized = (settings as any[]).map((s) => ({
       id: s.id,
       campus: s.campus,
       email: (s.settings as any)?.email || "",

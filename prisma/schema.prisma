@@ -182,14 +182,15 @@ model AdmissionPdfTemplate {
 }
 
 model WhatsAppSession {
-  id           String   @id @default(cuid())
-  campus       Campus   @unique
-  sessionData  String?  // encrypted Baileys session
-  qrCode       String?
-  status       String   @default("disconnected")
-  lastActive   DateTime @default(now())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  campus      Campus   @unique
+  sessionData String?  // encrypted JSON { creds, keys }
+  qrCode      String?  // raw QR string from Baileys
+  qrDataUrl   String?  // data URL for display
+  status      String   @default("disconnected") // disconnected | waiting_qr | connected
+  lastActive  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("whatsapp_sessions")
 }

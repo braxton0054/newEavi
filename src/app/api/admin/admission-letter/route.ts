@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { fillAdmissionPdf } from "@/lib/admission-pdf";
-import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
 export async function GET(req: NextRequest) {
   try {
@@ -99,7 +98,6 @@ export async function GET(req: NextRequest) {
       courseDisplayName = courseName.replace(/\s*\([^)]+\)\s*$/, "").trim();
     }
 
-    // Also try to find the qualification record for additional details
     if (qualMatch) {
       const courseBaseName = courseDisplayName;
       const existingCourse = await prisma.course.findFirst({
@@ -107,8 +105,9 @@ export async function GET(req: NextRequest) {
         include: { qualifications: true },
       });
       if (existingCourse) {
+        // Fix TypeScript: Specify the type for the arrow function parameter
         const qualRecord = existingCourse.qualifications.find(
-          q => q.qualificationCategory === courseType
+          (q: any) => q.qualificationCategory === courseType
         );
         if (qualRecord) {
           // Use the qualification record details if needed

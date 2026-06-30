@@ -95,7 +95,7 @@ export async function sendApprovalNotifications(
     if (courseRecord && courseType) {
       const qual = courseRecord.qualifications.find(
         (q) => q.qualificationCategory === courseType
-      );
+      ) as any;
       if (qual?.feePdf) {
         feePdfUrl = qual.feePdf;
       }

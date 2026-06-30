@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { getStatus, connect, disconnect } from "@/lib/whatsapp";
+import { getStatus, connect, disconnect, ensureReady } from "@/lib/whatsapp";
 
 async function getUser(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
@@ -22,6 +22,10 @@ export async function GET(req: NextRequest) {
   }
 
   const status = await getStatus(campus);
+  if (!status.connected && !status.hasQr) {
+    // Trigger connection if not connected (will generate QR)
+    await ensureReady();
+  }
   return NextResponse.json({ data: status }, { status: 200 });
 }
 
@@ -42,8 +46,8 @@ export async function POST(req: NextRequest) {
 
   if (action === "connect") {
     try {
-      const result = await connect(campus);
-      return NextResponse.json({ data: result }, { status: 200 });
+      const qr = await connect(campus);
+      return NextResponse.json({ data: { qr } }, { status: 200 });
     } catch (err) {
       console.error("WhatsApp connect error:", err);
       return NextResponse.json({ error: "Failed to connect" }, { status: 500 });

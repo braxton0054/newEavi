@@ -1,3 +1,6 @@
 export async function register() {
-  // WhatsApp is initialized lazily on first API call via ensureReady()
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { ensureReady } = await import("@/lib/whatsapp");
+    await ensureReady();
+  }
 }
