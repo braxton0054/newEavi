@@ -293,8 +293,8 @@ export async function ensureReady(): Promise<void> {
   const campuses = ["MAIN", "WEST"];
 
   for (const campus of campuses) {
-    const session = sessions.find(s => s.campus === campus);
-    if (session?.sessionData) {
+    const dbSession = sessions.find((s: any) => s.campus === campus);
+    if (dbSession?.sessionData) {
       console.log(`[WA] Restoring session for ${campus}...`);
     } else {
       console.log(`[WA] Initializing new connection for ${campus}...`);
