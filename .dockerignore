@@ -19,8 +19,8 @@ dist
 next-monorepo-release
 *.tsbuildinfo
 
-# Environment
-.env
+# Environment (avoid .env in public images; ok for private VPS build)
+# .env — needed at build time for NEXT_PUBLIC_* vars; mounted at runtime too
 .env.local
 .env.production
 .env.development

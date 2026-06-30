@@ -88,40 +88,6 @@ export async function GET(req: NextRequest) {
       year: "numeric",
     });
 
-    // Extract course type from stored course name (format: "ICT (Diploma)")
-    // The qualification type is in parentheses
-    let courseType = "";
-    let courseDisplayName = courseName;
-    const qualMatch = courseName.match(/\(([^)]+)\)\s*$/);
-    if (qualMatch) {
-      courseType = qualMatch[1]; // e.g. "Diploma"
-      // Strip the qualification suffix for display: "ICT (Diploma)" → "ICT"
-      courseDisplayName = courseName.replace(/\s*\([^)]+\)\s*$/, "").trim();
-    }
-
-    if (qualMatch) {
-      const courseBaseName = courseDisplayName;
-      const existingCourse = await prisma.course.findFirst({
-        where: { name: courseBaseName },
-        include: { qualifications: true },
-      });
-      if (existingCourse) {
-        // Fix TypeScript: Specify the type for the arrow function parameter
-        const qualRecord = existingCourse.qualifications.find(
-          (q: any) => q.qualificationCategory === courseType
-        );
-        if (qualRecord) {
-          // Use the qualification record details if needed
-          courseType = qualRecord.qualificationCategory || courseType;
-        }
-      }
-    }
-
-    // Strip qualification type prefix to avoid "Diploma in Diploma in..."
-    if (courseType && courseDisplayName.startsWith(courseType + " ")) {
-      courseDisplayName = courseDisplayName.substring(courseType.length + 1);
-    }
-
     const campusName = student.preferredCampus === "MAIN" ? "Main Campus" : "West Campus";
 
     // Fill the template PDF with real data
@@ -129,8 +95,8 @@ export async function GET(req: NextRequest) {
     const pdfBytes = await fillAdmissionPdf(templateBuffer, {
       letterDate: currentDate,
       studentName,
-      courseType,
-      courseName: courseDisplayName,
+      courseType: "",
+      courseName,
       admissionNumber,
       reportDate: typeof reportDate === "string" ? reportDate : String(reportDate),
       campus: campusName,

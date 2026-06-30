@@ -1,18 +1,18 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
+RUN apk add --no-cache openssl
 COPY package*.json pnpm-workspace.yaml pnpm-lock.yaml .gitignore ./
 RUN npm ci --prefer-offline --no-audit --loglevel error
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:22-alpine AS runner
 WORKDIR /app
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nodejs:nodejs /app/.next ./.next
-COPY --chown=nodejs:nodejs package*.json ./
-COPY --chown=nodejs:nodejs server.ts ./
-COPY --chown=nodejs:nodejs public ./public
-USER 1001
+RUN apk add --no-cache openssl
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
 EXPOSE 4000
-CMD ["node", "server.ts"]
+CMD ["npx", "next", "start", "-p", "4000"]

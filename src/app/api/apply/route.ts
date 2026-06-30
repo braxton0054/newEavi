@@ -32,34 +32,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Look up the course with all its qualification tracks
+    // Look up the course
     const courseRecord = await prisma.course.findUnique({
       where: { id: course },
-      include: { qualifications: true },
     });
 
     if (!courseRecord) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Find qualification tracks the student meets (educationQualification >= minGrade)
+    // Check if student's education qualification meets the course minimum
     const { meetsQualification } = await import("@/lib/education-qualifications");
-    let matchedQual = null;
+    const qualified = educationQualification
+      ? meetsQualification(educationQualification, courseRecord.minGrade)
+      : false;
 
-    if (educationQualification) {
-      for (const q of courseRecord.qualifications) {
-        if (q.minGrade && meetsQualification(educationQualification, q.minGrade)) {
-          matchedQual = q;
-          break; // pick the first match
-        }
-      }
-    }
-
-    // If student has no educationQualification or doesn't meet any track, still allow apply (pending review)
-    // Store the course name + matched qualification type
-    const courseName = matchedQual
-      ? `${courseRecord.name} (${matchedQual.qualificationCategory || matchedQual.qualificationLevel})`
-      : courseRecord.name;
+    const courseName = courseRecord.name;
 
     const student = await prisma.student.create({
       data: {

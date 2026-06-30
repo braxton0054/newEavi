@@ -78,27 +78,15 @@ export async function sendApprovalNotifications(
       orderBy: { createdAt: "desc" },
     });
 
-    // 4. Parse course name to find the course record
+    // 4. Find course for fee structure PDF
     const courseName = application.course || "";
-    const qualMatch = courseName.match(/\(([^)]+)\)\s*$/);
-    const courseBaseName = qualMatch
-      ? courseName.replace(/\s*\([^)]+\)\s*$/, "").trim()
-      : courseName;
-    const courseType = qualMatch ? qualMatch[1] : "";
-
-    // 5. Find course and qualification for fee structure PDF
     let feePdfUrl = "";
     const courseRecord = await prisma.course.findFirst({
-      where: { name: courseBaseName },
-      include: { qualifications: true },
+      where: { name: courseName },
+      include: { feeStructure: true },
     });
-    if (courseRecord && courseType) {
-      const qual = courseRecord.qualifications.find(
-        (q: any) => q.qualificationCategory === courseType
-      ) as any;
-      if (qual?.feePdf) {
-        feePdfUrl = qual.feePdf;
-      }
+    if (courseRecord?.feeStructure?.url) {
+      feePdfUrl = courseRecord.feeStructure.url;
     }
 
     // 6. Get bursary form PDF
@@ -132,17 +120,11 @@ export async function sendApprovalNotifications(
         });
         const campusName = campus === "MAIN" ? "Main Campus" : "West Campus";
 
-        // Build course display name (strip qualifier)
-        let courseDisplayName = courseBaseName;
-        if (courseType && courseDisplayName.startsWith(courseType + " ")) {
-          courseDisplayName = courseDisplayName.substring(courseType.length + 1);
-        }
-
         const pdfBytes = await fillAdmissionPdf(Buffer.from(template.pdfData), {
           letterDate: currentDate,
           studentName,
-          courseType,
-          courseName: courseDisplayName,
+          courseType: "",
+          courseName: courseName,
           admissionNumber,
           reportDate: typeof reportDate === "string" ? reportDate : String(reportDate),
           campus: campusName,
@@ -186,7 +168,7 @@ export async function sendApprovalNotifications(
       attachments.push({ filename: `Admission-${studentName.replace(/\s+/g, "_")}.pdf`, content: admissionPdfBuffer });
     }
     if (feePdfBuffer) {
-      attachments.push({ filename: `Fee_Structure-${courseBaseName.replace(/\s+/g, "_")}.pdf`, content: feePdfBuffer });
+      attachments.push({ filename: `Fee_Structure-${(courseRecord?.name || courseName).replace(/\s+/g, "_")}.pdf`, content: feePdfBuffer });
     }
     if (bursaryPdfBuffer) {
       attachments.push({ filename: "Bursary_Form.pdf", content: bursaryPdfBuffer });
@@ -213,7 +195,7 @@ export async function sendApprovalNotifications(
             student.phone || "",
             feePdfBuffer,
             `Fee_Structure.pdf`,
-            `📋 Fee structure for ${courseBaseName} (${courseType || "N/A"}).`
+            `📋 Fee structure for ${courseRecord?.name || courseName}.`
           );
         }
 
