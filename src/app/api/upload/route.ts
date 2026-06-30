@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { auth } from "@/lib/auth";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {

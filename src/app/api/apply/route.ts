@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendApprovalNotifications } from "@/lib/auto-notify";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {

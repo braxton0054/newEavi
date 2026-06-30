@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile, stat } from "fs/promises";
 import path from "path";
 import { auth } from "@/lib/auth";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,

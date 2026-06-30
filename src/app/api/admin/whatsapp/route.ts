@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { getStatus, connect, disconnect, ensureReady } from "@/lib/whatsapp";
+export const dynamic = "force-dynamic";
 
 async function getUser(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
