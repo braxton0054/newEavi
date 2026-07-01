@@ -1,9 +1,10 @@
 import {
   makeWASocket,
   DisconnectReason,
-  BaileysEventMap,
   AuthenticationState,
   initAuthCreds,
+  makeCacheableSignalKeyStore,
+  BufferJSON,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -20,6 +21,7 @@ interface WaEntry {
   sock: any;
   ready: boolean;
   campus: string;
+  keyStore: any;
 }
 
 const sockets = new Map<string, WaEntry>();
@@ -45,9 +47,10 @@ async function persistSession(campus: string) {
   const entry = sockets.get(campus);
   if (!entry || !entry.sock?.authState) return;
 
-  const { creds, keys } = entry.sock.authState;
-  if (!creds || !keys) return; // Baileys fires creds.update before creds exist
-  const data = JSON.stringify({ creds, keys });
+  const { creds } = entry.sock.authState;
+  const keys = entry.keyStore;
+  if (!creds || !keys) return;
+  const data = JSON.stringify({ creds, keys }, BufferJSON.replacer);
   const encrypted = encrypt(data);
 
   const existing = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
@@ -67,7 +70,7 @@ async function restoreSession(campus: string): Promise<{ creds?: any; keys?: any
   const session = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
   if (!session?.sessionData) return null;
   try {
-    const data = JSON.parse(decrypt(session.sessionData));
+    const data = JSON.parse(decrypt(session.sessionData), BufferJSON.reviver);
     return data;
   } catch {
     return null;
@@ -85,23 +88,22 @@ async function doConnect(campus: string): Promise<string | null> {
   const existingTimer = reconnectTimers.get(campus);
   if (existingTimer) { clearTimeout(existingTimer); reconnectTimers.delete(campus); }
 
-  const entry: WaEntry = { sock: null, ready: false, campus };
+  const entry: WaEntry = { sock: null, ready: false, campus, keyStore: null as any };
   sockets.set(campus, entry);
 
   try {
     const saved = await restoreSession(campus);
 
-    // Only pass auth when we have a valid saved session.
-    // When no session exists, let Baileys handle QR generation itself.
-    // Build auth state: use saved session if available, otherwise fresh creds
     let authState: AuthenticationState;
     if (saved) {
       authState = { creds: saved.creds, keys: saved.keys };
     } else {
-      // Fresh auth state for QR generation
       const creds = initAuthCreds();
       authState = { creds, keys: {} as any };
     }
+
+    const keyStore = makeCacheableSignalKeyStore(authState.keys, logger);
+    entry.keyStore = keyStore;
 
     const sock = makeWASocket({
       logger,
@@ -109,7 +111,10 @@ async function doConnect(campus: string): Promise<string | null> {
       syncFullHistory: false,
       markOnlineOnConnect: true,
       shouldSyncHistoryMessage: () => false,
-      auth: authState,
+      auth: {
+        creds: authState.creds,
+        keys: keyStore,
+      },
     });
 
     entry.sock = sock;
@@ -130,9 +135,7 @@ async function doConnect(campus: string): Promise<string | null> {
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
-          // Convert QR string to data URL for display
           const qrDataUrl = await QRCode.toDataURL(qr, { width: 300, margin: 2 });
-          // Store raw QR string in DB
           await prisma.whatsAppSession.upsert({
             where: { campus: campus as any },
             create: { campus: campus as any, qrCode: qr, qrDataUrl: qrDataUrl, status: "waiting_qr" },
@@ -170,7 +173,6 @@ async function doConnect(campus: string): Promise<string | null> {
             });
             sockets.delete(campus);
           } else {
-            // Auto-reconnect
             const timer = setTimeout(() => doConnect(campus).catch(() => {}), RECONNECT_DELAY);
             reconnectTimers.set(campus, timer);
           }
@@ -188,7 +190,7 @@ async function doConnect(campus: string): Promise<string | null> {
   }
 }
 
-// ─── Public API (same interface as before) ───
+// ─── Public API ───
 
 export function getClient(campus: string): any {
   const entry = sockets.get(campus);
@@ -197,7 +199,6 @@ export function getClient(campus: string): any {
 
 export async function getStatus(campus: string) {
   const dbSession = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
-  // If we have an in-memory socket, use its real-time status; otherwise use DB
   const entry = sockets.get(campus);
   const connected = entry?.ready || false;
   return {
@@ -288,7 +289,6 @@ export async function disconnect(campus: string) {
 export async function ensureReady(): Promise<void> {
   if (sockets.size > 0) return;
 
-  // Connect all campuses — use DB sessions if available, otherwise generate QR
   const sessions = await prisma.whatsAppSession.findMany();
   const campuses = ["MAIN", "WEST"];
 

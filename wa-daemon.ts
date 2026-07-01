@@ -3,10 +3,13 @@
  * Handles Baileys WebSocket connections for all campuses.
  * Communicates with Next.js via the database (WhatsAppSession table).
  */
-import { makeWASocket, DisconnectReason, initAuthCreds } from "@whiskeysockets/baileys";
+import { makeWASocket, DisconnectReason, initAuthCreds, makeCacheableSignalKeyStore, BufferJSON } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import QRCode from "qrcode";
+import pino from "pino";
 import { PrismaClient } from "@prisma/client";
+
+const logger = pino({ level: "warn" });
 
 const prisma = new PrismaClient();
 const RECONNECT_DELAY = 5000;
@@ -15,6 +18,7 @@ interface WaEntry {
   sock: any;
   ready: boolean;
   campus: string;
+  keyStore: any;
 }
 
 const sockets = new Map<string, WaEntry>();
@@ -27,9 +31,10 @@ function log(campus: string, msg: string) {
 async function persistSession(campus: string) {
   const entry = sockets.get(campus);
   if (!entry || !entry.sock?.authState) return;
-  const { creds, keys } = entry.sock.authState;
+  const { creds } = entry.sock.authState;
+  const keys = entry.keyStore;
   if (!creds || !keys) return;
-  const data = JSON.stringify({ creds, keys });
+  const data = JSON.stringify({ creds, keys }, BufferJSON.replacer);
 
   const existing = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
   if (existing) {
@@ -52,14 +57,14 @@ async function doConnect(campus: string) {
   const timer = reconnectTimers.get(campus);
   if (timer) { clearTimeout(timer); reconnectTimers.delete(campus); }
 
-  const entry: WaEntry = { sock: null, ready: false, campus };
+  const entry: WaEntry = { sock: null, ready: false, campus, keyStore: null as any };
   sockets.set(campus, entry);
 
   try {
     // Restore from DB if exists
     const saved = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
     const savedSession = saved?.sessionData
-      ? JSON.parse(saved.sessionData)
+      ? JSON.parse(saved.sessionData, BufferJSON.reviver)
       : null;
 
     // Build auth state: use saved session if available, otherwise fresh creds
@@ -67,17 +72,22 @@ async function doConnect(campus: string) {
     if (savedSession) {
       authState = { creds: savedSession.creds, keys: savedSession.keys };
     } else {
-      // Fresh auth state for QR generation (Baileys v7 requires this)
       const creds = initAuthCreds();
       authState = { creds, keys: {} };
     }
+
+    const keyStore = makeCacheableSignalKeyStore(authState.keys, logger);
+    entry.keyStore = keyStore;
 
     const sock = makeWASocket({
       printQRInTerminal: false,
       syncFullHistory: false,
       markOnlineOnConnect: true,
       shouldSyncHistoryMessage: () => false,
-      auth: authState,
+      auth: {
+        creds: authState.creds,
+        keys: keyStore,
+      },
     });
     entry.sock = sock;
 

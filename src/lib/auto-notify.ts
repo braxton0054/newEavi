@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { fillAdmissionPdf } from "@/lib/admission-pdf";
 import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
-import { sendDocument, sendText, checkNumber, ensureReady } from "@/lib/whatsapp";
+import { getClient, sendDocument, sendText, checkNumber, ensureReady } from "@/lib/whatsapp";
 
 interface NotifyResult {
   whatsapp: boolean;
@@ -160,7 +160,14 @@ export async function sendApprovalNotifications(
 
     // 9. Ensure WhatsApp sessions are restored, then check availability
     await ensureReady();
-    const whatsappAvailable = await checkNumber(campus, student.phone || "");
+    const sock = getClient(campus);
+    if (!sock) {
+      result.errors.push(`WhatsApp not connected for campus ${campus}`);
+    }
+    const whatsappAvailable = sock ? await checkNumber(campus, student.phone || "") : false;
+    if (sock && !whatsappAvailable) {
+      result.errors.push(`Number ${student.phone} not on WhatsApp for campus ${campus}`);
+    }
 
     // 10. Prepare common attachments
     const attachments: { filename: string; content: Buffer }[] = [];
@@ -175,7 +182,7 @@ export async function sendApprovalNotifications(
     }
 
     // 11. Send via WhatsApp (if connected and number available)
-    if (whatsappAvailable) {
+    if (sock && whatsappAvailable) {
       try {
         // Send admission PDF
         if (admissionPdfBuffer) {
@@ -212,7 +219,7 @@ export async function sendApprovalNotifications(
 
         result.whatsapp = true;
       } catch (err) {
-        result.errors.push(`WhatsApp send failed: ${(err as Error).message}`);
+        result.errors.push(`WhatsApp send failed for ${campus}: ${(err as Error).message}`);
       }
     }
 
