@@ -22,11 +22,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  // ensureReady already runs at server startup — don't re-trigger here
+  // or stale QRs from a previous session will cause a "replaced" conflict
   const status = await getStatus(campus);
-  if (!status.connected && !status.hasQr) {
-    // Trigger connection if not connected (will generate QR)
-    await ensureReady();
-  }
   return NextResponse.json({ data: status }, { status: 200 });
 }
 

@@ -9,16 +9,41 @@ import QRCode from "qrcode";
 import pino from "pino";
 import { PrismaClient } from "@prisma/client";
 
-const logger = pino({ level: "warn" });
-
 const prisma = new PrismaClient();
+const logger = pino({ level: "warn" });
 const RECONNECT_DELAY = 5000;
+
+function createSignalKeyStore(data: Record<string, any> = {}) {
+  return {
+    get: async (type: string, ids: string[]) => {
+      const result: Record<string, any> = {};
+      for (const id of ids) {
+        const key = `${type}-${id}`;
+        result[id] = key in data ? data[key] : null;
+      }
+      return result;
+    },
+    set: async (entries: any) => {
+      for (const category of Object.keys(entries)) {
+        for (const id of Object.keys(entries[category])) {
+          const value = entries[category][id];
+          const key = `${category}-${id}`;
+          if (value != null) data[key] = value;
+          else delete data[key];
+        }
+      }
+    },
+    delete: async (ids: string[]) => {
+      for (const id of ids) delete data[id];
+    },
+  };
+}
 
 interface WaEntry {
   sock: any;
   ready: boolean;
   campus: string;
-  keyStore: any;
+  keyData: Record<string, any>;
 }
 
 const sockets = new Map<string, WaEntry>();
@@ -32,9 +57,8 @@ async function persistSession(campus: string) {
   const entry = sockets.get(campus);
   if (!entry || !entry.sock?.authState) return;
   const { creds } = entry.sock.authState;
-  const keys = entry.keyStore;
-  if (!creds || !keys) return;
-  const data = JSON.stringify({ creds, keys }, BufferJSON.replacer);
+  if (!creds) return;
+  const data = JSON.stringify({ creds, keyData: entry.keyData }, BufferJSON.replacer);
 
   const existing = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
   if (existing) {
@@ -57,27 +81,26 @@ async function doConnect(campus: string) {
   const timer = reconnectTimers.get(campus);
   if (timer) { clearTimeout(timer); reconnectTimers.delete(campus); }
 
-  const entry: WaEntry = { sock: null, ready: false, campus, keyStore: null as any };
+  const keyData: Record<string, any> = {};
+  const entry: WaEntry = { sock: null, ready: false, campus, keyData };
   sockets.set(campus, entry);
 
   try {
-    // Restore from DB if exists
     const saved = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
     const savedSession = saved?.sessionData
       ? JSON.parse(saved.sessionData, BufferJSON.reviver)
       : null;
 
-    // Build auth state: use saved session if available, otherwise fresh creds
-    let authState: any;
+    let creds: any;
     if (savedSession) {
-      authState = { creds: savedSession.creds, keys: savedSession.keys };
+      creds = savedSession.creds;
+      if (savedSession.keyData) Object.assign(keyData, savedSession.keyData);
     } else {
-      const creds = initAuthCreds();
-      authState = { creds, keys: {} };
+      creds = initAuthCreds();
     }
 
-    const keyStore = makeCacheableSignalKeyStore(authState.keys, logger);
-    entry.keyStore = keyStore;
+    const store = makeCacheableSignalKeyStore(createSignalKeyStore(keyData), logger);
+    entry.keyData = keyData;
 
     const sock = makeWASocket({
       printQRInTerminal: false,
@@ -85,8 +108,8 @@ async function doConnect(campus: string) {
       markOnlineOnConnect: true,
       shouldSyncHistoryMessage: () => false,
       auth: {
-        creds: authState.creds,
-        keys: keyStore,
+        creds,
+        keys: store,
       },
     });
     entry.sock = sock;

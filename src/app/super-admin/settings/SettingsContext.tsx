@@ -100,11 +100,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
             ...prev,
             [campus]: {
               connected: data.data.connected,
-              qr: data.data.hasQr ? data.data.qr : prev[campus]?.qr || null,
-              connecting: prev[campus]?.connecting || false,
+              qr: data.data.hasQr ? data.data.qr : null,
+              connecting: data.data.connecting,
             },
           }));
-          if (data.data.connected) setWaStatus(prev => ({ ...prev, [campus]: { connected: true, qr: null, connecting: false } }));
         }
       } catch {}
     }
