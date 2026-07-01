@@ -168,17 +168,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   async function handleBursaryFormUpload(campus: string, file: File) {
     setMessage(null);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("type", "bursary_form");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (res.ok) {
-        await handleSave(campus, "Bursary Form", { email: form[campus].email, bursaryFormPdf: data.data.url });
-        setField(campus, "bursaryFormPdf", data.data.url);
-      } else {
-        setMessage({ type: "error", text: data.error || "Upload failed" });
-      }
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      await handleSave(campus, "Bursary Form", { email: form[campus].email, bursaryFormPdf: base64 });
+      setMessage({ type: "success", text: "Bursary form uploaded" });
     } catch { setMessage({ type: "error", text: "Upload failed" }); }
   }
 

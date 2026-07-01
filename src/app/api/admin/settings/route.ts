@@ -95,7 +95,15 @@ export async function PUT(req: NextRequest) {
     if (admissionStart !== undefined) admissionData.admissionStart = admissionStart;
     if (reportingDates !== undefined) admissionData.reportingDates = reportingDates;
     if (bursaryFormPdf !== undefined) {
-      admissionData.bursaryFormPdf = bursaryFormPdf === null ? null : Buffer.from(bursaryFormPdf.replace(/^data:application\/pdf;base64,/, ""), "base64");
+      const buf = bursaryFormPdf === null ? null : Buffer.from(bursaryFormPdf.replace(/^data:application\/pdf;base64,/, ""), "base64");
+      admissionData.bursaryFormPdf = buf;
+      // Share same bursary form across both campuses
+      const otherCampus = campus === "MAIN" ? "WEST" : "MAIN";
+      await prisma.campusSetting.upsert({
+        where: { campus: otherCampus as "MAIN" | "WEST" },
+        update: { bursaryFormPdf: buf },
+        create: { campus: otherCampus as "MAIN" | "WEST", settings: {}, bursaryFormPdf: buf },
+      });
     }
 
     await prisma.campusSetting.upsert({
