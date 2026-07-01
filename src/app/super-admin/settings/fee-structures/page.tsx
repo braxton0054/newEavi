@@ -13,7 +13,6 @@ export default function FeeStructuresPage() {
   const [structures, setStructures] = useState<FeeStructure[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -30,9 +29,10 @@ export default function FeeStructuresPage() {
 
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
-    if (!name || !file) return;
+    if (!file) return;
     setUploading(true);
     try {
+      const name = file.name.replace(/\.pdf$/i, "");
       const fd = new FormData();
       fd.append("file", file);
       const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
@@ -44,7 +44,7 @@ export default function FeeStructuresPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, url: uploadData.data.url }),
       });
-      if (res.ok) { setName(""); setFile(null); fetchStructures(); }
+      if (res.ok) { setFile(null); fetchStructures(); }
       else { const d = await res.json(); alert(d.error || "Failed"); }
     } catch (err) { console.error(err); }
     finally { setUploading(false); }
@@ -76,15 +76,9 @@ export default function FeeStructuresPage() {
       <main className="px-6 lg:px-8 py-6 max-w-4xl">
         <form onSubmit={handleUpload} className="bg-white rounded-xl border border-zinc-200 p-5 mb-5">
           <h2 className="text-sm font-medium text-zinc-900 mb-4">Upload fee structure</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Name *</label>
-              <input value={name} onChange={e => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. Diploma Fee Structure 2026" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-[11px] font-medium text-zinc-500 mb-1">PDF file *</label>
-              <input type="file" accept=".pdf" onChange={e => setFile(e.target.files?.[0] || null)} required className="w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-            </div>
+          <div className="mb-4">
+            <label className="block text-[11px] font-medium text-zinc-500 mb-1">PDF file *</label>
+            <input type="file" accept=".pdf" onChange={e => setFile(e.target.files?.[0] || null)} required className="w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
           </div>
           <button type="submit" disabled={uploading} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
             {uploading ? "Uploading..." : "Upload"}

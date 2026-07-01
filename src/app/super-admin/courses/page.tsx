@@ -26,7 +26,6 @@ export default function CoursesPage() {
   const [feeStructureId, setFeeStructureId] = useState("");
   const [uploadNewFee, setUploadNewFee] = useState(false);
   const [newFeeFile, setNewFeeFile] = useState<File | null>(null);
-  const [newFeeName, setNewFeeName] = useState("");
   const [uploading, setUploading] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -35,7 +34,6 @@ export default function CoursesPage() {
   const [editFeeStructureId, setEditFeeStructureId] = useState("");
   const [editUploadNewFee, setEditUploadNewFee] = useState(false);
   const [editNewFeeFile, setEditNewFeeFile] = useState<File | null>(null);
-  const [editNewFeeName, setEditNewFeeName] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { fetchCourses(); fetchFeeStructures(); }, []);
@@ -68,7 +66,7 @@ export default function CoursesPage() {
   function resetForm() {
     setName(""); setMinGrade("");
     setFeeStructureId(""); setUploadNewFee(false);
-    setNewFeeFile(null); setNewFeeName("");
+    setNewFeeFile(null);
   }
 
   async function handleAdd(e: React.FormEvent) {
@@ -77,13 +75,14 @@ export default function CoursesPage() {
     setUploading(true);
     try {
       let fsId = feeStructureId || null;
-      if (uploadNewFee && newFeeFile && newFeeName) {
+      if (uploadNewFee && newFeeFile) {
         const url = await uploadPdf(newFeeFile);
         if (!url) { alert("Failed to upload fee PDF"); return; }
+        const feeName = newFeeFile.name.replace(/\.pdf$/i, "");
         const res = await fetch("/api/fee-structures", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: newFeeName, url }),
+          body: JSON.stringify({ name: feeName, url }),
         });
         const d = await res.json();
         if (res.ok) fsId = d.data.id;
@@ -107,7 +106,6 @@ export default function CoursesPage() {
     setEditFeeStructureId(course.feeStructureId || "");
     setEditUploadNewFee(false);
     setEditNewFeeFile(null);
-    setEditNewFeeName("");
   }
 
   function cancelEdit() { setEditingId(null); }
@@ -117,13 +115,14 @@ export default function CoursesPage() {
     setSaving(true);
     try {
       let fsId = editFeeStructureId || null;
-      if (editUploadNewFee && editNewFeeFile && editNewFeeName) {
+      if (editUploadNewFee && editNewFeeFile) {
         const url = await uploadPdf(editNewFeeFile);
         if (!url) { alert("Failed to upload fee PDF"); return; }
+        const feeName = editNewFeeFile.name.replace(/\.pdf$/i, "");
         const res = await fetch("/api/fee-structures", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: editNewFeeName, url }),
+          body: JSON.stringify({ name: feeName, url }),
         });
         const d = await res.json();
         if (res.ok) fsId = d.data.id;
@@ -145,10 +144,9 @@ export default function CoursesPage() {
     fetch(`/api/courses?id=${id}`, { method: "DELETE" }).then(() => fetchCourses());
   }
 
-  function FeeSelector({ value, onChange, showUpload, setShowUpload, newName, setNewName, newFile, setNewFile }: {
+  function FeeSelector({ value, onChange, showUpload, setShowUpload, newFile, setNewFile }: {
     value: string; onChange: (v: string) => void;
     showUpload: boolean; setShowUpload: (v: boolean) => void;
-    newName: string; setNewName: (v: string) => void;
     newFile: File | null; setNewFile: (f: File | null) => void;
   }) {
     return (
@@ -166,7 +164,6 @@ export default function CoursesPage() {
           </div>
         ) : (
           <div className="space-y-2 p-3 rounded-lg border border-blue-200 bg-blue-50/30">
-            <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Fee structure name" className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
             <input type="file" accept=".pdf" onChange={e => setNewFile(e.target.files?.[0] || null)} className="w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
             <button type="button" onClick={() => setShowUpload(false)} className="text-[11px] text-zinc-500 hover:underline">Cancel</button>
           </div>
@@ -208,7 +205,6 @@ export default function CoursesPage() {
             <FeeSelector
               value={feeStructureId} onChange={setFeeStructureId}
               showUpload={uploadNewFee} setShowUpload={setUploadNewFee}
-              newName={newFeeName} setNewName={setNewFeeName}
               newFile={newFeeFile} setNewFile={setNewFeeFile}
             />
           </div>
@@ -241,7 +237,6 @@ export default function CoursesPage() {
                       <FeeSelector
                         value={editFeeStructureId} onChange={setEditFeeStructureId}
                         showUpload={editUploadNewFee} setShowUpload={setEditUploadNewFee}
-                        newName={editNewFeeName} setNewName={setEditNewFeeName}
                         newFile={editNewFeeFile} setNewFile={setEditNewFeeFile}
                       />
                     </div>

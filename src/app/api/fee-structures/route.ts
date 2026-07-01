@@ -33,11 +33,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Name and file URL are required" }, { status: 400 });
     }
 
-    const structure = await prisma.feeStructure.create({
-      data: { name, url },
-    });
+    const existing = await prisma.feeStructure.findFirst({ where: { name } });
 
-    return NextResponse.json({ data: structure }, { status: 201 });
+    let structure;
+    if (existing) {
+      structure = await prisma.feeStructure.update({
+        where: { id: existing.id },
+        data: { url },
+      });
+    } else {
+      structure = await prisma.feeStructure.create({
+        data: { name, url },
+      });
+    }
+
+    return NextResponse.json({ data: structure }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

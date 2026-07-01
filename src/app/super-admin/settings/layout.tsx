@@ -11,6 +11,7 @@ const navItems = [
   { href: "/super-admin/settings/admissions", label: "Admissions" },
   { href: "/super-admin/settings/reporting", label: "Reporting Dates" },
   { href: "/super-admin/settings/bursary", label: "Bursary Form" },
+  { href: "/super-admin/settings/fee-structures", label: "Fee Structures" },
   { href: "/super-admin/settings/whatsapp", label: "WhatsApp" },
 ];
 
