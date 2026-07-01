@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { meetsQualification, GRADE_RANK } from "@/lib/education-qualifications";
 import { sendApprovalNotifications } from "@/lib/auto-notify";
 export const dynamic = "force-dynamic";
 
@@ -41,13 +42,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Check if student's education qualification meets the course minimum
-    const { meetsQualification } = await import("@/lib/education-qualifications");
-    const qualified = educationQualification
-      ? meetsQualification(educationQualification, courseRecord.minGrade)
-      : false;
-
     const courseName = courseRecord.name;
+
+    // Check if student's education qualification meets the course minimum
+    if (educationQualification) {
+      const qualified = meetsQualification(educationQualification, courseRecord.minGrade);
+      if (!qualified) {
+        // Find all courses the student IS qualified for
+        const allCourses = await prisma.course.findMany({ orderBy: { name: "asc" } });
+        const suggested = allCourses
+          .filter(c => c.id !== course && meetsQualification(educationQualification, c.minGrade))
+          .map(c => ({ id: c.id, name: c.name, minGrade: c.minGrade }));
+
+        const studentRank = GRADE_RANK[educationQualification] ?? 0;
+        const requiredRank = GRADE_RANK[courseRecord.minGrade] ?? 0;
+
+        return NextResponse.json({
+          error: `Your qualification (${educationQualification}, rank ${studentRank}) does not meet the minimum requirement for ${courseName} (${courseRecord.minGrade}, rank ${requiredRank}).`,
+          suggested,
+          qualification: educationQualification,
+        }, { status: 422 });
+      }
+    }
 
     const student = await prisma.student.create({
       data: {

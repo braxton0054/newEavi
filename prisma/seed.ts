@@ -2,6 +2,21 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const SEED_COURSES = [
+  { name: "Diploma in Information Communication Technology", minGrade: "C+" },
+  { name: "Certificate in Information Communication Technology", minGrade: "C-" },
+  { name: "Diploma in Business Management", minGrade: "C+" },
+  { name: "Certificate in Business Management", minGrade: "C-" },
+  { name: "Diploma in Early Childhood Education", minGrade: "C" },
+  { name: "Certificate in Early Childhood Education", minGrade: "D+" },
+  { name: "Diploma in Social Work and Community Development", minGrade: "C" },
+  { name: "Certificate in Social Work", minGrade: "D+" },
+  { name: "Diploma in Counselling Psychology", minGrade: "C+" },
+  { name: "Certificate in Counselling Psychology", minGrade: "C-" },
+  { name: "Artisan in Hair Dressing and Beauty Therapy", minGrade: "D" },
+  { name: "Artisan in Fashion Design and Garment Making", minGrade: "D" },
+];
+
 async function main() {
   const superAdmin = await prisma.user.upsert({
     where: { email: "super@eavi-college.edu" },
@@ -36,6 +51,14 @@ async function main() {
   });
 
   console.log("Seeded users:", { superAdmin: superAdmin.email, mainAdmin: mainAdmin.email, westAdmin: westAdmin.email });
+
+  for (const c of SEED_COURSES) {
+    const exists = await prisma.course.findUnique({ where: { name: c.name } });
+    if (!exists) {
+      await prisma.course.create({ data: c });
+      console.log("Seeded course:", c.name);
+    }
+  }
 }
 
 main()

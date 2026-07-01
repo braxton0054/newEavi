@@ -6,6 +6,7 @@ import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 interface Course {
   id: string;
   name: string;
+  minGrade: string;
 }
 
 interface Props {
@@ -18,6 +19,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [suggestions, setSuggestions] = useState<Course[] | null>(null);
   const [form, setForm] = useState({
     firstName: "", middleName: "", lastName: "", gender: "",
     phone: "", email: "", educationQualification: "",
@@ -37,6 +39,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
     e.preventDefault();
     setSubmitting(true);
     setMessage(null);
+    setSuggestions(null);
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
@@ -48,6 +51,9 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
         setMessage({ type: "success", text: "Application submitted successfully!" });
         setForm({ firstName: "", middleName: "", lastName: "", gender: "", phone: "", email: "", educationQualification: "", preferredCampus: defaultCampus || "", course: "", academicYear: "" });
         onSuccess?.();
+      } else if (res.status === 422 && data.suggested?.length > 0) {
+        setMessage({ type: "error", text: data.error });
+        setSuggestions(data.suggested);
       } else {
         setMessage({ type: "error", text: data.error || "Something went wrong." });
       }
@@ -73,6 +79,26 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
           {message && (
             <div className={`p-3 rounded-lg text-sm ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
               {message.text}
+            </div>
+          )}
+
+          {suggestions && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <p className="text-xs font-semibold text-amber-800 mb-1.5">Suggested courses:</p>
+              <ul className="space-y-1">
+                {suggestions.map(s => (
+                  <li key={s.id}>
+                    <button
+                      type="button"
+                      onClick={() => { setForm(f => ({ ...f, course: s.id })); setSuggestions(null); setMessage(null); }}
+                      className="text-xs text-amber-700 hover:text-amber-900 hover:underline text-left"
+                    >
+                      {s.name} <span className="text-amber-500">(min: {s.minGrade})</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-amber-600 mt-1">Click a course to select it, then re-submit.</p>
             </div>
           )}
 
