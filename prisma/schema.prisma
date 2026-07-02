@@ -96,7 +96,8 @@ model Verification {
 model FeeStructure {
   id        String   @id @default(cuid())
   name      String   // display name, e.g. "Diploma Fee Structure 2026"
-  url       String   // PDF file URL
+  url       String?  // PDF file URL (legacy — kept for backward compat)
+  pdfData   Bytes?   // PDF stored directly in DB
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -108,6 +109,7 @@ model FeeStructure {
 model Course {
   id             String       @id @default(cuid())
   name           String       @unique
+  department     String?      // e.g. "ICT", "Business", "Hospitality"
   minGrade       String       // minimum education qualification required, e.g. "C+"
   feeStructureId String?
   feeStructure   FeeStructure? @relation(fields: [feeStructureId], references: [id], onDelete: SetNull)

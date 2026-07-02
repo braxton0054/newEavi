@@ -27,14 +27,14 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, minGrade, feeStructureId } = body;
+    const { name, department, minGrade, feeStructureId } = body;
 
     if (!name || !minGrade) {
       return NextResponse.json({ error: "Name and min grade are required" }, { status: 400 });
     }
 
     const course = await prisma.course.create({
-      data: { name, minGrade, feeStructureId: feeStructureId || null },
+      data: { name, department: department || null, minGrade, feeStructureId: feeStructureId || null },
       include: { feeStructure: true },
     });
 
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, name, minGrade, feeStructureId } = body;
+    const { id, name, department, minGrade, feeStructureId } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing course id" }, { status: 400 });
@@ -74,6 +74,7 @@ export async function PUT(req: NextRequest) {
       where: { id },
       data: {
         name: name !== undefined ? name : undefined,
+        department: department !== undefined ? department : undefined,
         minGrade: minGrade !== undefined ? minGrade : undefined,
         feeStructureId: feeStructureId !== undefined ? feeStructureId : undefined,
       },

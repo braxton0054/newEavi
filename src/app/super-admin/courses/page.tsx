@@ -5,12 +5,14 @@ import { useState, useEffect } from "react";
 interface FeeStructure {
   id: string;
   name: string;
-  url: string;
+  url: string | null;
+  pdfData: string | null;
 }
 
 interface Course {
   id: string;
   name: string;
+  department: string | null;
   minGrade: string;
   feeStructureId: string | null;
   feeStructure: FeeStructure | null;
@@ -22,6 +24,9 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
+  const [department, setDepartment] = useState("");
+  const [departmentCustom, setDepartmentCustom] = useState(false);
+  const [newDepartment, setNewDepartment] = useState("");
   const [minGrade, setMinGrade] = useState("");
   const [feeStructureId, setFeeStructureId] = useState("");
   const [uploadNewFee, setUploadNewFee] = useState(false);
@@ -30,6 +35,9 @@ export default function CoursesPage() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [editDepartment, setEditDepartment] = useState("");
+  const [editDepartmentCustom, setEditDepartmentCustom] = useState(false);
+  const [editNewDepartment, setEditNewDepartment] = useState("");
   const [editMinGrade, setEditMinGrade] = useState("");
   const [editFeeStructureId, setEditFeeStructureId] = useState("");
   const [editUploadNewFee, setEditUploadNewFee] = useState(false);
@@ -56,15 +64,28 @@ export default function CoursesPage() {
   }
 
   async function uploadPdf(file: File): Promise<string | null> {
-    const fd = new FormData();
-    fd.append("file", file);
-    const r = await fetch("/api/upload", { method: "POST", body: fd });
-    const d = await r.json();
-    return r.ok ? d.data.url : null;
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const feeName = file.name.replace(/\.pdf$/i, "");
+    const res = await fetch("/api/fee-structures", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: feeName, pdfData: base64 }),
+    });
+    const d = await res.json();
+    if (res.ok) {
+      await fetchFeeStructures();
+      return d.data.id;
+    }
+    return null;
   }
 
   function resetForm() {
-    setName(""); setMinGrade("");
+    setName(""); setDepartment(""); setDepartmentCustom(false); setNewDepartment(""); setMinGrade("");
     setFeeStructureId(""); setUploadNewFee(false);
     setNewFeeFile(null);
   }
@@ -76,22 +97,15 @@ export default function CoursesPage() {
     try {
       let fsId = feeStructureId || null;
       if (uploadNewFee && newFeeFile) {
-        const url = await uploadPdf(newFeeFile);
-        if (!url) { alert("Failed to upload fee PDF"); return; }
-        const feeName = newFeeFile.name.replace(/\.pdf$/i, "");
-        const res = await fetch("/api/fee-structures", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: feeName, url }),
-        });
-        const d = await res.json();
-        if (res.ok) fsId = d.data.id;
-        else { alert(d.error || "Failed"); return; }
+        const id = await uploadPdf(newFeeFile);
+        if (!id) { alert("Failed to upload fee PDF"); return; }
+        fsId = id;
       }
+      const deptVal = departmentCustom ? newDepartment : department;
       const res = await fetch("/api/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, minGrade, feeStructureId: fsId }),
+        body: JSON.stringify({ name, department: deptVal || null, minGrade, feeStructureId: fsId }),
       });
       if (res.ok) { resetForm(); fetchCourses(); fetchFeeStructures(); }
       else { const d = await res.json(); alert(d.error || "Failed"); }
@@ -102,6 +116,9 @@ export default function CoursesPage() {
   function startEdit(course: Course) {
     setEditingId(course.id);
     setEditName(course.name);
+    setEditDepartment(course.department || "");
+    setEditDepartmentCustom(false);
+    setEditNewDepartment("");
     setEditMinGrade(course.minGrade);
     setEditFeeStructureId(course.feeStructureId || "");
     setEditUploadNewFee(false);
@@ -116,22 +133,15 @@ export default function CoursesPage() {
     try {
       let fsId = editFeeStructureId || null;
       if (editUploadNewFee && editNewFeeFile) {
-        const url = await uploadPdf(editNewFeeFile);
-        if (!url) { alert("Failed to upload fee PDF"); return; }
-        const feeName = editNewFeeFile.name.replace(/\.pdf$/i, "");
-        const res = await fetch("/api/fee-structures", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: feeName, url }),
-        });
-        const d = await res.json();
-        if (res.ok) fsId = d.data.id;
-        else { alert(d.error || "Failed"); return; }
+        const id = await uploadPdf(editNewFeeFile);
+        if (!id) { alert("Failed to upload fee PDF"); return; }
+        fsId = id;
       }
+      const deptVal = editDepartmentCustom ? editNewDepartment : editDepartment;
       const res = await fetch("/api/courses", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, name: editName, minGrade: editMinGrade, feeStructureId: fsId }),
+        body: JSON.stringify({ id, name: editName, department: deptVal || null, minGrade: editMinGrade, feeStructureId: fsId }),
       });
       if (res.ok) { cancelEdit(); fetchCourses(); fetchFeeStructures(); }
       else { const d = await res.json(); alert(d.error || "Failed"); }
@@ -151,12 +161,12 @@ export default function CoursesPage() {
   }) {
     return (
       <div>
-        <label className="block text-[11px] font-medium text-zinc-500 mb-1">Fee structure</label>
+        <label className="block text-[11px] font-medium text-zinc-500 mb-1">Fee structure {feeStructures.length > 0 ? `(${feeStructures.length})` : ""}</label>
         {!showUpload ? (
           <div className="flex gap-2">
             <select value={value} onChange={e => onChange(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
               <option value="">None</option>
-              {feeStructures.map(fs => (
+              {feeStructures.length > 0 && feeStructures.map(fs => (
                 <option key={fs.id} value={fs.id}>{fs.name}</option>
               ))}
             </select>
@@ -171,6 +181,8 @@ export default function CoursesPage() {
       </div>
     );
   }
+
+  const depts = [...new Set(courses.map(c => c.department).filter(Boolean) as string[])].sort();
 
   if (loading) return (
     <div className="flex items-center justify-center py-12">
@@ -199,6 +211,25 @@ export default function CoursesPage() {
               <input value={name} onChange={e => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. Diploma in ICT" />
             </div>
             <div>
+              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Department</label>
+              {!departmentCustom ? (
+                <div className="flex gap-2">
+                  <select value={department} onChange={e => { const val = e.target.value; if (val === "__new__") { setDepartmentCustom(true); setDepartment(""); } else { setDepartment(val); } }} className="flex-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                    <option value="">Select department</option>
+                    {depts.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                    <option value="__new__">+ Add new department</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input value={newDepartment} onChange={e => setNewDepartment(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="New department name" autoFocus />
+                  <button type="button" onClick={() => setDepartmentCustom(false)} className="text-[11px] text-zinc-500 hover:underline whitespace-nowrap">Cancel</button>
+                </div>
+              )}
+            </div>
+            <div>
               <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min education qualification *</label>
               <input value={minGrade} onChange={e => setMinGrade(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. C+" />
             </div>
@@ -219,59 +250,93 @@ export default function CoursesPage() {
             <p className="text-sm text-gray-500">No courses added yet</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {courses.map(course => (
-              <div key={course.id} className="bg-white border border-zinc-200 rounded-xl">
-                {editingId === course.id ? (
-                  <div className="p-5">
-                    <h3 className="text-sm font-medium text-zinc-900 mb-3">Edit course</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-[11px] font-medium text-zinc-500 mb-1">Course name</label>
-                        <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min education qualification</label>
-                        <input value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
-                      </div>
-                      <FeeSelector
-                        value={editFeeStructureId} onChange={setEditFeeStructureId}
-                        showUpload={editUploadNewFee} setShowUpload={setEditUploadNewFee}
-                        newFile={editNewFeeFile} setNewFile={setEditNewFeeFile}
-                      />
+          <div className="space-y-6">
+            {Array.from(
+              courses.reduce((map, c) => {
+                const dept = c.department || "Other";
+                if (!map.has(dept)) map.set(dept, []);
+                map.get(dept)!.push(c);
+                return map;
+              }, new Map<string, typeof courses>()),
+              ([dept, deptCourses]) => ({ dept, courses: deptCourses })
+            ).sort((a, b) => a.dept.localeCompare(b.dept)).map(group => (
+              <div key={group.dept}>
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2 px-1">{group.dept} ({group.courses.length})</h3>
+                <div className="space-y-2">
+                  {group.courses.map(course => (
+                    <div key={course.id} className="bg-white border border-zinc-200 rounded-xl">
+                      {editingId === course.id ? (
+                        <div className="p-5">
+                          <h3 className="text-sm font-medium text-zinc-900 mb-3">Edit course</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Course name</label>
+                              <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Department</label>
+                              {!editDepartmentCustom ? (
+                                <div className="flex gap-2">
+                                  <select value={editDepartment} onChange={e => { const val = e.target.value; if (val === "__new__") { setEditDepartmentCustom(true); setEditDepartment(""); } else { setEditDepartment(val); } }} className="flex-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                                    <option value="">Select department</option>
+                                    {depts.map(d => (
+                                      <option key={d} value={d}>{d}</option>
+                                    ))}
+                                    <option value="__new__">+ Add new department</option>
+                                  </select>
+                                </div>
+                              ) : (
+                                <div className="flex gap-2">
+                                  <input value={editNewDepartment} onChange={e => setEditNewDepartment(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="New department name" autoFocus />
+                                  <button type="button" onClick={() => setEditDepartmentCustom(false)} className="text-[11px] text-zinc-500 hover:underline whitespace-nowrap">Cancel</button>
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min education qualification</label>
+                              <input value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                            </div>
+                            <FeeSelector
+                              value={editFeeStructureId} onChange={setEditFeeStructureId}
+                              showUpload={editUploadNewFee} setShowUpload={setEditUploadNewFee}
+                              newFile={editNewFeeFile} setNewFile={setEditNewFeeFile}
+                            />
+                          </div>
+                          <div className="flex gap-2 mt-4">
+                            <button onClick={() => handleEditSave(course.id)} disabled={saving} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
+                              {saving ? "Saving..." : "Save"}
+                            </button>
+                            <button onClick={cancelEdit} className="px-3.5 py-1.5 rounded-lg bg-zinc-100 text-zinc-700 text-sm font-medium hover:bg-zinc-200 transition-colors">
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-4 sm:p-5">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <h3 className="text-sm font-medium text-zinc-900">{course.name}</h3>
+                              <p className="text-xs text-zinc-500 mt-0.5">
+                                Min: <span className="font-medium text-zinc-700">{course.minGrade}</span>
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {course.feeStructure && (
+                                <a href={course.feeStructure.pdfData ? `/api/fee-structures/${course.feeStructure.id}` : (course.feeStructure.url || "#")} target="_blank" className="text-[11px] text-blue-700 hover:underline font-medium">{course.feeStructure.name}</a>
+                              )}
+                              <button onClick={() => startEdit(course)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Edit">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                              </button>
+                              <button onClick={() => handleDelete(course.id)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Delete">
+                                <svg className="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex gap-2 mt-4">
-                      <button onClick={() => handleEditSave(course.id)} disabled={saving} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg px-3.5 py-1.5 transition-colors disabled:opacity-50">
-                        {saving ? "Saving..." : "Save"}
-                      </button>
-                      <button onClick={cancelEdit} className="px-3.5 py-1.5 rounded-lg bg-zinc-100 text-zinc-700 text-sm font-medium hover:bg-zinc-200 transition-colors">
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-4 sm:p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h3 className="text-sm font-medium text-zinc-900">{course.name}</h3>
-                        <p className="text-xs text-zinc-500 mt-0.5">
-                          Min: <span className="font-medium text-zinc-700">{course.minGrade}</span>
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {course.feeStructure && (
-                          <a href={course.feeStructure.url} target="_blank" className="text-[11px] text-blue-700 hover:underline font-medium">{course.feeStructure.name}</a>
-                        )}
-                        <button onClick={() => startEdit(course)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Edit">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        </button>
-                        <button onClick={() => handleDelete(course.id)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Delete">
-                          <svg className="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
             ))}
           </div>

@@ -80,14 +80,10 @@ export async function sendApprovalNotifications(
 
     // 4. Find course for fee structure PDF
     const courseName = application.course || "";
-    let feePdfUrl = "";
     const courseRecord = await prisma.course.findFirst({
       where: { name: courseName },
       include: { feeStructure: true },
     });
-    if (courseRecord?.feeStructure?.url) {
-      feePdfUrl = courseRecord.feeStructure.url;
-    }
 
     // 6. Get bursary form PDF
     let bursaryPdfBuffer: Buffer | null = null;
@@ -139,23 +135,10 @@ export async function sendApprovalNotifications(
       }
     }
 
-    // 8. Download fee structure PDF from URL (SSRF guard — only allow same-origin)
+    // 8. Get fee structure PDF from DB
     let feePdfBuffer: Buffer | null = null;
-    if (feePdfUrl) {
-      try {
-        const allowedOrigin = process.env.NEXTAUTH_URL || "http://localhost:4000";
-        const parsed = new URL(feePdfUrl);
-        if (parsed.origin !== new URL(allowedOrigin).origin) {
-          result.errors.push(`Fee structure PDF URL rejected: not same-origin`);
-        } else {
-          const resp = await fetch(feePdfUrl);
-          if (resp.ok) {
-            feePdfBuffer = Buffer.from(await resp.arrayBuffer());
-          }
-        }
-      } catch (err) {
-        result.errors.push(`Fee structure download failed: ${(err as Error).message}`);
-      }
+    if (courseRecord?.feeStructure?.pdfData) {
+      feePdfBuffer = Buffer.from(courseRecord.feeStructure.pdfData);
     }
 
     // 9. Ensure WhatsApp sessions are restored, then check availability
