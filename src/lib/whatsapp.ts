@@ -53,6 +53,7 @@ interface WaEntry {
 
 const sockets = new Map<string, WaEntry>();
 let reconnectTimers = new Map<string, ReturnType<typeof setTimeout>>();
+let keepaliveTimer: ReturnType<typeof setInterval> | null = null;
 
 // ─── Phone normalization ───
 
@@ -146,6 +147,17 @@ async function doConnect(campus: string): Promise<string | null> {
     });
 
     entry.sock = sock;
+
+    // Catch silent WebSocket death that Baileys doesn't report as close
+    if ((sock as any).ws) {
+      (sock as any).ws.on("close", () => {
+        if (entry.ready) {
+          console.log(`[WA] WebSocket closed silently for ${campus}, reconnecting...`);
+          entry.ready = false;
+          doConnect(campus);
+        }
+      });
+    }
 
     // Wait for QR or open — resolve within 30s
     const qrPromise = new Promise<string | null>((resolve) => {
@@ -314,6 +326,20 @@ export async function disconnect(campus: string) {
   });
 }
 
+// ─── Keepalive — checks every 60s, reconnects stale sockets ───
+
+function startKeepalive() {
+  if (keepaliveTimer) return;
+  keepaliveTimer = setInterval(async () => {
+    for (const [campus, entry] of sockets) {
+      if (!entry.ready || !entry.sock?.ws) {
+        console.log(`[WA] Keepalive: ${campus} stale, reconnecting...`);
+        await doConnect(campus);
+      }
+    }
+  }, 60_000);
+}
+
 // ─── Initialize all campuses ───
 
 export async function ensureReady(): Promise<void> {
@@ -332,4 +358,6 @@ export async function ensureReady(): Promise<void> {
     }
     await doConnect(campus);
   }
+
+  startKeepalive();
 }
