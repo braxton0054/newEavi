@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { EDUCATION_QUALIFICATIONS } from "@/lib/education-qualifications";
 
 interface FeeStructure {
   id: string;
@@ -230,8 +231,13 @@ export default function CoursesPage() {
               )}
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min education qualification *</label>
-              <input value={minGrade} onChange={e => setMinGrade(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. C+" />
+              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Minimum Grade *</label>
+              <select value={minGrade} onChange={e => setMinGrade(e.target.value)} required className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                <option value="">Select grade</option>
+                {EDUCATION_QUALIFICATIONS.map(g => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
             </div>
             <FeeSelector
               value={feeStructureId} onChange={setFeeStructureId}
@@ -293,8 +299,13 @@ export default function CoursesPage() {
                               )}
                             </div>
                             <div>
-                              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Min education qualification</label>
-                              <input value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                              <label className="block text-[11px] font-medium text-zinc-500 mb-1">Minimum Grade</label>
+                              <select value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                                <option value="">Select grade</option>
+                                {EDUCATION_QUALIFICATIONS.map(g => (
+                                  <option key={g} value={g}>{g}</option>
+                                ))}
+                              </select>
                             </div>
                             <FeeSelector
                               value={editFeeStructureId} onChange={setEditFeeStructureId}
@@ -317,12 +328,12 @@ export default function CoursesPage() {
                             <div>
                               <h3 className="text-sm font-medium text-zinc-900">{course.name}</h3>
                               <p className="text-xs text-zinc-500 mt-0.5">
-                                Min: <span className="font-medium text-zinc-700">{course.minGrade}</span>
+                                Min Grade: <span className="font-medium text-zinc-700">{course.minGrade}</span>
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
                               {course.feeStructure && (
-                                <a href={course.feeStructure.pdfData ? `/api/fee-structures/${course.feeStructure.id}` : (course.feeStructure.url || "#")} target="_blank" className="text-[11px] text-blue-700 hover:underline font-medium">{course.feeStructure.name}</a>
+                                <a href={`/api/fee-structures/${course.feeStructure.id}`} target="_blank" className="text-[11px] text-blue-700 hover:underline font-medium">{course.feeStructure.name}</a>
                               )}
                               <button onClick={() => startEdit(course)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Edit">
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>

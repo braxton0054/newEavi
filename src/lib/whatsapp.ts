@@ -12,7 +12,11 @@ import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/encryption";
 
 const logger = pino({ level: "warn" });
-const RECONNECT_DELAY = 5000;
+
+const BASE_RECONNECT_DELAY = 5000;
+const MAX_RECONNECT_DELAY = 30000;
+const MAX_RECONNECT_ATTEMPTS = 10;
+const AUTO_RECOVER_DELAY = 300_000; // 5 min before allowing auto-reconnect after connectionReplaced/maxAttempts
 
 // ─── Helper — in-memory signal key store ───
 
@@ -49,6 +53,10 @@ interface WaEntry {
   ready: boolean;
   campus: string;
   keyData: Record<string, any>;
+  reconnectAttempts: number;
+  autoReconnectDisabled: boolean;
+  disabledAt: number | null;
+  gen: number; // generation counter to avoid stale socket handler races
 }
 
 const sockets = new Map<string, WaEntry>();
@@ -107,7 +115,6 @@ async function restoreSession(campus: string): Promise<{ creds?: any; keyData?: 
 // ─── Connect ───
 
 async function doConnect(campus: string): Promise<string | null> {
-  // Clean up existing
   const existing = sockets.get(campus);
   if (existing?.sock) {
     try { existing.sock.end(new Error("Reconnect")); } catch {}
@@ -116,7 +123,17 @@ async function doConnect(campus: string): Promise<string | null> {
   if (existingTimer) { clearTimeout(existingTimer); reconnectTimers.delete(campus); }
 
   const keyData: Record<string, any> = {};
-  const entry: WaEntry = { sock: null, ready: false, campus, keyData };
+  const existingEntry = sockets.get(campus);
+  const entry: WaEntry = {
+    sock: null,
+    ready: false,
+    campus,
+    keyData,
+    reconnectAttempts: existingEntry?.reconnectAttempts ?? 0,
+    autoReconnectDisabled: false,
+    disabledAt: null,
+    gen: (existingEntry?.gen ?? 0) + 1,
+  };
   sockets.set(campus, entry);
 
   try {
@@ -151,6 +168,7 @@ async function doConnect(campus: string): Promise<string | null> {
     // Catch silent WebSocket death that Baileys doesn't report as close
     if ((sock as any).ws) {
       (sock as any).ws.on("close", () => {
+        if (entry.gen !== sockets.get(campus)?.gen) return;
         if (entry.ready) {
           console.log(`[WA] WebSocket closed silently for ${campus}, reconnecting...`);
           entry.ready = false;
@@ -161,16 +179,25 @@ async function doConnect(campus: string): Promise<string | null> {
 
     // Wait for QR or open — resolve within 30s
     const qrPromise = new Promise<string | null>((resolve) => {
-      const timeout = setTimeout(() => {
+      const timeout = setTimeout(async () => {
         console.log(`[WA] Timeout waiting for QR/open on ${campus}`);
+        // Clean up stale waiting_qr status
+        await prisma.whatsAppSession.upsert({
+          where: { campus: campus as any },
+          create: { campus: campus as any, status: "disconnected" },
+          update: { status: "disconnected", qrCode: null },
+        });
         resolve(null);
       }, 30000);
 
       sock.ev.on("creds.update", async () => {
+        if (entry.gen !== sockets.get(campus)?.gen) return;
         await persistSession(campus);
       });
 
       sock.ev.on("connection.update", async (update: any) => {
+        // Ignore stale events from older socket instances
+        if (entry.gen !== sockets.get(campus)?.gen) return;
         console.log(`[WA] connection.update for ${campus}:`, update.connection, update.qr ? 'QR present' : 'no qr');
         const { connection, lastDisconnect, qr } = update;
 
@@ -187,13 +214,18 @@ async function doConnect(campus: string): Promise<string | null> {
 
         if (connection === "open") {
           entry.ready = true;
+          entry.reconnectAttempts = 0;
+          entry.autoReconnectDisabled = false;
           sockets.set(campus, entry);
+          // Extract phone number from Baileys creds (e.g. "254712345678.0:1234@s.whatsapp.net")
+          const meId: string = sock?.authState?.creds?.me?.id || "";
+          const phoneNumber = meId ? meId.split(":")[0].split("@")[0] || null : null;
           await prisma.whatsAppSession.upsert({
             where: { campus: campus as any },
-            create: { campus: campus as any, status: "connected", qrCode: null },
-            update: { status: "connected", qrCode: null, lastActive: new Date() },
+            create: { campus: campus as any, status: "connected", qrCode: null, phoneNumber },
+            update: { status: "connected", qrCode: null, lastActive: new Date(), phoneNumber },
           });
-          console.log(`[WA] READY for ${campus}`);
+          console.log(`[WA] READY for ${campus}${phoneNumber ? ` — ${phoneNumber}` : ""}`);
           await persistSession(campus);
           clearTimeout(timeout);
           resolve(null);
@@ -201,23 +233,77 @@ async function doConnect(campus: string): Promise<string | null> {
 
         if (connection === "close") {
           entry.ready = false;
+          clearTimeout(timeout);
+          resolve(null);
+
           const isLoggedOut =
             lastDisconnect?.error instanceof Boom &&
             lastDisconnect.error.output.statusCode === DisconnectReason.loggedOut;
 
           if (isLoggedOut) {
+            console.log(`[WA] ${campus} logged out — clearing session`);
             await prisma.whatsAppSession.upsert({
               where: { campus: campus as any },
               create: { campus: campus as any, status: "disconnected", sessionData: null },
               update: { status: "disconnected", sessionData: null, qrCode: null },
             });
             sockets.delete(campus);
-          } else {
-            const timer = setTimeout(() => doConnect(campus).catch(() => {}), RECONNECT_DELAY);
-            reconnectTimers.set(campus, timer);
+            return;
           }
-          clearTimeout(timeout);
-          resolve(null);
+
+          const statusCode = lastDisconnect?.error instanceof Boom
+            ? lastDisconnect.error.output.statusCode
+            : undefined;
+
+          // restartRequired — Baileys asks for a fresh connection (protocol upgrade etc)
+          if (statusCode === DisconnectReason.restartRequired) {
+            console.log(`[WA] ${campus} restart required — reconnecting immediately`);
+            entry.reconnectAttempts = 0;
+            await prisma.whatsAppSession.upsert({
+              where: { campus: campus as any },
+              create: { campus: campus as any, status: "reconnecting" },
+              update: { status: "reconnecting" },
+            });
+            const timer = setTimeout(() => doConnect(campus).catch(() => {}), 1000);
+            reconnectTimers.set(campus, timer);
+            return;
+          }
+
+          // connectionReplaced — another process logged in with same creds
+          if (statusCode === DisconnectReason.connectionReplaced) {
+            console.log(`[WA] ${campus} connection REPLACED — will auto-retry after cooldown`);
+            entry.autoReconnectDisabled = true;
+            entry.disabledAt = Date.now();
+            await prisma.whatsAppSession.upsert({
+              where: { campus: campus as any },
+              create: { campus: campus as any, status: "disconnected", sessionData: null },
+              update: { status: "disconnected", qrCode: null },
+            });
+            return;
+          }
+
+          // Exponential backoff for generic errors
+          entry.reconnectAttempts += 1;
+
+          if (entry.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
+            console.log(`[WA] ${campus} exceeded ${MAX_RECONNECT_ATTEMPTS} reconnect attempts — will auto-retry after cooldown`);
+            entry.autoReconnectDisabled = true;
+            entry.disabledAt = Date.now();
+            await prisma.whatsAppSession.upsert({
+              where: { campus: campus as any },
+              create: { campus: campus as any, status: "error" },
+              update: { status: "error", qrCode: null },
+            });
+            return;
+          }
+
+          const delay = Math.min(
+            BASE_RECONNECT_DELAY * Math.pow(2, entry.reconnectAttempts - 1),
+            MAX_RECONNECT_DELAY
+          );
+          console.log(`[WA] ${campus} closed (reason: ${statusCode ?? "unknown"}), reconnecting in ${delay / 1000}s (attempt ${entry.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+          const timer = setTimeout(() => doConnect(campus).catch(() => {}), delay);
+          reconnectTimers.set(campus, timer);
         }
       });
     });
@@ -248,6 +334,7 @@ export async function getStatus(campus: string) {
     hasQr: !!dbSession?.qrCode,
     qr: dbSession?.qrDataUrl || dbSession?.qrCode || null,
     status: connecting ? "connecting" : dbSession?.status || "disconnected",
+    phoneNumber: dbSession?.phoneNumber || null,
   };
 }
 
@@ -308,6 +395,12 @@ export async function sendText(
 }
 
 export async function connect(campus: string): Promise<string | null> {
+  const entry = sockets.get(campus);
+  if (entry) {
+    entry.reconnectAttempts = 0;
+    entry.autoReconnectDisabled = false;
+    entry.disabledAt = null;
+  }
   return doConnect(campus);
 }
 
@@ -321,8 +414,8 @@ export async function disconnect(campus: string) {
   sockets.delete(campus);
   await prisma.whatsAppSession.upsert({
     where: { campus: campus as any },
-    create: { campus: campus as any, status: "disconnected" },
-    update: { status: "disconnected", qrCode: null },
+    create: { campus: campus as any, status: "disconnected", sessionData: null, qrCode: null },
+    update: { status: "disconnected", sessionData: null, qrCode: null, phoneNumber: null },
   });
 }
 
@@ -332,6 +425,17 @@ function startKeepalive() {
   if (keepaliveTimer) return;
   keepaliveTimer = setInterval(async () => {
     for (const [campus, entry] of sockets) {
+      // Auto-recover after cooldown if disabled
+      if (entry.autoReconnectDisabled) {
+        if (entry.disabledAt && Date.now() - entry.disabledAt >= AUTO_RECOVER_DELAY) {
+          console.log(`[WA] Keepalive: ${campus} cooldown passed, attempting auto-recovery...`);
+          entry.autoReconnectDisabled = false;
+          entry.disabledAt = null;
+          entry.reconnectAttempts = 0;
+          await doConnect(campus);
+        }
+        continue;
+      }
       if (!entry.ready || !entry.sock?.ws) {
         console.log(`[WA] Keepalive: ${campus} stale, reconnecting...`);
         await doConnect(campus);

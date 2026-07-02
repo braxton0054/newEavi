@@ -26,8 +26,8 @@ export default function AdmissionsSettingsPage() {
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-1">Admission Number Format</label>
-                <input type="text" value={f.admissionFormat} onChange={e => setField(campus, "admissionFormat", e.target.value)} placeholder={`EAVI/${campus}/2026/`} className="w-full rounded-lg border border-zinc-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
-                <p className="text-xs text-zinc-400 mt-1">Prefix before auto-increment number. e.g. EAVI/{campus}/2026/</p>
+                <input type="text" value={f.admissionFormat} onChange={e => setField(campus, "admissionFormat", e.target.value)} placeholder={`EAVI/${campus}/${new Date().getFullYear()}/`} className="w-full rounded-lg border border-zinc-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                <p className="text-xs text-zinc-400 mt-1">Prefix before auto-increment number. e.g. EAVI/{campus}/{new Date().getFullYear()}/</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-1">Starting Number</label>

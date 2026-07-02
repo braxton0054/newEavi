@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { firstName, middleName, lastName, gender, phone, email, educationQualification, preferredCampus, course, academicYear } = body;
+    const { firstName, middleName, lastName, gender, phone, email, educationQualification, preferredCampus, course } = body;
 
-    if (!firstName || !lastName || !phone || !preferredCampus || !course || !academicYear) {
+    if (!firstName || !lastName || !phone || !preferredCampus || !course) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -79,7 +79,6 @@ export async function POST(req: NextRequest) {
         applications: {
           create: {
             course: courseName,
-            academicYear,
             status: "APPROVED",
           },
         },

@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Build admission number from campus format and increment
-    const format = campusSetting?.admissionFormat || `EAVI/${student.preferredCampus}/2026/`;
+    const format = campusSetting?.admissionFormat || `EAVI/${student.preferredCampus}/${new Date().getFullYear()}/`;
     const lastNum = campusSetting?.lastAdmissionNumber || 0;
     const nextNum = lastNum + 1;
     const admissionNumber = `${format}${String(nextNum).padStart(4, "0")}`;
@@ -68,15 +68,18 @@ export async function GET(req: NextRequest) {
       data: { lastAdmissionNumber: nextNum },
     });
 
-    // Get reporting date from campus settings
+    // Get next reporting date from campus settings
     const reportingDates = (campusSetting?.reportingDates as any[]) || [];
-    const reportDate = reportingDates.length > 0
-      ? (reportingDates[0]?.start || reportingDates[0] || "To be communicated")
+    const now = new Date();
+    const nextReporting = reportingDates
+      .filter(d => d.startDate && new Date(d.startDate) > now)
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+    const reportDate = nextReporting
+      ? `${new Date(nextReporting.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
       : "To be communicated";
 
     const application = student.applications[0];
     const courseName = application?.course || "N/A";
-    const academicYear = application?.academicYear || "2026-2027";
 
     const studentName = [student.firstName, student.middleName, student.lastName]
       .filter(Boolean)
@@ -100,7 +103,6 @@ export async function GET(req: NextRequest) {
       admissionNumber,
       reportDate: typeof reportDate === "string" ? reportDate : String(reportDate),
       campus: campusName,
-      academicYear,
       educationQualification: student.educationQualification || "",
       studentPhone: student.phone || "",
       studentEmail: student.email || "",

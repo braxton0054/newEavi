@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { fillAdmissionPdf } from "@/lib/admission-pdf";
 import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
-import { getClient, sendDocument, sendText, checkNumber, ensureReady } from "@/lib/whatsapp";
+import { getClient, sendDocument, sendText, checkNumber } from "@/lib/whatsapp";
 
 interface NotifyResult {
   whatsapp: boolean;
@@ -102,12 +102,15 @@ export async function sendApprovalNotifications(
           data: { lastAdmissionNumber: { increment: 1 } },
         });
         const nextNum = incremented.lastAdmissionNumber;
-        admissionNumber = `${campusSetting?.admissionFormat || `EAVI/${campus}/2026/`}${String(nextNum).padStart(4, "0")}`;
+        admissionNumber = `${campusSetting?.admissionFormat || `EAVI/${campus}/${new Date().getFullYear()}/`}${String(nextNum).padStart(4, "0")}`;
         const reportingDates = (campusSetting?.reportingDates as any[]) || [];
-        const reportDate =
-          reportingDates.length > 0
-            ? reportingDates[0]?.start || reportingDates[0] || "To be communicated"
-            : "To be communicated";
+        const now = new Date();
+        const nextReporting = reportingDates
+          .filter((d: any) => d.startDate && new Date(d.startDate) > now)
+          .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+        const reportDate = nextReporting
+          ? `${new Date(nextReporting.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
+          : "To be communicated";
 
         const currentDate = new Date().toLocaleDateString("en-GB", {
           day: "numeric",
@@ -122,9 +125,8 @@ export async function sendApprovalNotifications(
           courseType: "",
           courseName: courseName,
           admissionNumber,
-          reportDate: typeof reportDate === "string" ? reportDate : String(reportDate),
+          reportDate,
           campus: campusName,
-          academicYear: application.academicYear,
           educationQualification: student.educationQualification || "",
           studentPhone: student.phone || "",
           studentEmail: student.email || "",
@@ -141,8 +143,7 @@ export async function sendApprovalNotifications(
       feePdfBuffer = Buffer.from(courseRecord.feeStructure.pdfData);
     }
 
-    // 9. Ensure WhatsApp sessions are restored, then check availability
-    await ensureReady();
+    // 9. Check WhatsApp availability — do NOT force session restore, just use existing connection
     const sock = getClient(campus);
     if (!sock) {
       result.errors.push(`WhatsApp not connected for campus ${campus}`);

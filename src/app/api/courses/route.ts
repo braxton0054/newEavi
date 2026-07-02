@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const courses = await prisma.course.findMany({
       orderBy: { name: "asc" },
-      include: { feeStructure: true },
+      include: { feeStructure: { select: { id: true, name: true, url: true } } },
     });
     return NextResponse.json({ data: courses }, { status: 200 });
   } catch (error) {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     const course = await prisma.course.create({
       data: { name, department: department || null, minGrade, feeStructureId: feeStructureId || null },
-      include: { feeStructure: true },
+      include: { feeStructure: { select: { id: true, name: true, url: true } } },
     });
 
     return NextResponse.json({ data: course }, { status: 201 });
@@ -78,7 +78,7 @@ export async function PUT(req: NextRequest) {
         minGrade: minGrade !== undefined ? minGrade : undefined,
         feeStructureId: feeStructureId !== undefined ? feeStructureId : undefined,
       },
-      include: { feeStructure: true },
+      include: { feeStructure: { select: { id: true, name: true, url: true } } },
     });
 
     return NextResponse.json({ data: course }, { status: 200 });

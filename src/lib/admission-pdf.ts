@@ -14,7 +14,6 @@ export interface AdmissionPdfFields {
   admissionNumber: string;
   reportDate: string;
   campus?: string;
-  academicYear?: string;
   educationQualification?: string;
   studentPhone?: string;
   studentEmail?: string;
@@ -31,7 +30,6 @@ export interface AdmissionPdfFields {
  * - admission_number
  * - report_date
  * - campus (optional)
- * - academic_year (optional)
  * - education_qualification (optional)
  * - student_phone (optional)
  * - student_email (optional)
@@ -84,7 +82,6 @@ export async function fillAdmissionPdf(
   fillFirstField("report_date", fields.reportDate);
 
   if (fields.campus) fillFirstField("campus", fields.campus);
-  if (fields.academicYear) fillFirstField("academic_year", fields.academicYear);
   if (fields.educationQualification) fillFirstField("education_qualification", fields.educationQualification);
   if (fields.studentPhone) fillFirstField("student_phone", fields.studentPhone);
   if (fields.studentEmail) fillFirstField("student_email", fields.studentEmail);

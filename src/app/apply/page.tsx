@@ -10,15 +10,6 @@ interface Course {
   minGrade: string;
 }
 
-function generateAcademicYears(): string[] {
-  const currentYear = new Date().getFullYear();
-  const years: string[] = [];
-  for (let y = currentYear - 1; y <= currentYear + 2; y++) {
-    years.push(`${y}-${y + 1}`);
-  }
-  return years;
-}
-
 export default function ApplyPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [form, setForm] = useState({
@@ -31,7 +22,6 @@ export default function ApplyPage() {
     educationQualification: "",
     preferredCampus: "",
     course: "",
-    academicYear: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -65,7 +55,7 @@ export default function ApplyPage() {
         setMessage({ type: "success", text: "Application submitted successfully! You have been admitted — check your email and WhatsApp for your admission letter." });
         setForm({
           firstName: "", middleName: "", lastName: "", gender: "", phone: "",
-          email: "", educationQualification: "", preferredCampus: "", course: "", academicYear: "",
+          email: "", educationQualification: "", preferredCampus: "", course: "",
         });
       } else if (res.status === 422 && data.suggested?.length > 0) {
         setMessage({ type: "error", text: data.error });
@@ -206,15 +196,6 @@ export default function ApplyPage() {
                 ))}
               </select>
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Academic Year *</label>
-            <select name="academicYear" value={form.academicYear} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none">
-              <option value="">Select year</option>
-              {generateAcademicYears().map(y => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
           </div>
           <button type="submit" disabled={submitting} className="w-full rounded-lg bg-[#2d8a4e] px-4 py-3 font-semibold text-white hover:bg-[#236d3c] disabled:opacity-50 transition-colors shadow-sm">
             {submitting ? "Submitting..." : "Submit Application"}

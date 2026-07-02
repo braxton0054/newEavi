@@ -22,7 +22,6 @@ interface Student {
 interface Application {
   id: string;
   course: string;
-  academicYear: string;
   status: string;
   notes: string | null;
 }
@@ -402,7 +401,6 @@ export default function SuperAdminDashboard() {
                               <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
                               <div>
                                 <span className="text-xs font-medium text-zinc-700">{app.course}</span>
-                                <span className="text-[11px] text-zinc-400 ml-2">{app.academicYear}</span>
                                 {app.notes && <span className="text-[11px] text-zinc-400 ml-2">· {app.notes}</span>}
                               </div>
                             </div>

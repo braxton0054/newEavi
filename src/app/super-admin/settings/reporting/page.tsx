@@ -15,7 +15,7 @@ export default function ReportingSettingsPage() {
       )}
 
       <h1 className="text-base font-medium text-zinc-900 mb-1">Reporting Dates</h1>
-      <p className="text-xs text-zinc-400 mb-5">Set reporting start and end dates for each month — {new Date().getFullYear()}.</p>
+      <p className="text-xs text-zinc-400 mb-5">Set reporting start and end dates for each month — {new Date().getFullYear()}-{new Date().getFullYear() + 1}.</p>
 
       {["MAIN", "WEST"].map(campus => {
         const f = form[campus] || { reportingDates: [] };

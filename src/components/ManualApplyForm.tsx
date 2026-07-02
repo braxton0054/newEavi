@@ -24,7 +24,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
     firstName: "", middleName: "", lastName: "", gender: "",
     phone: "", email: "", educationQualification: "",
     preferredCampus: defaultCampus || "",
-    course: "", academicYear: "",
+    course: "",
   });
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: "success", text: "Application submitted successfully!" });
-        setForm({ firstName: "", middleName: "", lastName: "", gender: "", phone: "", email: "", educationQualification: "", preferredCampus: defaultCampus || "", course: "", academicYear: "" });
+        setForm({ firstName: "", middleName: "", lastName: "", gender: "", phone: "", email: "", educationQualification: "", preferredCampus: defaultCampus || "", course: "" });
         onSuccess?.();
       } else if (res.status === 422 && data.suggested?.length > 0) {
         setMessage({ type: "error", text: data.error });
@@ -173,14 +173,6 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
                     ))}
                   </select>
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Academic Year *</label>
-                <select name="academicYear" value={form.academicYear} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                  <option value="">Select year</option>
-                  <option value="2026-2027">2026-2027</option>
-                  <option value="2027-2028">2027-2028</option>
-                </select>
               </div>
             </div>
           </div>

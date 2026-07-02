@@ -157,7 +157,6 @@ model Application {
   id           String             @id @default(cuid())
   studentId    String
   course       String
-  academicYear String
   status       ApplicationStatus  @default(PENDING)
   reviewedBy   String?
   notes        String?
@@ -184,6 +183,7 @@ model AdmissionPdfTemplate {
 model WhatsAppSession {
   id          String   @id @default(uuid())
   campus      Campus   @unique
+  phoneNumber String?  // connected WhatsApp phone number (e.g. 254712345678)
   sessionData String?  // encrypted JSON { creds, keys }
   qrCode      String?  // raw QR string from Baileys
   qrDataUrl   String?  // data URL for display

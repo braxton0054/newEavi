@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const structures = await prisma.feeStructure.findMany({
       orderBy: { name: "asc" },
-      include: { _count: { select: { courses: true } } },
+      select: { id: true, name: true, url: true, _count: { select: { courses: true } } },
     });
     return NextResponse.json({ data: structures }, { status: 200 });
   } catch (error) {

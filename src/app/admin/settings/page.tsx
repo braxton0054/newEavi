@@ -23,10 +23,13 @@ export default function AdminSettingsPage() {
   const [reportingDates, setReportingDates] = useState<any[]>([]);
   const [bursaryFormPdf, setBursaryFormPdf] = useState<string | null>(null);
   const currentYear = new Date().getFullYear();
+  const academicYear = `${currentYear}-${currentYear + 1}`;
 
   const [waConnected, setWaConnected] = useState(false);
   const [waQr, setWaQr] = useState<string | null>(null);
   const [waConnecting, setWaConnecting] = useState(false);
+  const [waPhoneNumber, setWaPhoneNumber] = useState<string | null>(null);
+  const [waLoading, setWaLoading] = useState(true);
 
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -44,7 +47,7 @@ export default function AdminSettingsPage() {
       if (res.ok && data.user) {
         setUser(data.user);
         await fetchSettings(data.user);
-        await fetchStatus();
+        await fetchStatus(data.user.campus);
       } else { window.location.href = "/login"; }
     } catch { window.location.href = "/login"; } finally { setLoading(false); }
   }
@@ -69,17 +72,20 @@ export default function AdminSettingsPage() {
     } catch (e) { console.error(e); }
   }
 
-  async function fetchStatus() {
-    if (!user) return;
+  async function fetchStatus(campus?: string) {
+    const c = campus || user?.campus;
+    if (!c) { setWaLoading(false); return; }
     try {
-      const res = await fetch(`/api/admin/whatsapp?campus=${user.campus}`);
+      const res = await fetch(`/api/admin/whatsapp?campus=${c}`);
       const data = await res.json();
       if (res.ok) {
         setWaConnected(data.data.connected);
-        if (data.data.hasQr && data.data.qr) setWaQr(data.data.qr);
         if (data.data.connected) { setWaConnecting(false); setWaQr(null); }
+        else if (data.data.hasQr && data.data.qr) setWaQr(data.data.qr);
+        setWaPhoneNumber(data.data.phoneNumber || null);
       }
     } catch {}
+    finally { setWaLoading(false); }
   }
 
   async function handleSave(section: string, body: any) {
@@ -186,8 +192,8 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Admission Number Format</label>
-              <input type="text" value={admissionFormat} onChange={e => setAdmissionFormat(e.target.value)} placeholder={`EAVI/${user?.campus || "CAMPUS"}/2026/`} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-              <p className="text-xs text-gray-400 mt-1">The prefix before the auto-increment number. e.g. EAVI/MAIN/2026/</p>
+              <input type="text" value={admissionFormat} onChange={e => setAdmissionFormat(e.target.value)} placeholder={`EAVI/${user?.campus || "CAMPUS"}/${new Date().getFullYear()}/`} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <p className="text-xs text-gray-400 mt-1">The prefix before the auto-increment number. e.g. EAVI/MAIN/{new Date().getFullYear()}/</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Starting Number</label>
@@ -201,7 +207,7 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Reporting Dates — {currentYear}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Reporting Dates — {academicYear}</h2>
           <p className="text-xs text-gray-400 mb-4">Set the start and end reporting dates for each month.</p>
           <ReportingDatesEditor year={currentYear} dates={reportingDates} onChange={setReportingDates} />
           <button onClick={() => handleSave("Reporting", { email, reportingDates })} disabled={saving === "Reporting"} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
@@ -229,11 +235,15 @@ export default function AdminSettingsPage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">WhatsApp Configuration</h2>
+          {waLoading ? (
+            <p className="text-sm text-gray-400">Checking WhatsApp status...</p>
+          ) : (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className={`inline-block w-3 h-3 rounded-full ${waConnected ? "bg-green-500" : "bg-gray-300"}`} />
               <span className="text-sm font-medium">{waConnected ? "Connected" : "Not Connected"}</span>
             </div>
+            {waConnected && waPhoneNumber && <p className="text-xs text-gray-500 mt-1">WhatsApp: {waPhoneNumber}</p>}
             {waQr && <div className="flex justify-center py-4"><img src={waQr} alt="WhatsApp QR Code" className="w-48 h-48" /></div>}
             {waConnecting && !waQr && <p className="text-sm text-gray-500 text-center">Generating QR code...</p>}
             <div className="flex gap-3">
@@ -242,6 +252,7 @@ export default function AdminSettingsPage() {
             </div>
             <p className="text-xs text-gray-400">Scan the QR code with WhatsApp to connect. Session encrypted and stored in the database.</p>
           </div>
+          )}
         </div>
     </main>
   );

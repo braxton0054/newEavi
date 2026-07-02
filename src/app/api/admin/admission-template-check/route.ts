@@ -35,8 +35,6 @@ export async function GET(req: NextRequest) {
       "course_name",
       "admission_number",
       "report_date",
-      "campus",
-      "academic_year",
       "education_qualification",
       "student_phone",
       "student_email",
