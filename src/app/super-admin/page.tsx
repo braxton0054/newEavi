@@ -135,20 +135,20 @@ export default function SuperAdminDashboard() {
 
   return (
     <>
-      <header className="bg-white border-b border-zinc-100 px-6 lg:px-8 py-4 sticky top-0 z-30">
+      <header className="bg-white border-b border-zinc-100 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 sticky top-0 z-30">
         <div className="flex items-center gap-3">
-          <div className="w-10 lg:hidden shrink-0" />
+          <div className="w-12 lg:hidden shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-lg font-semibold text-zinc-900">Dashboard</h1>
-              <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100">{totalStudents} total</span>
+              <h1 className="text-base sm:text-lg font-semibold text-zinc-900">Dashboard</h1>
+              <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100 shrink-0">{totalStudents} total</span>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">Overview of all campuses</p>
+            <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Overview of all campuses</p>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="mb-6">
           <ManualApplyForm onSuccess={() => fetchStudents()} />
         </div>

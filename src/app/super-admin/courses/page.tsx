@@ -152,7 +152,12 @@ export default function CoursesPage() {
 
   function handleDelete(id: string) {
     if (!confirm("Delete this course?")) return;
-    fetch(`/api/courses?id=${id}`, { method: "DELETE" }).then(() => fetchCourses());
+    fetch(`/api/courses?id=${id}`, { method: "DELETE" })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to delete course");
+        fetchCourses();
+      })
+      .catch(err => alert(err.message));
   }
 
   function FeeSelector({ value, onChange, showUpload, setShowUpload, newFile, setNewFile }: {
@@ -335,11 +340,11 @@ export default function CoursesPage() {
                               {course.feeStructure && (
                                 <a href={`/api/fee-structures/${course.feeStructure.id}`} target="_blank" className="text-[11px] text-blue-700 hover:underline font-medium">{course.feeStructure.name}</a>
                               )}
-                              <button onClick={() => startEdit(course)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Edit">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                              <button onClick={() => startEdit(course)} className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors active:bg-zinc-200" title="Edit">
+                                <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                               </button>
-                              <button onClick={() => handleDelete(course.id)} className="w-7 h-7 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors" title="Delete">
-                                <svg className="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              <button onClick={() => handleDelete(course.id)} className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 transition-colors active:bg-red-100" title="Delete">
+                                <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                               </button>
                             </div>
                           </div>
