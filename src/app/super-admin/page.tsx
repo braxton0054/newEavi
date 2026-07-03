@@ -398,14 +398,7 @@ export default function SuperAdminDashboard() {
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                               {app.status === "PENDING" && (
-                                <div className="flex gap-1.5">
-                                  <button onClick={() => handleReview(app.id, "APPROVED")} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors">
-                                    Approve
-                                  </button>
-                                  <button onClick={() => handleReview(app.id, "REJECTED")} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors">
-                                    Reject
-                                  </button>
-                                </div>
+                                <span className="text-[11px] text-amber-600 font-medium">Pending</span>
                               )}
                               {app.status === "APPROVED" && (
                                 <a href={`/api/admin/admission-letter?studentId=${student.id}`} target="_blank" className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors">
