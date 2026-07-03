@@ -1,6 +1,6 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl python3 make g++
 COPY package*.json .gitignore ./
 RUN npm install --legacy-peer-deps --loglevel error
 COPY . .
