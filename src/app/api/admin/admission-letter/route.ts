@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
       data: { lastAdmissionNumber: nextNum },
     });
 
-    const reportDate = getUpcomingReportingDate((campusSetting?.reportingDates as any[]) || []);
+    const reportDate = await getUpcomingReportingDate();
 
     const application = student.applications[0];
     const courseName = application?.course || "N/A";

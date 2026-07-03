@@ -90,17 +90,17 @@ export default function LoginPage() {
             {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</div>}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-lg border border-gray-300 px-3 py-2.5 sm:py-2 text-sm focus:ring-2 focus:ring-[#d81e6f]/30 focus:border-[#d81e6f] outline-none transition-shadow" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-lg border border-gray-300 px-3 py-2.5 sm:py-2 text-sm focus:ring-2 focus:ring-[#d81e6f]/30 focus:border-[#d81e6f] outline-none transition-shadow" />
             </div>
-            <button type="submit" disabled={loading} className="w-full rounded-lg bg-[#2d8a4e] px-4 py-2.5 font-semibold text-white hover:bg-[#236d3c] disabled:opacity-50 transition-colors">
+            <button type="submit" disabled={loading} className="w-full rounded-lg bg-[#d81e6f] px-4 py-2.5 sm:py-2.5 font-semibold text-white hover:bg-[#b8185e] disabled:opacity-50 transition-colors min-h-11">
               {loading ? "Signing in..." : "Sign In"}
             </button>
             <p className="text-center text-sm text-gray-500">
-              <Link href="/" className="text-[#2d8a4e] hover:underline">Back to home</Link>
+              <Link href="/" className="text-[#d81e6f] hover:underline">Back to home</Link>
             </p>
           </form>
         </div>

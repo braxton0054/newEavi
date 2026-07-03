@@ -104,7 +104,7 @@ export async function sendApprovalNotifications(
         });
         const nextNum = incremented.lastAdmissionNumber;
         admissionNumber = `${campusSetting?.admissionFormat || `EAVI/${campus}/${new Date().getFullYear()}/`}${String(nextNum).padStart(4, "0")}`;
-        const reportDate = getUpcomingReportingDate((campusSetting?.reportingDates as any[]) || []);
+        const reportDate = await getUpcomingReportingDate();
 
         const currentDate = new Date().toLocaleDateString("en-GB", {
           day: "numeric",

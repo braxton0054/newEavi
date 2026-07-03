@@ -1,14 +1,28 @@
-export function getUpcomingReportingDate(reportingDates: { month: string; startDate: string; endDate: string }[]): string {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const upcoming = reportingDates
-    .filter(d => d.startDate && new Date(d.startDate) >= today)
-    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-  const next = upcoming[0]?.startDate;
-  if (!next) return "To be communicated";
-  return new Date(next).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+import { prisma } from "@/lib/prisma";
+
+/**
+ * Get the next upcoming reporting start date from the shared ReportingPeriod model.
+ */
+export async function getUpcomingReportingDate(): Promise<string> {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const next = await prisma.reportingPeriod.findFirst({
+      where: {
+        startDate: { gte: today },
+      },
+      orderBy: { startDate: "asc" },
+    });
+
+    if (!next?.startDate) return "To be communicated";
+
+    return next.startDate.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return "To be communicated";
+  }
 }

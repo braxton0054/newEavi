@@ -3,6 +3,9 @@
 :root {
   --background: #fafafa;
   --foreground: #18181b;
+  --brand-maroon: #d81e6f;
+  --brand-navy: #1a3d63;
+  --brand-green: #2d8a4e;
 }
 
 @theme inline {
@@ -17,6 +20,7 @@ body {
   font-family: "Inter Variable", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Scrollbar */
@@ -24,3 +28,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Hide scrollbar for mobile filter bars */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

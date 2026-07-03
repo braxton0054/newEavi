@@ -101,8 +101,11 @@ export default function ApplyPage() {
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Intro */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 text-center">
-          <h2 className="text-lg sm:text-xl font-bold text-[#1a3d63] mb-2">Apply for Admission</h2>
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 text-center shadow-sm">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="w-1 h-6 bg-[#d81e6f] rounded-full" />
+            <h2 className="text-lg sm:text-xl font-bold text-[#1a3d63]">Apply for Admission</h2>
+          </div>
           <p className="text-sm text-gray-600 leading-relaxed">
             Apply for admission to East Africa Vision Institute. Fill in your details below and we will process your application shortly. Our admissions team will contact you via phone or email with the next steps.
           </p>
@@ -198,7 +201,7 @@ export default function ApplyPage() {
               </select>
             </div>
           </div>
-          <button type="submit" disabled={submitting} className="w-full rounded-lg bg-[#2d8a4e] px-4 py-3 font-semibold text-white hover:bg-[#236d3c] disabled:opacity-50 transition-colors shadow-sm">
+          <button type="submit" disabled={submitting} className="w-full rounded-lg bg-[#d81e6f] px-4 py-3 font-semibold text-white hover:bg-[#b8185e] disabled:opacity-50 transition-colors shadow-sm">
             {submitting ? "Submitting..." : "Submit Application"}
           </button>
         </form>

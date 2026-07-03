@@ -40,6 +40,7 @@ export default function SuperAdminDashboard() {
   });
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [processingApp, setProcessingApp] = useState<string | null>(null);
 
   useEffect(() => { fetchUser(); }, []);
 

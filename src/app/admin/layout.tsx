@@ -40,10 +40,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-zinc-50 flex">
-      <AdminSidebar role="ADMIN" campus={user?.campus} email={user?.email} />
-      <div className="flex-1 min-w-0">
-        {children}
-      </div>
+    <AdminSidebar role="ADMIN" campus={user?.campus} email={user?.email} />
+    <div className="flex-1 min-w-0 overflow-x-hidden">
+      {children}
+    </div>
     </div>
   );
 }

@@ -48,16 +48,16 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-4 left-4 z-40 lg:hidden bg-white rounded-xl border border-zinc-200 p-2.5 shadow-sm hover:shadow-md transition-shadow"
+        className="fixed top-3 left-3 z-40 lg:hidden bg-white rounded-xl border border-zinc-200 p-3 shadow-sm hover:shadow-md transition-shadow"
         aria-label="Open menu"
       >
-        <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden" onClick={() => setOpen(false)} />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={() => setOpen(false)} />
       )}
 
       <aside
@@ -84,7 +84,7 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
               <button
                 key={link.href}
                 onClick={() => { router.push(link.href); setOpen(false); }}
-                className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all ${
+                className={`flex items-center gap-3 w-full px-3 py-2.5 sm:py-2 rounded-lg text-sm transition-all min-h-11 ${
                   isActive
                     ? "bg-blue-50 text-blue-700 font-medium"
                     : "text-zinc-500 hover:bg-zinc-100"

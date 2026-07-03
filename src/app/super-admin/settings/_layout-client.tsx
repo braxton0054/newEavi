@@ -13,6 +13,7 @@ const navItems = [
   { href: "/super-admin/settings/bursary", label: "Bursary Form" },
   { href: "/super-admin/settings/fee-structures", label: "Fee Structures" },
   { href: "/super-admin/settings/whatsapp", label: "WhatsApp" },
+  { href: "/super-admin/settings/credentials", label: "Credentials" },
 ];
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ReportingDatesEditor from "@/components/ReportingDatesEditor";
 
 export default function AdminSettingsPage() {
   const [user, setUser] = useState<any>(null);
@@ -20,10 +19,7 @@ export default function AdminSettingsPage() {
   const [hasSmsApiSecret, setHasSmsApiSecret] = useState(false);
   const [admissionFormat, setAdmissionFormat] = useState("");
   const [admissionStart, setAdmissionStart] = useState(1);
-  const [reportingDates, setReportingDates] = useState<any[]>([]);
   const [bursaryFormPdf, setBursaryFormPdf] = useState<string | null>(null);
-  const currentYear = new Date().getFullYear();
-  const academicYear = `${currentYear}-${currentYear + 1}`;
 
   const [waConnected, setWaConnected] = useState(false);
   const [waQr, setWaQr] = useState<string | null>(null);
@@ -32,6 +28,14 @@ export default function AdminSettingsPage() {
   const [waLoading, setWaLoading] = useState(true);
 
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Login credentials state
+  const [credEmail, setCredEmail] = useState("");
+  const [credCurrentPw, setCredCurrentPw] = useState("");
+  const [credNewPw, setCredNewPw] = useState("");
+  const [credNewPw2, setCredNewPw2] = useState("");
+  const [credSaving, setCredSaving] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState("");
 
   useEffect(() => { fetchUser(); }, []);
   useEffect(() => {
@@ -46,6 +50,8 @@ export default function AdminSettingsPage() {
       const data = await res.json();
       if (res.ok && data.user) {
         setUser(data.user);
+        setCredEmail(data.user.email || "");
+        setCurrentEmail(data.user.email || "");
         await fetchSettings(data.user);
         await fetchStatus(data.user.campus);
       } else { window.location.href = "/login"; }
@@ -66,7 +72,6 @@ export default function AdminSettingsPage() {
         setHasSmsApiSecret(s.hasSmsApiSecret || false);
         setAdmissionFormat(s.admissionFormat || "");
         setAdmissionStart(s.admissionStart || 1);
-        setReportingDates(Array.isArray(s.reportingDates) ? s.reportingDates : []);
         setBursaryFormPdf(s.bursaryFormPdf || null);
       }
     } catch (e) { console.error(e); }
@@ -133,6 +138,59 @@ export default function AdminSettingsPage() {
       setWaConnected(false); setWaQr(null); setWaConnecting(false);
       setMessage({ type: "success", text: "WhatsApp disconnected" });
     } catch { setMessage({ type: "error", text: "Failed to disconnect" }); }
+  }
+
+  async function handleChangeCredentials() {
+    if (credNewPw && credNewPw !== credNewPw2) {
+      setMessage({ type: "error", text: "New passwords don't match" }); return;
+    }
+    if (credEmail === currentEmail && !credNewPw) {
+      setMessage({ type: "error", text: "No changes to save" }); return;
+    }
+    if (!credCurrentPw) {
+      setMessage({ type: "error", text: "Current password is required" }); return;
+    }
+
+    setCredSaving(true);
+    setMessage(null);
+
+    let emailOk = true;
+    let pwOk = true;
+
+    // Change email (no password needed — Better Auth uses the session)
+    if (credEmail !== currentEmail) {
+      try {
+        const res = await fetch("/api/admin/credentials", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newEmail: credEmail }),
+        });
+        if (res.ok) {
+          setCurrentEmail(credEmail);
+          setMessage({ type: "success", text: "Email updated! Use your new email to login next time." });
+        } else {
+          const d = await res.json();
+          setMessage({ type: "error", text: d.error || "Failed to update email" });
+          emailOk = false;
+        }
+      } catch { setMessage({ type: "error", text: "Failed to update email" }); emailOk = false; }
+    }
+
+    // Change password via Better Auth
+    if (credNewPw && emailOk) {
+      try {
+        const res = await fetch("/api/auth/change-password", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currentPassword: credCurrentPw, newPassword: credNewPw }),
+        });
+        if (res.ok) {
+          setMessage({ type: "success", text: (emailOk && credEmail !== currentEmail ? "Email and " : "") + "Password updated!" });
+          setCredNewPw(""); setCredNewPw2("");
+        } else { const d = await res.json(); setMessage({ type: "error", text: d.message || d.error || "Failed to update password" }); pwOk = false; }
+      } catch { setMessage({ type: "error", text: "Failed to update password" }); pwOk = false; }
+    }
+
+    setCredSaving(false);
+    if (emailOk && pwOk) { setCredCurrentPw(""); }
   }
 
   if (loading) return <div className="flex items-center justify-center py-12">Loading...</div>;
@@ -207,33 +265,6 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Reporting Dates — {academicYear}</h2>
-          <p className="text-xs text-gray-400 mb-4">Set the start and end reporting dates for each month.</p>
-          <ReportingDatesEditor year={currentYear} dates={reportingDates} onChange={setReportingDates} />
-          <button onClick={() => handleSave("Reporting", { email, reportingDates })} disabled={saving === "Reporting"} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
-            {saving === "Reporting" ? "Saving..." : "Save Reporting Dates"}
-          </button>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Bursary Form</h2>
-          <div className="space-y-4">
-            {bursaryFormPdf ? (
-              <div className="flex items-center gap-3">
-                <span className="inline-block w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-sm font-medium text-green-700">Bursary form has been configured</span>
-                <a href={bursaryFormPdf} target="_blank" className="text-sm text-blue-600 hover:underline">View PDF</a>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <span className="inline-block w-3 h-3 rounded-full bg-gray-300" />
-                <span className="text-sm font-medium text-gray-500">No bursary form configured yet</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">WhatsApp Configuration</h2>
           {waLoading ? (
             <p className="text-sm text-gray-400">Checking WhatsApp status...</p>
@@ -253,6 +284,33 @@ export default function AdminSettingsPage() {
             <p className="text-xs text-gray-400">Scan the QR code with WhatsApp to connect. Session encrypted and stored in the database.</p>
           </div>
           )}
+        </div>
+
+        {/* Login Credentials */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">Login Credentials</h2>
+          <p className="text-xs text-gray-400 mb-4">Change your login email and/or password for this account. Email changes take effect immediately — use new email on next login.</p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Login Email</label>
+              <input type="email" value={credEmail} onChange={e => setCredEmail(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+              <input type="password" value={credCurrentPw} onChange={e => setCredCurrentPw(e.target.value)} placeholder="Required to make changes" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Password <span className="text-gray-400 font-normal">(leave blank to keep current)</span></label>
+              <input type="password" value={credNewPw} onChange={e => setCredNewPw(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+              <input type="password" value={credNewPw2} onChange={e => setCredNewPw2(e.target.value)} placeholder="Confirm new password" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            </div>
+            <button onClick={handleChangeCredentials} disabled={credSaving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+              {credSaving ? "Saving..." : "Save Credentials"}
+            </button>
+          </div>
         </div>
     </main>
   );

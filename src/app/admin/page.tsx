@@ -40,7 +40,6 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-
   useEffect(() => { fetchUser(); }, []);
 
   async function fetchUser() {
@@ -63,17 +62,6 @@ export default function AdminDashboard() {
       if (res.ok) setStudents(data.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
-  }
-
-  async function handleReview(applicationId: string, status: string) {
-    try {
-      const res = await fetch("/api/admin/review", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ applicationId, status }),
-      });
-      if (res.ok) fetchStudents(user);
-    } catch (e) { console.error(e); }
   }
 
   function startEdit(student: Student) {
@@ -149,92 +137,94 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <header className="bg-white border-b border-zinc-100 px-6 lg:px-8 py-4 sticky top-0 z-30">
-        <div className="flex items-center gap-3">
-          <div className="w-10 lg:hidden shrink-0" />
+      <header className="bg-white border-b border-zinc-100 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 sticky top-0 z-30">
+        <div className="flex items-center gap-3 min-h-10">
+          <div className="w-12 lg:hidden shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-lg font-semibold text-zinc-900">{campusLabel} campus</h1>
-              <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100">{totalCount} students</span>
+              <h1 className="text-base sm:text-lg font-semibold text-zinc-900">{campusLabel} campus</h1>
+              <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100 shrink-0">{totalCount} students</span>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">Review and manage student applications</p>
+            <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Review and manage student applications</p>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="mb-6">
           <ManualApplyForm defaultCampus={user?.campus} onSuccess={() => fetchStudents(user)} />
         </div>
 
-        {/* Bento Grid Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-          <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
+        {/* Stat Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 mb-6">
+          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{totalCount}</p>
-            <p className="text-[11px] text-zinc-400">all registered</p>
+            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{totalCount}</p>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400">all registered</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
+          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Approved</span>
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Approved</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{approvedCount}</p>
-            <p className="text-[11px] text-zinc-400">enrolled</p>
+            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{approvedCount}</p>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400">enrolled</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
+          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Pending</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Pending</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{pendingCount}</p>
-            <p className="text-[11px] text-zinc-400">awaiting review</p>
+            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{pendingCount}</p>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400">awaiting review</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
+          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Rejected</span>
-              <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Rejected</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{rejectedCount}</p>
-            <p className="text-[11px] text-zinc-400">not admitted</p>
+            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{rejectedCount}</p>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400">not admitted</p>
           </div>
         </div>
 
-        {/* Filters + Search */}
+        {/* Filters */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-          <div className="flex items-center gap-1.5 bg-white rounded-xl border border-zinc-100 p-1">
-            {[
-              { key: "all", label: "All" },
-              { key: "PENDING", label: "Pending" },
-              { key: "APPROVED", label: "Approved" },
-              { key: "REJECTED", label: "Rejected" },
-            ].map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setStatusFilter(f.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  statusFilter === f.key
-                    ? "bg-zinc-900 text-white shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+          <div className="flex overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scrollbar-none">
+            <div className="flex items-center gap-1.5 bg-white rounded-xl border border-zinc-100 p-1 shrink-0">
+              {[
+                { key: "all", label: "All" },
+                { key: "PENDING", label: "Pending" },
+                { key: "APPROVED", label: "Approved" },
+                { key: "REJECTED", label: "Rejected" },
+              ].map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setStatusFilter(f.key)}
+                  className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap min-h-10 ${
+                    statusFilter === f.key
+                      ? "bg-zinc-900 text-white shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex items-center gap-2 sm:ml-auto">
-            <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-sm text-zinc-400 w-full sm:w-60 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+            <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-xl px-3.5 py-2.5 sm:py-2 text-sm text-zinc-400 flex-1 sm:flex-initial sm:w-60 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
               <svg className="w-3.5 h-3.5 shrink-0 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -380,18 +370,8 @@ export default function AdminDashboard() {
                               </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              {app.status === "PENDING" && (
-                                <div className="flex gap-1.5">
-                                  <button onClick={() => handleReview(app.id, "APPROVED")} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors">
-                                    Approve
-                                  </button>
-                                  <button onClick={() => handleReview(app.id, "REJECTED")} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors">
-                                    Reject
-                                  </button>
-                                </div>
-                              )}
                               {app.status === "APPROVED" && (
-                                <a href={`/api/admin/admission-letter?studentId=${student.id}`} target="_blank" className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors">
+                                <a href={`/api/admin/admission-letter?studentId=${student.id}`} target="_blank" className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium rounded-lg bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 transition-colors">
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                   Letter
                                 </a>

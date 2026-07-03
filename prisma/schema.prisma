@@ -194,3 +194,16 @@ model WhatsAppSession {
 
   @@map("whatsapp_sessions")
 }
+
+model ReportingPeriod {
+  id        String   @id @default(cuid())
+  year      Int
+  month     Int      // 1-12
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([year, month])
+  @@map("reporting_periods")
+}
