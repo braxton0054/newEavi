@@ -40,7 +40,6 @@ export default function SuperAdminDashboard() {
   });
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [processingApp, setProcessingApp] = useState<string | null>(null);
 
   useEffect(() => { fetchUser(); }, []);
 
@@ -62,15 +61,6 @@ export default function SuperAdminDashboard() {
       if (res.ok) setStudents(data.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
-  }
-
-  async function handleReview(applicationId: string, status: string) {
-    await fetch("/api/admin/review", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ applicationId, status }),
-    });
-    fetchStudents();
   }
 
   function startEdit(student: Student) {
