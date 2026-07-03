@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { fillAdmissionPdf } from "@/lib/admission-pdf";
 import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
-import { getClient, sendDocument, sendText, checkNumber } from "@/lib/whatsapp";
+import { getClient, sendDocument } from "@/lib/whatsapp";
 import { getUpcomingReportingDate } from "@/lib/reporting-dates";
 
 interface NotifyResult {
@@ -137,14 +137,12 @@ export async function sendApprovalNotifications(
       feePdfBuffer = Buffer.from(courseRecord.feeStructure.pdfData);
     }
 
-    // 9. Check WhatsApp availability — do NOT force session restore, just use existing connection
+    // 9. Check WhatsApp availability — attempt to send regardless, don't block on onWhatsApp check
+    // (onWhatsApp API calls from Baileys are unreliable under load and silently fail for
+    // subsequent students, causing PDFs to never send. Just try sending directly instead.)
     const sock = getClient(campus);
     if (!sock) {
       result.errors.push(`WhatsApp not connected for campus ${campus}`);
-    }
-    const whatsappAvailable = sock ? await checkNumber(campus, student.phone || "") : false;
-    if (sock && !whatsappAvailable) {
-      result.errors.push(`Number ${student.phone} not on WhatsApp for campus ${campus}`);
     }
 
     // 10. Prepare common attachments
@@ -159,8 +157,8 @@ export async function sendApprovalNotifications(
       attachments.push({ filename: "Bursary_Form.pdf", content: bursaryPdfBuffer });
     }
 
-    // 11. Send via WhatsApp (if connected and number available)
-    if (sock && whatsappAvailable) {
+    // 11. Send via WhatsApp (if connected)
+    if (sock) {
       try {
         // Send admission PDF
         if (admissionPdfBuffer) {
