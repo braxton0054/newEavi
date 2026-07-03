@@ -38,8 +38,8 @@ export default function Home() {
           <div className="bg-white rounded-xl border border-gray-200 p-6 text-left space-y-3">
             <h2 className="text-sm font-semibold text-gray-900">Our Campuses</h2>
             <div className="space-y-2 text-sm text-gray-600">
-              <p><span className="font-medium text-gray-800">Main Campus</span> — Nairobi, Kenya</p>
-              <p><span className="font-medium text-gray-800">West Campus</span> — Nakuru, Kenya</p>
+              <p><span className="font-medium text-gray-800">Main Campus</span> — Eldoret</p>
+              <p><span className="font-medium text-gray-800">West Campus</span> — Eldoret</p>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -62,7 +62,7 @@ export default function Home() {
       <footer className="bg-[#1a3d63] text-white">
         <div className="max-w-2xl mx-auto px-4 py-6 text-center text-sm space-y-1">
           <p className="font-semibold">East Africa Vision Institute</p>
-          <p className="text-gray-300">Main Campus — Nairobi, Kenya | West Campus — Nakuru, Kenya</p>
+          <p className="text-gray-300">Main Campus — Eldoret | West Campus — Eldoret</p>
           <p className="text-gray-300">Phone: +254 700 000 000 | Email: admissions@eavicollege.ac.ke</p>
           <p className="text-gray-400 text-xs mt-2">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>
         </div>

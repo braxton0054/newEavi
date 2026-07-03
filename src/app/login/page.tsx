@@ -61,7 +61,7 @@ export default function LoginPage() {
             <span className="text-white text-sm font-semibold tracking-wider uppercase">Leading the Leaders</span>
           </div>
           <p className="mt-4 text-gray-300 italic">Nurturing quality and affordable education</p>
-          <p className="mt-6 text-sm text-gray-400">Main Campus — Nairobi<br />West Campus — Nakuru</p>
+          <p className="mt-6 text-sm text-gray-400">Main Campus — Eldoret<br />West Campus — Eldoret</p>
         </div>
       </div>
 

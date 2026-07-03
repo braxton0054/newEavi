@@ -208,7 +208,7 @@ export default function ApplyPage() {
       <footer className="bg-[#1a3d63] text-white mt-12">
         <div className="max-w-2xl mx-auto px-4 py-6 text-center text-sm space-y-1">
           <p className="font-semibold">East Africa Vision Institute</p>
-          <p className="text-gray-300">Main Campus — Nairobi, Kenya | West Campus — Nakuru, Kenya</p>
+          <p className="text-gray-300">Main Campus — Eldoret | West Campus — Eldoret</p>
           <p className="text-gray-300">Phone: +254 700 000 000 | Email: admissions@eavicollege.ac.ke</p>
           <p className="text-gray-400 text-xs mt-2">© {new Date().getFullYear()} EAVI. All rights reserved.</p>
         </div>
