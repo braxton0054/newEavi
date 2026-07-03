@@ -203,18 +203,6 @@ export default function Home() {
             Welcome to the EAVI College Admission Portal. Apply for admission,
             check your application status, and manage your academic journey.
           </p>
-
-          {/* Campuses below the welcome text */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-left space-y-3 shadow-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-5 bg-[#d81e6f] rounded-full" />
-              <h2 className="text-sm font-semibold text-gray-900">Our Campuses</h2>
-            </div>
-            <div className="space-y-2 text-sm text-gray-600 ml-3">
-              <p><span className="font-medium text-gray-800">Main Campus</span> — Eldoret — 0726022044</p>
-              <p><span className="font-medium text-gray-800">West Campus</span> — Eldoret — 0748022044</p>
-            </div>
-          </div>
         </div>
       </main>
 
