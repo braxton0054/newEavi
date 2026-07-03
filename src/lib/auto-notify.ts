@@ -221,7 +221,7 @@ export async function sendApprovalNotifications(
       }
     }
 
-    // 13. Send congratulations SMS
+    // 13. Send SMS with reporting date and contact info
     if (smsConfig.enabled && student.phone) {
       try {
         const phoneClean = student.phone.startsWith("0")
@@ -230,10 +230,12 @@ export async function sendApprovalNotifications(
           ? student.phone.slice(1)
           : student.phone;
 
+        const reportDate = await getUpcomingReportingDate();
+
         await sendSms(
           smsConfig,
           phoneClean,
-          `🎉 Congratulations ${studentName}! Your application to EAVI College (${courseName}) has been approved. Welcome aboard!`
+          `Congratulations ${studentName}! Your application to EAVI College (${courseName}) has been approved. Report on ${reportDate}. Download your admission letter sent via WhatsApp or email. For inquiries call 0726022044 (Main) or 0748022044 (West).`
         );
         result.sms = true;
       } catch (err) {
