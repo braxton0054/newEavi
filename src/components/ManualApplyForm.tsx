@@ -104,7 +104,7 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
 
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Student Name</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">First Name *</label>
                 <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />

@@ -150,8 +150,9 @@ export default function AdminDashboard() {
   return (
     <>
       <header className="bg-white border-b border-zinc-100 px-6 lg:px-8 py-4 sticky top-0 z-30">
-        <div className="flex items-center justify-between">
-          <div className="lg:pl-0 pl-12">
+        <div className="flex items-center gap-3">
+          <div className="w-10 lg:hidden shrink-0" />
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5">
               <h1 className="text-lg font-semibold text-zinc-900">{campusLabel} campus</h1>
               <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100">{totalCount} students</span>
@@ -161,13 +162,13 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <main className="px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
         <div className="mb-6">
           <ManualApplyForm defaultCampus={user?.campus} onSuccess={() => fetchStudents(user)} />
         </div>
 
         {/* Bento Grid Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
           <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
@@ -270,7 +271,7 @@ export default function AdminDashboard() {
                       <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                       <h3 className="text-sm font-semibold text-zinc-900">Edit student</h3>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-3">
                       {["firstName", "middleName", "lastName"].map((field) => (
                         <div key={field}>
                           <label className="block text-[11px] font-medium text-zinc-500 mb-1 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>

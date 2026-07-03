@@ -74,15 +74,16 @@ export default function ApplyPage() {
     <div className="min-h-screen bg-gray-50">
       {/* EAVI Brand Header */}
       <header className="bg-white border-b-4 border-[#d81e6f] shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-5 flex flex-col items-center text-center">
-          <Image
-            src="/images/eavi-logo.jpg"
-            alt="East Africa Vision Institute Logo"
-            width={120}
-            height={120}
-            className="rounded-full shadow-md mb-3"
-            priority
-          />
+        <div className="max-w-2xl mx-auto px-4 py-5 flex flex-col items-center text-center">
+          <div className="w-16 sm:w-20 md:w-24 aspect-square relative mx-auto mb-3">
+            <Image
+              src="/images/eavi-logo.jpg"
+              alt="East Africa Vision Institute Logo"
+              fill
+              className="rounded-full shadow-md object-cover"
+              priority
+            />
+          </div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#1a3d63] tracking-wide">
             EAST AFRICA VISION INSTITUTE
           </h1>
@@ -134,7 +135,7 @@ export default function ApplyPage() {
         )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
               <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
@@ -205,7 +206,7 @@ export default function ApplyPage() {
 
       {/* Footer */}
       <footer className="bg-[#1a3d63] text-white mt-12">
-        <div className="max-w-4xl mx-auto px-4 py-6 text-center text-sm space-y-1">
+        <div className="max-w-2xl mx-auto px-4 py-6 text-center text-sm space-y-1">
           <p className="font-semibold">East Africa Vision Institute</p>
           <p className="text-gray-300">Main Campus — Nairobi, Kenya | West Campus — Nakuru, Kenya</p>
           <p className="text-gray-300">Phone: +254 700 000 000 | Email: admissions@eavicollege.ac.ke</p>
