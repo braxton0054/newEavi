@@ -154,8 +154,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
-          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
+        <div className="flex gap-2 sm:gap-3 mb-6 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none sm:flex-wrap sm:overflow-visible">
+          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
             <p className="text-xl sm:text-2xl font-bold text-zinc-900">{totalCount}</p>
             <p className="text-[10px] sm:text-[11px] text-zinc-400">all registered</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
+          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Approved</span>
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
             <p className="text-xl sm:text-2xl font-bold text-zinc-900">{approvedCount}</p>
             <p className="text-[10px] sm:text-[11px] text-zinc-400">enrolled</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
+          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Pending</span>
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
