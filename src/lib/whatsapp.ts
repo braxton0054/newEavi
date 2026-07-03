@@ -274,9 +274,11 @@ async function doConnect(campus: string): Promise<string | null> {
             console.log(`[WA] ${campus} connection REPLACED — will auto-retry after cooldown`);
             entry.autoReconnectDisabled = true;
             entry.disabledAt = Date.now();
+            // Preserve session data so the next reconnect restores the session
+            // instead of generating a fresh QR code.
             await prisma.whatsAppSession.upsert({
               where: { campus: campus as any },
-              create: { campus: campus as any, status: "disconnected", sessionData: null },
+              create: { campus: campus as any, status: "disconnected" },
               update: { status: "disconnected", qrCode: null },
             });
             return;
