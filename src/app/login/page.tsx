@@ -47,7 +47,7 @@ export default function LoginPage() {
   const formContent = (
     <>
       <h2 className="text-lg font-semibold text-gray-900 text-center mb-1">
-        Staff Login
+        Admin Login
       </h2>
       <p className="text-xs text-gray-500 text-center mb-5">
         Sign in to access the admission portal
