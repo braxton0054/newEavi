@@ -320,9 +320,19 @@ async function doConnect(campus: string): Promise<string | null> {
 
 // ─── Public API ───
 
-export function getClient(campus: string): any {
+export async function getClient(campus: string): Promise<any> {
   const entry = sockets.get(campus);
-  return entry?.ready ? entry.sock : null;
+  if (entry?.ready) return entry.sock;
+
+  // Socket not ready or missing — try restoring from DB
+  const dbSession = await prisma.whatsAppSession.findUnique({ where: { campus: campus as any } });
+  if (dbSession?.sessionData) {
+    console.log(`[WA] getClient: ${campus} socket missing, attempting restore...`);
+    await doConnect(campus);
+    const restored = sockets.get(campus);
+    return restored?.ready ? restored.sock : null;
+  }
+  return null;
 }
 
 export async function getStatus(campus: string) {
@@ -341,7 +351,7 @@ export async function getStatus(campus: string) {
 }
 
 export async function checkNumber(campus: string, phone: string): Promise<boolean> {
-  const sock = getClient(campus);
+  const sock = await getClient(campus);
   if (!sock) return false;
 
   try {
@@ -360,7 +370,7 @@ export async function sendDocument(
   filename: string,
   caption: string
 ): Promise<boolean> {
-  const sock = getClient(campus);
+  const sock = await getClient(campus);
   if (!sock) return false;
 
   try {
@@ -383,7 +393,7 @@ export async function sendText(
   phone: string,
   message: string
 ): Promise<boolean> {
-  const sock = getClient(campus);
+  const sock = await getClient(campus);
   if (!sock) return false;
 
   try {

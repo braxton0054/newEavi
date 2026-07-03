@@ -140,7 +140,7 @@ export async function sendApprovalNotifications(
     // 9. Check WhatsApp availability — attempt to send regardless, don't block on onWhatsApp check
     // (onWhatsApp API calls from Baileys are unreliable under load and silently fail for
     // subsequent students, causing PDFs to never send. Just try sending directly instead.)
-    const sock = getClient(campus);
+    const sock = await getClient(campus);
     if (!sock) {
       result.errors.push(`WhatsApp not connected for campus ${campus}`);
     }
@@ -159,41 +159,52 @@ export async function sendApprovalNotifications(
 
     // 11. Send via WhatsApp (if connected)
     if (sock) {
+      let sentAnything = false;
       try {
         // Send admission PDF
         if (admissionPdfBuffer) {
-          await sendDocument(
+          const ok = await sendDocument(
             campus,
             student.phone || "",
             admissionPdfBuffer,
             `Admission_Letter.pdf`,
             `🎓 Congratulations ${studentName}! Your admission letter from EAVI College.`
           );
+          if (ok) sentAnything = true;
+          else result.errors.push(`WhatsApp admission PDF send returned false for ${campus}`);
         }
 
         // Send fee structure
         if (feePdfBuffer) {
-          await sendDocument(
+          const ok = await sendDocument(
             campus,
             student.phone || "",
             feePdfBuffer,
             `Fee_Structure.pdf`,
             `📋 Fee structure for ${courseRecord?.name || courseName}.`
           );
+          if (ok) sentAnything = true;
+          else result.errors.push(`WhatsApp fee structure send returned false for ${campus}`);
         }
 
         // Send bursary form
         if (bursaryPdfBuffer) {
-          await sendDocument(
+          const ok = await sendDocument(
             campus,
             student.phone || "",
             bursaryPdfBuffer,
             "Bursary_Form.pdf",
             "📄 Please fill and submit the bursary form if you need financial assistance."
           );
+          if (ok) sentAnything = true;
+          else result.errors.push(`WhatsApp bursary form send returned false for ${campus}`);
         }
 
-        result.whatsapp = true;
+        if (sentAnything) {
+          result.whatsapp = true;
+        } else {
+          result.errors.push(`WhatsApp: no documents were sent for ${campus} (no PDF data or all sends failed)`);
+        }
       } catch (err) {
         result.errors.push(`WhatsApp send failed for ${campus}: ${(err as Error).message}`);
       }

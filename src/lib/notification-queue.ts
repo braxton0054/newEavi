@@ -63,6 +63,8 @@ async function processNextJob() {
 
     const result = await sendApprovalNotifications(job.studentId);
 
+    console.log(`[Queue] Job ${job.id} (${job.studentName}): WA=${result.whatsapp} EM=${result.email} SMS=${result.sms} errors=${result.errors.length ? result.errors.join("; ") : "none"}`);
+
     const succeeded = result.whatsapp || result.email || result.sms;
     const errorMessages = result.errors.join("; ");
 
