@@ -18,6 +18,7 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = withSerwist({
   serverExternalPackages: ["bufferutil", "utf-8-validate", "@whiskeysockets/baileys"],
+  poweredByHeader: false,
 });
 
 export default nextConfig;

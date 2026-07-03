@@ -3,7 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    network_mode: "host"
+    network_mode: "bridge"
+    ports:
+      - "4000:4000"
     env_file: .env
     environment:
       - NODE_ENV=production
@@ -15,4 +17,11 @@ services:
       - ./.wwebjs_cache:/app/.wwebjs_cache
       - ./storage:/app/storage
       - ./logs:/app/logs
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+      - NET_RAW
     restart: unless-stopped
