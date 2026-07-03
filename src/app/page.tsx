@@ -167,7 +167,7 @@ export default function Home() {
                 src="/images/eavi-logo.jpg"
                 alt="East Africa Vision Institute Logo"
                 fill
-                className="rounded-full shadow-lg object-cover ring-2 ring-[#d81e6f]/10"
+                className="shadow-lg object-cover ring-2 ring-[#d81e6f]/10"
                 priority
               />
             </div>
@@ -188,20 +188,7 @@ export default function Home() {
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-lg w-full text-center space-y-8">
-          <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-            Welcome to the EAVI College Admission Portal. Apply for admission,
-            check your application status, and manage your academic journey.
-          </p>
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-left space-y-3 shadow-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-5 bg-[#d81e6f] rounded-full" />
-              <h2 className="text-sm font-semibold text-gray-900">Our Campuses</h2>
-            </div>
-            <div className="space-y-2 text-sm text-gray-600 ml-3">
-              <p><span className="font-medium text-gray-800">Main Campus</span> — Eldoret</p>
-              <p><span className="font-medium text-gray-800">West Campus</span> — Eldoret</p>
-            </div>
-          </div>
+          {/* Apply Now button first — the primary action */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/apply"
@@ -210,6 +197,24 @@ export default function Home() {
               Apply Now
             </Link>
           </div>
+
+          {/* Welcome text below the button */}
+          <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+            Welcome to the EAVI College Admission Portal. Apply for admission,
+            check your application status, and manage your academic journey.
+          </p>
+
+          {/* Campuses below the welcome text */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 text-left space-y-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-5 bg-[#d81e6f] rounded-full" />
+              <h2 className="text-sm font-semibold text-gray-900">Our Campuses</h2>
+            </div>
+            <div className="space-y-2 text-sm text-gray-600 ml-3">
+              <p><span className="font-medium text-gray-800">Main Campus</span> — Eldoret — 0726022044</p>
+              <p><span className="font-medium text-gray-800">West Campus</span> — Eldoret — 0748022044</p>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -217,8 +222,8 @@ export default function Home() {
         <div className="max-w-2xl mx-auto px-4 py-8 text-center text-sm space-y-1">
           <p className="font-semibold tracking-wide">EAST AFRICA VISION INSTITUTE</p>
           <div className="w-8 h-0.5 bg-[#d81e6f] mx-auto my-3 rounded-full" />
-          <p className="text-gray-300">Main Campus — Eldoret | West Campus — Eldoret</p>
-          <p className="text-gray-300">Phone: +254 700 000 000 | Email: admissions@eavicollege.ac.ke</p>
+          <p className="text-gray-300">Main Campus — Eldoret · West Campus — Eldoret</p>
+          <p className="text-gray-300">Main: 0726022044 | West: 0748022044 | Email: admissions@eavicollege.ac.ke</p>
           <p className="text-gray-400 text-xs mt-4">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>
         </div>
       </footer>
