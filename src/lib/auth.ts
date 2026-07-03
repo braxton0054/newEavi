@@ -11,6 +11,14 @@ export const auth = betterAuth({
   },
   secret: process.env.AUTH_SECRET!,
   baseURL: process.env.NEXTAUTH_URL!,
+  session: {
+    expiresIn: 60 * 60 * 24 * 30,      // 30 days
+    updateAge: 60 * 60 * 24,           // refresh if used within 1 day of expiry
+    cookieCache: { enabled: true, maxAge: 60 * 5 },
+  },
+  advanced: {
+    useSecureCookies: true,            // HTTPS via nginx
+  },
   user: {
     additionalFields: {
       role: {
