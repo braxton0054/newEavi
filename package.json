@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production node -r tsx/cjs server.ts",
+    "start": "NODE_ENV=production npx tsx server.ts",
     "lint": "eslint"
   },
   "dependencies": {
