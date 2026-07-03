@@ -1,6 +1,11 @@
 import { createServer } from "http";
 import { parse } from "url";
 import next from "next";
+import { createRequire } from "module";
+
+// Patch ws module before anything else loads
+const _req = createRequire(import.meta.url);
+_req("./patch-ws.js");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "0.0.0.0";
