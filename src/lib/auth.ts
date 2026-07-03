@@ -19,6 +19,10 @@ export const auth = betterAuth({
   advanced: {
     useSecureCookies: process.env.NODE_ENV === "production" && !!process.env.NEXTAUTH_URL?.startsWith("https"),
   },
+  trustedOrigins: [
+    "http://5.189.191.35:4000",
+    "https://eavi.college.eavi.shop",
+  ],
   user: {
     additionalFields: {
       role: {
