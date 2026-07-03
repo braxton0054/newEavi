@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { fillAdmissionPdf } from "@/lib/admission-pdf";
+import { getUpcomingReportingDate } from "@/lib/reporting-dates";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -68,15 +69,7 @@ export async function GET(req: NextRequest) {
       data: { lastAdmissionNumber: nextNum },
     });
 
-    // Get next reporting date from campus settings
-    const reportingDates = (campusSetting?.reportingDates as any[]) || [];
-    const now = new Date();
-    const nextReporting = reportingDates
-      .filter(d => d.startDate && new Date(d.startDate) > now)
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
-    const reportDate = nextReporting
-      ? `${new Date(nextReporting.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
-      : "To be communicated";
+    const reportDate = getUpcomingReportingDate((campusSetting?.reportingDates as any[]) || []);
 
     const application = student.applications[0];
     const courseName = application?.course || "N/A";

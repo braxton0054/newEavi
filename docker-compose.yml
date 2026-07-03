@@ -9,7 +9,6 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - NEXT_TELEMETRY_DISABLED=1
-      - DATABASE_URL=postgresql://0rmXzAXfHRrZbOuX:kMo0ghHiN9Uqwx4uttaROdk52i0F16iY@127.0.0.1:5432/eavi_college?schema=public
     volumes:
       - ./.env:/app/.env
       - ./.wwebjs_auth:/app/.wwebjs_auth

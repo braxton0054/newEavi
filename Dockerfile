@@ -15,5 +15,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/server.ts ./server.ts
+COPY --from=builder /app/src/lib ./src/lib
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma db push && npx next start -p 4000"]
+CMD ["sh", "-c", "npx prisma db push && npm start"]

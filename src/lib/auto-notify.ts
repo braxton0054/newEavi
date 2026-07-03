@@ -3,6 +3,7 @@ import { fillAdmissionPdf } from "@/lib/admission-pdf";
 import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
 import { getClient, sendDocument, sendText, checkNumber } from "@/lib/whatsapp";
+import { getUpcomingReportingDate } from "@/lib/reporting-dates";
 
 interface NotifyResult {
   whatsapp: boolean;
@@ -103,14 +104,7 @@ export async function sendApprovalNotifications(
         });
         const nextNum = incremented.lastAdmissionNumber;
         admissionNumber = `${campusSetting?.admissionFormat || `EAVI/${campus}/${new Date().getFullYear()}/`}${String(nextNum).padStart(4, "0")}`;
-        const reportingDates = (campusSetting?.reportingDates as any[]) || [];
-        const now = new Date();
-        const nextReporting = reportingDates
-          .filter((d: any) => d.startDate && new Date(d.startDate) > now)
-          .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
-        const reportDate = nextReporting
-          ? `${new Date(nextReporting.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
-          : "To be communicated";
+        const reportDate = getUpcomingReportingDate((campusSetting?.reportingDates as any[]) || []);
 
         const currentDate = new Date().toLocaleDateString("en-GB", {
           day: "numeric",
