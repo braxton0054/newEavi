@@ -11,7 +11,7 @@ import QRCode from "qrcode";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/encryption";
 
-const logger = pino({ level: "warn" });
+const logger: any = pino({ level: "warn" });
 
 const BASE_RECONNECT_DELAY = 5000;
 const MAX_RECONNECT_DELAY = 30000;
