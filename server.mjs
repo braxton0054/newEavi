@@ -32,4 +32,12 @@ app.prepare().then(async () => {
     }
   }, 30_000);
   console.log("[WA] Keepalive started (every 30s)");
+
+  // ─── Notification queue ───
+  try {
+    await fetch(`http://localhost:${port}/api/admin/notification-queue/start`, { method: "POST" });
+    console.log("[Queue] Notification processor started");
+  } catch (e) {
+    console.error("[Queue] Start error:", e.message);
+  }
 });

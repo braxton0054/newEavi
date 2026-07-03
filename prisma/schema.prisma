@@ -207,3 +207,22 @@ model ReportingPeriod {
   @@unique([year, month])
   @@map("reporting_periods")
 }
+
+model NotificationJob {
+  id          String   @id @default(cuid())
+  studentId   String
+  studentName String
+  course      String
+  campus      Campus
+  status      String   @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  lastError   String?
+  createdAt   DateTime @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  updatedAt   DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@map("notification_jobs")
+}

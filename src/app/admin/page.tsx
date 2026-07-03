@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ManualApplyForm from "@/components/ManualApplyForm";
+import NotificationQueueStatus from "@/components/NotificationQueueStatus";
 
 interface Student {
   id: string;
@@ -198,6 +199,9 @@ export default function AdminDashboard() {
             <p className="text-[10px] sm:text-[11px] text-zinc-400">not admitted</p>
           </div>
         </div>
+
+        {/* Notification queue status */}
+        <NotificationQueueStatus />
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
