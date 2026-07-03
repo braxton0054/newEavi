@@ -122,18 +122,15 @@ export default function SuperAdminDashboard() {
   const westCount = students.filter(s => s.preferredCampus === "WEST").length;
   const pendingCount = students.filter(s => s.status === "PENDING").length;
   const approvedCount = students.filter(s => s.status === "APPROVED").length;
-  const rejectedCount = students.filter(s => s.status === "REJECTED").length;
 
   const statusColors: Record<string, string> = {
     PENDING: "bg-amber-50 text-amber-700 border-amber-200",
     APPROVED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    REJECTED: "bg-red-50 text-red-700 border-red-200",
   };
 
   const statusDotColors: Record<string, string> = {
     PENDING: "bg-amber-500",
     APPROVED: "bg-emerald-500",
-    REJECTED: "bg-red-500",
   };
 
   return (
@@ -157,7 +154,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Bento Grid Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
           <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
@@ -187,16 +184,6 @@ export default function SuperAdminDashboard() {
             </div>
             <p className="text-2xl font-bold text-zinc-900">{pendingCount}</p>
             <p className="text-[11px] text-zinc-400">awaiting review</p>
-          </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Rejected</span>
-              <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-zinc-900">{rejectedCount}</p>
-            <p className="text-[11px] text-zinc-400">not admitted</p>
           </div>
           <div className="bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
@@ -235,7 +222,6 @@ export default function SuperAdminDashboard() {
               { key: "all", label: "All" },
               { key: "PENDING", label: "Pending" },
               { key: "APPROVED", label: "Approved" },
-              { key: "REJECTED", label: "Rejected" },
             ].map((f) => (
               <button
                 key={f.key}

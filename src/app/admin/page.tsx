@@ -121,19 +121,16 @@ export default function AdminDashboard() {
   const totalCount = students.length;
   const pendingCount = students.filter(s => s.status === "PENDING").length;
   const approvedCount = students.filter(s => s.status === "APPROVED").length;
-  const rejectedCount = students.filter(s => s.status === "REJECTED").length;
   const campusLabel = user?.campus === "WEST" ? "West" : "Main";
 
   const statusColors: Record<string, string> = {
     PENDING: "bg-amber-50 text-amber-700 border-amber-200",
     APPROVED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    REJECTED: "bg-red-50 text-red-700 border-red-200",
   };
 
   const statusDotColors: Record<string, string> = {
     PENDING: "bg-amber-500",
     APPROVED: "bg-emerald-500",
-    REJECTED: "bg-red-500",
   };
 
   return (
@@ -157,7 +154,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 mb-6">
           <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
@@ -188,16 +185,6 @@ export default function AdminDashboard() {
             <p className="text-xl sm:text-2xl font-bold text-zinc-900">{pendingCount}</p>
             <p className="text-[10px] sm:text-[11px] text-zinc-400">awaiting review</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Rejected</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </div>
-            </div>
-            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{rejectedCount}</p>
-            <p className="text-[10px] sm:text-[11px] text-zinc-400">not admitted</p>
-          </div>
         </div>
 
         {/* Notification queue status */}
@@ -211,7 +198,6 @@ export default function AdminDashboard() {
                 { key: "all", label: "All" },
                 { key: "PENDING", label: "Pending" },
                 { key: "APPROVED", label: "Approved" },
-                { key: "REJECTED", label: "Rejected" },
               ].map((f) => (
                 <button
                   key={f.key}
