@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { encrypt } from "@/lib/encryption";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -78,15 +79,15 @@ export async function PUT(req: NextRequest) {
     const merged = {
       email,
       appPassword: appPassword !== undefined && appPassword !== ""
-        ? appPassword
+        ? encrypt(appPassword)
         : existingSettings.appPassword || "",
       smsBaseUrl: smsBaseUrl !== undefined ? smsBaseUrl : existingSettings.smsBaseUrl || "",
       smsEnabled: smsEnabled !== undefined ? smsEnabled : existingSettings.smsEnabled || false,
       smsApiKey: smsApiKey !== undefined && smsApiKey !== ""
-        ? smsApiKey
+        ? encrypt(smsApiKey)
         : existingSettings.smsApiKey || "",
       smsApiSecret: smsApiSecret !== undefined && smsApiSecret !== ""
-        ? smsApiSecret
+        ? encrypt(smsApiSecret)
         : existingSettings.smsApiSecret || "",
     };
 

@@ -4,6 +4,7 @@ import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
 import { getClient, sendDocument } from "@/lib/whatsapp";
 import { getUpcomingReportingDate } from "@/lib/reporting-dates";
+import { decrypt } from "@/lib/encryption";
 
 interface NotifyResult {
   whatsapp: boolean;
@@ -64,12 +65,12 @@ export async function sendApprovalNotifications(
     const settings = (campusSetting?.settings as any) || {};
     const emailConfig = {
       email: settings.email || "",
-      appPassword: settings.appPassword || "",
+      appPassword: settings.appPassword ? decrypt(settings.appPassword) : "",
       enabled: !!(settings.email && settings.appPassword),
     };
     const smsConfig = {
-      apiKey: settings.smsApiKey || "",
-      apiSecret: settings.smsApiSecret || "",
+      apiKey: settings.smsApiKey ? decrypt(settings.smsApiKey) : "",
+      apiSecret: settings.smsApiSecret ? decrypt(settings.smsApiSecret) : "",
       baseUrl: settings.smsBaseUrl || "https://api.sms-gate.app/3rdparty/v1",
       enabled: !!settings.smsEnabled,
     };
