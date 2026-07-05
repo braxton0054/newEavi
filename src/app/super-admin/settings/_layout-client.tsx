@@ -22,7 +22,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   return (
     <div className="flex-1 min-w-0 flex flex-col md:flex-row">
       {/* Mobile: horizontal scrollable tab bar */}
-      <div className="md:hidden overflow-x-auto border-b border-zinc-200 bg-white sticky top-0 z-20">
+      <div className="md:hidden overflow-x-auto border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-20">
         <div className="flex gap-1 px-3 py-2 min-w-max">
           {navItems.map(item => {
             const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href);
@@ -32,8 +32,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 href={item.href}
                 className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 font-medium"
-                    : "text-zinc-500 hover:bg-zinc-100"
+                    ? "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400 font-medium"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 {item.label}
@@ -44,10 +44,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       </div>
 
       {/* Desktop: sidebar */}
-      <aside className="hidden md:flex md:w-52 md:border-r md:border-zinc-200 md:bg-white md:flex-col">
-        <div className="px-4 py-4 border-b border-zinc-100">
-          <h2 className="text-sm font-medium text-zinc-900">Settings</h2>
-          <p className="text-[11px] text-zinc-400 mt-0.5">Configure your campus</p>
+      <aside className="hidden md:flex md:w-52 md:border-r md:border-zinc-200 md:dark:border-zinc-800 md:bg-white md:dark:bg-zinc-950 md:flex-col">
+        <div className="px-4 py-4 border-b border-zinc-100 dark:border-zinc-800">
+          <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Settings</h2>
+          <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">Configure your campus</p>
         </div>
         <nav className="flex-1 px-3 py-3 space-y-0.5">
           {navItems.map(item => {
@@ -58,8 +58,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 href={item.href}
                 className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 font-medium"
-                    : "text-zinc-500 hover:bg-zinc-100"
+                    ? "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400 font-medium"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 {item.label}
