@@ -1,8 +1,7 @@
-// POST /api/admin/credentials — change login email
-// User is already authenticated via session — no extra password verify needed
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import bcrypt from "bcryptjs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
@@ -16,8 +15,25 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { newEmail } = body;
+    const { newEmail, currentPassword } = body;
     if (!newEmail) return NextResponse.json({ error: "New email is required" }, { status: 400 });
+
+    // Require current password to change email
+    if (!currentPassword) {
+      return NextResponse.json({ error: "Current password is required to change email" }, { status: 400 });
+    }
+
+    // Verify current password against stored hash
+    const account = await prisma.account.findFirst({
+      where: { userId: user.id, providerId: "email" },
+    });
+    if (!account?.password) {
+      return NextResponse.json({ error: "No password set on this account" }, { status: 400 });
+    }
+    const valid = await bcrypt.compare(currentPassword, account.password);
+    if (!valid) {
+      return NextResponse.json({ error: "Current password is incorrect" }, { status: 403 });
+    }
 
     if (newEmail !== user.email) {
       const existing = await prisma.user.findUnique({ where: { email: newEmail } });
