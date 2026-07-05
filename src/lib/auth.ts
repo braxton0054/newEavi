@@ -17,7 +17,7 @@ export const auth = betterAuth({
     cookieCache: { enabled: true, maxAge: 60 * 5 },
   },
   advanced: {
-    useSecureCookies: false,
+    useSecureCookies: process.env.NODE_ENV === "production",
   },
   trustedOrigins: [
     "http://5.189.191.35:4000",
