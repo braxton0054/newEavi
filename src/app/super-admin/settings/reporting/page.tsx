@@ -81,7 +81,7 @@ export default function ReportingDatesPage() {
   return (
     <main className="px-4 sm:px-6 py-6 max-w-4xl">
       {message && (
-        <div className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950 text-red-700 border border-red-200 dark:border-red-800"}`}>
+        <div className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 dark:border-green-800" : "bg-red-50 dark:bg-red-950 text-red-700 border border-red-200 dark:border-red-800 dark:border-red-800"}`}>
           {message.text}
         </div>
       )}
@@ -121,7 +121,7 @@ export default function ReportingDatesPage() {
               </thead>
               <tbody className="divide-y divide-zinc-100">
                 {periods.map(p => (
-                  <tr key={p.month} className="hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50 dark:hover:bg-zinc-800/50 transition-colors">
+                  <tr key={p.month} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 dark:bg-zinc-900 transition-colors">
                     <td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200 text-sm">{MONTHS[p.month - 1]}</td>
                     <td className="px-4 py-3">
                       <input

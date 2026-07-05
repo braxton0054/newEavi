@@ -149,7 +149,7 @@ export default function FeeStructuresPage() {
           </div>
 
           {files.length > 0 && (
-            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/40 dark:bg-blue-950/40 rounded-lg border border-blue-100 dark:border-blue-900">
+            <div className="mb-4 p-3 bg-blue-50/40 dark:bg-blue-950/40 rounded-lg border border-blue-100 dark:border-blue-900">
               <p className="text-[11px] font-medium text-blue-700 mb-2">{files.length} file{files.length !== 1 ? "s" : ""} selected</p>
               <div className="space-y-1">
                 {files.map((f, i) => (

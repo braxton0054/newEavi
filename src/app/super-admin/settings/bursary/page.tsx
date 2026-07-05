@@ -12,7 +12,7 @@ export default function BursarySettingsPage() {
   return (
     <main className="px-6 py-6 max-w-3xl">
       {message && (
-        <div className={`p-4 rounded-lg mb-6 ${message.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950 text-red-700 border border-red-200 dark:border-red-800"}`}>{message.text}</div>
+        <div className={`p-4 rounded-lg mb-6 ${message.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 dark:border-green-800" : "bg-red-50 dark:bg-red-950 text-red-700 border border-red-200 dark:border-red-800 dark:border-red-800"}`}>{message.text}</div>
       )}
 
       <h1 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Bursary Form</h1>
@@ -21,7 +21,7 @@ export default function BursarySettingsPage() {
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5">
         {hasPdf ? (
           <div className="flex items-center gap-3 mb-4">
-            <span className="inline-block w-3 h-3 rounded-full bg-green-50 dark:bg-green-9500" />
+            <span className="inline-block w-3 h-3 rounded-full bg-green-50 dark:bg-green-950 dark:bg-green-9500" />
             <span className="text-sm font-medium text-green-700 dark:text-green-400">Bursary form uploaded</span>
             <button onClick={() => handleDeleteBursaryForm("MAIN")} className="text-sm text-red-600 dark:text-red-400 hover:underline ml-auto">Remove</button>
           </div>

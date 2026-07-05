@@ -179,7 +179,7 @@ export default function CoursesPage() {
             <button type="button" onClick={() => setShowUpload(true)} className="text-[11px] text-blue-700 hover:underline whitespace-nowrap">+ New</button>
           </div>
         ) : (
-          <div className="space-y-2 p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 dark:bg-blue-950/30">
+          <div className="space-y-2 p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 dark:bg-blue-950/30 dark:bg-blue-950/30">
             <input type="file" accept=".pdf" onChange={e => setNewFile(e.target.files?.[0] || null)} className="w-full text-xs text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 dark:bg-blue-950 dark:file:bg-blue-950 file:text-blue-700 hover:file:bg-blue-100 dark:hover:file:bg-blue-900" />
             <button type="button" onClick={() => setShowUpload(false)} className="text-[11px] text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 hover:underline">Cancel</button>
           </div>

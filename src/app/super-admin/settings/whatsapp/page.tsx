@@ -10,7 +10,7 @@ export default function WhatsAppSettingsPage() {
   return (
     <main className="px-6 py-6 max-w-3xl">
       {message && (
-        <div className={`p-4 rounded-lg mb-6 ${message.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950 text-red-700 border border-red-200 dark:border-red-800"}`}>{message.text}</div>
+        <div className={`p-4 rounded-lg mb-6 ${message.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 dark:border-green-800" : "bg-red-50 dark:bg-red-950 text-red-700 border border-red-200 dark:border-red-800 dark:border-red-800"}`}>{message.text}</div>
       )}
 
       <h1 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">WhatsApp Configuration</h1>
