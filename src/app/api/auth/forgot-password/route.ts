@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { decrypt } from "@/lib/encryption";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -35,8 +36,8 @@ export async function POST(req: NextRequest) {
 
     const emailConfig = {
       email: settings.email || "",
-      appPassword: settings.emailPassword || "",
-      enabled: !!(settings.email && settings.emailPassword),
+      appPassword: settings.appPassword ? decrypt(settings.appPassword) : "",
+      enabled: !!(settings.email && settings.appPassword),
     };
 
     if (!emailConfig.enabled) {
