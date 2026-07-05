@@ -15,6 +15,7 @@ const navItems = [
   { href: "/super-admin/settings/whatsapp", label: "WhatsApp" },
   { href: "/super-admin/settings/credentials", label: "Credentials" },
   { href: "/super-admin/settings/login-history", label: "Login History" },
+  { href: "/super-admin/settings/audit-log", label: "Audit Trail" },
   { href: "/super-admin/settings/backup", label: "Backup" },
 ];
 

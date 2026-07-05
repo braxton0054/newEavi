@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
 function deserializeRecord(record: any): any {
@@ -123,6 +124,16 @@ export async function POST(req: NextRequest) {
     if (Array.isArray(data.users)) {
       imported += await upsertMany(prisma.user, data.users);
     }
+
+    audit({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      campus: null,
+      action: "backup.import",
+      target: file.name,
+      detail: JSON.stringify({ imported }),
+    });
 
     return NextResponse.json({
       success: true,

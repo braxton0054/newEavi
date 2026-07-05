@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 import bcrypt from "bcryptjs";
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,16 @@ export async function POST(req: NextRequest) {
       await prisma.user.update({
         where: { id: user.id },
         data: { email: newEmail, emailVerified: true },
+      });
+
+      audit({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        campus: user.campus || null,
+        action: "email.change",
+        target: user.email,
+        detail: JSON.stringify({ newEmail }),
       });
     }
 

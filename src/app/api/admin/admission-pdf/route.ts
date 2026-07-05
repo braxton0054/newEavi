@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -28,6 +30,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || user.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -60,6 +70,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    audit({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      campus: null,
+      action: "pdf.upload",
+      target: file.name,
+    });
+
     return NextResponse.json({
       data: { id: template.id, name: template.name },
     }, { status: 200 });
@@ -69,9 +88,30 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(req: NextRequest) {
   try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || user.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const existing = await prisma.admissionPdfTemplate.findFirst();
+    const name = existing?.name || "unknown";
+
     await prisma.admissionPdfTemplate.deleteMany();
+
+    audit({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      campus: null,
+      action: "pdf.delete",
+      target: name,
+    });
+
     return NextResponse.json({ data: { message: "Admission PDF template removed" } }, { status: 200 });
   } catch (error) {
     console.error("Delete error:", error);

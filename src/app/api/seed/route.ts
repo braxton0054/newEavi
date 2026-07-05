@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
   try {
+    const session = await auth.api.getSession({ headers: new Headers() });
+    // No session required for seed — it's a one-off setup endpoint
     const admins = [
       { email: "super@eavi-college.edu", password: "admin123", name: "Super Admin", role: "SUPER_ADMIN" as const },
       { email: "main@eavi-college.edu", password: "admin123", name: "Main Campus Admin", role: "ADMIN" as const, campus: "MAIN" as const },
@@ -112,6 +115,17 @@ export async function POST() {
         coursesCreated++;
       }
     }
+
+    // Audit log (fire-and-forget — seed often runs without a real session)
+    audit({
+      userId: session?.user?.id || "seed-script",
+      email: session?.user?.email || "seed@system",
+      role: session?.user?.role || "SYSTEM",
+      campus: null,
+      action: "seed.run",
+      target: "database",
+      detail: JSON.stringify({ adminsCreated: results.length, coursesCreated }),
+    });
 
     return NextResponse.json({ data: results, coursesCreated }, { status: 201 });
   } catch (error) {

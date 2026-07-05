@@ -263,3 +263,20 @@ model NotificationJob {
   @@index([status, createdAt])
   @@map("notification_jobs")
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  email     String
+  role      String
+  campus    String?
+  action    String   // e.g. "student.approve", "student.reject", "student.delete", "pdf.upload", "pdf.delete", "bursary.upload", "bursary.delete", "settings.update", "email.change", "course.create", "course.update", "course.delete", "fee.create", "fee.update", "fee.delete", "seed.run", "backup.import"
+  target    String   // what was acted on (student ID, course name, etc.)
+  detail    String?  // extra context (JSON string)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

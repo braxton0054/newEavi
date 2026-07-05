@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -50,9 +51,17 @@ export async function POST(req: NextRequest) {
         where: { id: existing.id },
         data: { url: url || existing.url, pdfData: pdfBuffer ?? existing.pdfData },
       });
+      audit({
+        userId: user.id, email: user.email, role: user.role, campus: null,
+        action: "fee.update", target: name, detail: JSON.stringify({ id: existing.id }),
+      });
     } else {
       structure = await prisma.feeStructure.create({
         data: { name, url: url || null, pdfData: pdfBuffer },
+      });
+      audit({
+        userId: user.id, email: user.email, role: user.role, campus: null,
+        action: "fee.create", target: name,
       });
     }
 
@@ -92,6 +101,11 @@ export async function PUT(req: NextRequest) {
       data: updateData,
     });
 
+    audit({
+      userId: user.id, email: user.email, role: user.role, campus: null,
+      action: "fee.update", target: structure.name, detail: JSON.stringify({ id }),
+    });
+
     return NextResponse.json({ data: structure }, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -113,7 +127,15 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
+    const existing = await prisma.feeStructure.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
     await prisma.feeStructure.delete({ where: { id } });
+
+    audit({
+      userId: user.id, email: user.email, role: user.role, campus: null,
+      action: "fee.delete", target: existing.name, detail: JSON.stringify({ id }),
+    });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error(error);

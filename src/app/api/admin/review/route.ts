@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
 export async function PATCH(req: NextRequest) {
@@ -51,6 +52,18 @@ export async function PATCH(req: NextRequest) {
     await prisma.student.update({
       where: { id: application.studentId },
       data: { status },
+    });
+
+    // Audit log
+    const action = status === "APPROVED" ? "student.approve" : "student.reject";
+    audit({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      campus: user.campus || null,
+      action,
+      target: `${application.student.firstName} ${application.student.lastName} (${application.studentId})`,
+      detail: JSON.stringify({ course: application.course, notes: notes || null }),
     });
 
     // If approved, send notifications in the background

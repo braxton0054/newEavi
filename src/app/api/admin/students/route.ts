@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -110,8 +111,19 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Delete applications first (foreign key constraint)
+    const student = await prisma.student.findUnique({ where: { id } });
     await prisma.application.deleteMany({ where: { studentId: id } });
     await prisma.student.delete({ where: { id } });
+
+    audit({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      campus: user.campus || null,
+      action: "student.delete",
+      target: student ? `${student.firstName} ${student.lastName} (${id})` : id,
+      detail: student ? JSON.stringify({ email: student.email, phone: student.phone }) : null,
+    });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
