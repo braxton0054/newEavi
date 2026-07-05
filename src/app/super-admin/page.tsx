@@ -135,13 +135,13 @@ export default function SuperAdminDashboard() {
 
   return (
     <>
-      <header className="bg-white border-b border-zinc-100 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 sticky top-0 z-30">
+      <header className="bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 sticky top-0 z-30">
         <div className="flex items-center gap-3">
           <div className="w-12 lg:hidden shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-base sm:text-lg font-semibold text-zinc-900">Dashboard</h1>
-              <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100 shrink-0">{totalStudents} total</span>
+              <h1 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-100">Dashboard</h1>
+              <span className="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[11px] font-medium border border-blue-100 dark:border-blue-800 shrink-0">{totalStudents} total</span>
             </div>
             <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Overview of all campuses</p>
           </div>
@@ -155,51 +155,51 @@ export default function SuperAdminDashboard() {
 
         {/* Bento Grid Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-6">
-          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+          <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
             <div className="flex items-center justify-between gap-1">
               <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Total</span>
               <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                 <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
               </div>
             </div>
-            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{totalStudents}</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight">{totalStudents}</p>
             <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">all campuses</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+          <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
             <div className="flex items-center justify-between gap-1">
               <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Approved</span>
               <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                 <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{approvedCount}</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight">{approvedCount}</p>
             <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">enrolled</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+          <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
             <div className="flex items-center justify-between gap-1">
               <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Pending</span>
               <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                 <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{pendingCount}</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight">{pendingCount}</p>
             <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">awaiting</p>
           </div>
-          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+          <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
             <div className="flex items-center justify-between gap-1">
               <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Campuses</span>
               <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
                 <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
               </div>
             </div>
-            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{mainCount} <span className="text-xs sm:text-sm font-normal text-zinc-400">/ {westCount}</span></p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight">{mainCount} <span className="text-xs sm:text-sm font-normal text-zinc-400">/ {westCount}</span></p>
             <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">main / west</p>
           </div>
         </div>
 
         {/* Filters + Search */}
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-4">
-          <div className="flex items-center gap-1.5 bg-white rounded-xl border border-zinc-100 p-1">
+          <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 p-1">
             {[
               { key: "all", label: "All" },
               { key: "MAIN", label: `Main (${mainCount})` },
@@ -211,7 +211,7 @@ export default function SuperAdminDashboard() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
                   campusFilter === f.key
                     ? "bg-zinc-900 text-white shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
+                    : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 }`}
               >
                 {f.label}
@@ -229,7 +229,7 @@ export default function SuperAdminDashboard() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   statusFilter === f.key
                     ? "bg-zinc-900 text-white shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
+                    : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                 }`}
               >
                 {f.label}
@@ -237,7 +237,7 @@ export default function SuperAdminDashboard() {
             ))}
           </div>
           <div className="flex items-center gap-2 lg:ml-auto">
-            <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-sm text-zinc-400 w-full sm:w-60 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+            <div className="flex items-center gap-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 py-2 text-sm text-zinc-400 w-full sm:w-60 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
               <svg className="w-3.5 h-3.5 shrink-0 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -246,10 +246,10 @@ export default function SuperAdminDashboard() {
                 placeholder="Search by name, phone or email..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 outline-none w-full"
+                className="bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 outline-none w-full"
               />
             </div>
-            <span className="text-[11px] text-zinc-400 whitespace-nowrap bg-white px-2.5 py-1 rounded-lg border border-zinc-100">
+            <span className="text-[11px] text-zinc-400 whitespace-nowrap bg-white dark:bg-zinc-950 px-2.5 py-1 rounded-lg border border-zinc-100 dark:border-zinc-800">
               {filtered.length} / {totalStudents}
             </span>
           </div>
@@ -257,22 +257,22 @@ export default function SuperAdminDashboard() {
 
         {/* Student List */}
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-zinc-100 p-16 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 p-16 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-4">
               <svg className="w-6 h-6 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>
-            <p className="text-sm font-medium text-zinc-600">No students found</p>
+            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">No students found</p>
             <p className="text-xs text-zinc-400 mt-1">Try adjusting your search or filter</p>
           </div>
         ) : (
           <div className="space-y-2">
             {filtered.map((student) => (
-              <div key={student.id} className="bg-white rounded-xl border border-zinc-100 overflow-hidden transition-all duration-150 hover:border-zinc-200 hover:shadow-sm">
+              <div key={student.id} className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-800 overflow-hidden transition-all duration-150 hover:border-zinc-200 dark:hover:border-zinc-700 hover:shadow-sm">
                 {editingId === student.id ? (
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-4">
                       <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                      <h3 className="text-sm font-semibold text-zinc-900">Edit student</h3>
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Edit student</h3>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-3">
                       {["firstName", "middleName", "lastName"].map((field) => (
@@ -331,7 +331,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-sm font-semibold text-zinc-900">
+                            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                               {student.firstName} {student.middleName ? `${student.middleName} ` : ""}{student.lastName}
                             </h3>
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${statusColors[student.status] || "bg-zinc-50 text-zinc-600 border-zinc-200"}`}>
@@ -339,11 +339,11 @@ export default function SuperAdminDashboard() {
                               {student.status === "APPROVED" ? "Approved" : student.status === "REJECTED" ? "Rejected" : "Pending"}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500 flex-wrap">
+                          <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
                             {student.gender && <span>{student.gender}</span>}
-                            {student.phone && <span className="text-zinc-300">·</span>}
+                            {student.phone && <span className="text-zinc-300 dark:text-zinc-600">·</span>}
                             {student.phone && <span>{student.phone}</span>}
-                            {student.email && <span className="text-zinc-300">·</span>}
+                            {student.email && <span className="text-zinc-300 dark:text-zinc-600">·</span>}
                             {student.email && <span className="truncate max-w-[200px]">{student.email}</span>}
                           </div>
                           <div className="flex items-center gap-3 mt-1.5 text-[11px] text-zinc-400">
@@ -361,10 +361,10 @@ export default function SuperAdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <button onClick={() => startEdit(student)} className="w-8 h-8 rounded-lg border border-zinc-200 bg-white flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 transition-all" title="Edit">
+                        <button onClick={() => startEdit(student)} className="w-8 h-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 transition-all" title="Edit">
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
-                        <button onClick={() => handleDelete(student.id, `${student.firstName} ${student.lastName}`)} className="w-8 h-8 rounded-lg border border-zinc-200 bg-white flex items-center justify-center text-zinc-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all" title="Delete">
+                        <button onClick={() => handleDelete(student.id, `${student.firstName} ${student.lastName}`)} className="w-8 h-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all" title="Delete">
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
                       </div>
@@ -372,13 +372,13 @@ export default function SuperAdminDashboard() {
 
                     {/* Applications */}
                     {student.applications.length > 0 && (
-                      <div className="mt-3 ml-[52px] border-t border-zinc-50 pt-3">
+                      <div className="mt-3 ml-[52px] border-t border-zinc-50 dark:border-zinc-800 pt-3">
                         {student.applications.map((app) => (
                           <div key={app.id} className="flex items-center justify-between py-1.5">
                             <div className="flex items-center gap-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
                               <div>
-                                <span className="text-xs font-medium text-zinc-700">{app.course}</span>
+                                <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{app.course}</span>
                                 {app.notes && <span className="text-[11px] text-zinc-400 ml-2">· {app.notes}</span>}
                               </div>
                             </div>

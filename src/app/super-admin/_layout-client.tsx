@@ -39,7 +39,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex">
       <AdminSidebar role="SUPER_ADMIN" email={user?.email} />
       <div className="flex-1 min-w-0">
         {children}

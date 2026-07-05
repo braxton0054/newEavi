@@ -103,8 +103,8 @@ export default function Home() {
   const isActive = pressing || keyPressing;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
-      <header className="bg-white border-b-2 border-[#d81e6f]/20 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-zinc-900 dark:to-zinc-950 flex flex-col">
+      <header className="bg-white dark:bg-zinc-950 border-b-2 border-[#d81e6f]/20 shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-5 flex flex-col items-center text-center">
           {/* Logo — long-press target */}
           <div
@@ -180,7 +180,7 @@ export default function Home() {
               Leading the Leaders
             </span>
           </div>
-          <p className="mt-2 text-sm text-[#1a3d63]/70 italic font-medium">
+          <p className="mt-2 text-sm text-[#1a3d63]/70 dark:text-zinc-400 italic font-medium">
             Nurturing quality and affordable education
           </p>
         </div>
@@ -199,7 +199,7 @@ export default function Home() {
           </div>
 
           {/* Welcome text below the button */}
-          <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-gray-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
             Welcome to the EAVI College Admission Portal. Apply for admission,
             check your application status, and manage your academic journey.
           </p>

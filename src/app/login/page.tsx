@@ -46,7 +46,7 @@ export default function LoginPage() {
 
   const formContent = (
     <>
-      <h2 className="text-lg font-semibold text-gray-900 text-center mb-1">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 text-center mb-1">
         Admin Login
       </h2>
       <p className="text-xs text-gray-500 text-center mb-5">
@@ -183,7 +183,7 @@ export default function LoginPage() {
       </div>
 
       {/* ─── Right panel: form (all sizes) ─── */}
-      <div className="flex-1 flex flex-col bg-gray-50 min-h-screen">
+      <div className="flex-1 flex flex-col bg-gray-50 dark:bg-zinc-900 min-h-screen">
         {/* Mobile branding (visible below lg) */}
         <div className="lg:hidden pt-10 pb-2 px-4 flex flex-col items-center text-center">
           <div className="w-[64px] aspect-square relative mx-auto mb-3.5">
@@ -209,7 +209,7 @@ export default function LoginPage() {
         {/* Form area — vertically centered */}
         <div className="flex-1 flex items-center justify-center px-4 py-6">
           <div className="w-full max-w-sm">
-            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6 shadow-sm">
               {formContent}
             </div>
 
@@ -221,7 +221,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer — visible on all sizes, always at bottom */}
-        <div className="px-4 py-5 text-center text-[11px] text-gray-400 leading-relaxed border-t border-gray-200 bg-white lg:border-none lg:bg-transparent">
+        <div className="px-4 py-5 text-center text-[11px] text-gray-400 leading-relaxed border-t border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 lg:border-none lg:bg-transparent lg:dark:bg-transparent">
           <p>East Africa Vision Institute Main Campus — Eldoret | West Campus — Eldoret</p>
           <p className="mt-0.5">Phone: +254 700 000 000 | Email: admissions@eavicollege.ac.ke</p>
           <p className="mt-0.5">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>

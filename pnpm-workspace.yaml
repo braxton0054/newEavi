@@ -1,7 +1,12 @@
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
+  '@whiskeysockets/baileys': set this to true or false
+  bufferutil: set this to true or false
+  electron-winstaller: set this to true or false
+  esbuild: set this to true or false
   prisma: true
+  protobufjs: set this to true or false
   puppeteer: true
   sharp: true
   unrs-resolver: true

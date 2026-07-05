@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { Sun, Moon } from "lucide-react";
 
 interface SidebarProps {
   role: "ADMIN" | "SUPER_ADMIN";
@@ -18,8 +19,20 @@ const navIcons = {
 
 export default function AdminSidebar({ role, campus, email }: SidebarProps) {
   const [open, setOpen] = useState(false);
+  const [dark, setDark] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("eavi-theme", next ? "dark" : "light");
+  };
 
   const links =
     role === "SUPER_ADMIN"
@@ -61,11 +74,11 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-full w-56 bg-white border-r border-zinc-100 z-50 flex flex-col transition-all duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto shadow-sm ${
+        className={`fixed top-0 left-0 h-full w-56 bg-white dark:bg-zinc-950 border-r border-zinc-100 dark:border-zinc-800 z-50 flex flex-col transition-all duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto shadow-sm ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="px-4 py-4 border-b border-zinc-100">
+        <div className="px-4 py-4 border-b border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-700 to-blue-600 flex items-center justify-center">
               <span className="text-white font-semibold text-[10px] tracking-tight">EAVI</span>
@@ -99,7 +112,14 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
           })}
         </nav>
 
-        <div className="border-t border-zinc-100 px-3 py-2">
+        <div className="border-t border-zinc-100 px-3 py-2 space-y-1">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-zinc-500 hover:bg-zinc-100 transition-colors"
+          >
+            {dark ? <Moon size={16} /> : <Sun size={16} />}
+            <span>{dark ? "Dark" : "Light"}</span>
+          </button>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
