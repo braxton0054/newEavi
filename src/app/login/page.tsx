@@ -222,7 +222,8 @@ export default function LoginPage() {
 
         {/* Footer — visible on all sizes, always at bottom */}
         <div className="px-4 py-5 text-center text-[11px] text-gray-400 leading-relaxed border-t border-gray-200 bg-white lg:border-none lg:bg-transparent">
-          <p>Main: 0726022044 &middot; West: 0748022044 &middot; Email: admissions@eavicollege.ac.ke</p>
+          <p>East Africa Vision Institute Main Campus — Eldoret | West Campus — Eldoret</p>
+          <p className="mt-0.5">Phone: +254 700 000 000 | Email: admissions@eavicollege.ac.ke</p>
           <p className="mt-0.5">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>
         </div>
       </div>
