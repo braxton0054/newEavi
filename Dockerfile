@@ -17,4 +17,4 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/server.mjs ./server.mjs
 COPY --from=builder /app/prisma ./prisma
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma db push && npm start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
