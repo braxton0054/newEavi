@@ -19,10 +19,21 @@ export const auth = betterAuth({
   advanced: {
     useSecureCookies: process.env.NODE_ENV === "production",
   },
-  trustedOrigins: [
-    "http://5.189.191.35:4000",
-    "https://eavi.college.eavi.shop",
-  ],
+  trustedOrigins: (() => {
+    // Build from env var (comma-separated) or fall back to defaults
+    const fromEnv = process.env.TRUSTED_ORIGINS;
+    const origins = fromEnv
+      ? fromEnv.split(",").map((s) => s.trim()).filter(Boolean)
+      : [
+          "http://5.189.191.35:4000",
+          "https://eavi.college.eavi.shop",
+        ];
+    // Always include the baseURL so it never locks itself out
+    if (process.env.NEXTAUTH_URL && !origins.includes(process.env.NEXTAUTH_URL)) {
+      origins.push(process.env.NEXTAUTH_URL);
+    }
+    return origins;
+  })(),
   user: {
     additionalFields: {
       role: {
