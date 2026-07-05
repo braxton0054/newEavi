@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -11,6 +12,18 @@ export default function Home() {
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [pressing, setPressing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("eavi-theme", next ? "dark" : "light");
+  };
 
   const LONG_PRESS_MS = 1200;
   const PROGRESS_STEP_MS = 12; // ~100 ticks over 1200ms
@@ -104,7 +117,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-zinc-900 dark:to-zinc-950 flex flex-col">
-      <header className="bg-white dark:bg-zinc-950 border-b-2 border-[#d81e6f]/20 shadow-sm">
+      <header className="bg-white dark:bg-zinc-950 border-b-2 border-[#d81e6f]/20 shadow-sm relative">
+        {/* Dark mode toggle */}
+        <button
+          onClick={toggleTheme}
+          className="absolute top-4 right-4 p-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          aria-label="Toggle dark mode"
+        >
+          {dark ? <Moon size={18} /> : <Sun size={18} />}
+        </button>
         <div className="max-w-2xl mx-auto px-4 py-5 flex flex-col items-center text-center">
           {/* Logo — long-press target */}
           <div
