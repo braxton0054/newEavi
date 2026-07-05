@@ -33,6 +33,33 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Duplicate detection: same phone + similar name across campuses
+    const normalizedFirst = firstName.trim().toLowerCase();
+    const normalizedLast = lastName.trim().toLowerCase();
+    const phoneClean = phone.replace(/[\s\-\(\)\+]/g, "");
+
+    const phoneDupes = await prisma.student.findMany({
+      where: { phone: { contains: phoneClean.slice(-9) } }, // match last 9 digits
+    });
+    for (const dupe of phoneDupes) {
+      const dupeFirst = dupe.firstName.trim().toLowerCase();
+      const dupeLast = dupe.lastName.trim().toLowerCase();
+      const firstNameMatch = dupeFirst === normalizedFirst
+        || dupeFirst.includes(normalizedFirst)
+        || normalizedFirst.includes(dupeFirst);
+      const lastNameMatch = dupeLast === normalizedLast
+        || dupeLast.includes(normalizedLast)
+        || normalizedLast.includes(dupeLast);
+      if (firstNameMatch && lastNameMatch) {
+        return NextResponse.json({
+          error: "A student with this name and phone number already exists. If this is a mistake, contact the admin.",
+          existingStudentId: dupe.id,
+          existingCampus: dupe.preferredCampus,
+          existingStatus: dupe.status,
+        }, { status: 409 });
+      }
+    }
+
     // Look up the course
     const courseRecord = await prisma.course.findUnique({
       where: { id: course },
