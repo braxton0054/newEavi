@@ -78,38 +78,38 @@ export default function CredentialsPage() {
     if (ok) setCurrentPassword("");
   }
 
-  if (loading) return <main className="px-6 py-6 max-w-3xl"><p className="text-sm text-zinc-400">Loading...</p></main>;
+  if (loading) return <main className="px-6 py-6 max-w-3xl"><p className="text-sm text-zinc-400 dark:text-zinc-500">Loading...</p></main>;
 
   return (
     <main className="px-6 py-6 max-w-3xl">
-      <div className="bg-white border border-zinc-200 rounded-xl p-5">
-        <h2 className="text-base font-medium text-zinc-900 mb-1">Login Credentials</h2>
-        <p className="text-xs text-zinc-400 mb-4">Change your super admin login email and/or password.</p>
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5">
+        <h2 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Login Credentials</h2>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-4">Change your super admin login email and/or password.</p>
         <div className="space-y-4 max-w-md">
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">Login Email</label>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Login Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">Current Password</label>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Current Password</label>
             <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)}
               placeholder="Required to make changes"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              New Password <span className="text-zinc-400 font-normal">(leave blank to keep current)</span>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+              New Password <span className="text-zinc-400 dark:text-zinc-500 font-normal">(leave blank to keep current)</span>
             </label>
             <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
               placeholder="New password"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">Confirm New Password</label>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Confirm New Password</label>
             <input type="password" value={newPassword2} onChange={e => setNewPassword2(e.target.value)}
               placeholder="Confirm new password"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
           </div>
           <button onClick={handleSave} disabled={saving}
             className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:opacity-50 transition-colors">

@@ -61,10 +61,10 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-3 left-3 z-40 lg:hidden bg-white rounded-xl border border-zinc-200 p-3 shadow-sm hover:shadow-md transition-shadow"
+        className="fixed top-3 left-3 z-40 lg:hidden bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-700 p-3 shadow-sm hover:shadow-md transition-shadow"
         aria-label="Open menu"
       >
-        <svg className="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
@@ -84,8 +84,8 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
               <span className="text-white font-semibold text-[10px] tracking-tight">EAVI</span>
             </div>
             <div className="min-w-0">
-              <h2 className="font-medium text-sm text-zinc-900 leading-tight">{title}</h2>
-              <p className="text-[11px] text-zinc-400 truncate mt-0.5">{email || ""}</p>
+              <h2 className="font-medium text-sm text-zinc-900 dark:text-zinc-100 leading-tight">{title}</h2>
+              <p className="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5">{email || ""}</p>
             </div>
           </div>
         </div>
@@ -99,11 +99,11 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
                 onClick={() => { router.push(link.href); setOpen(false); }}
                 className={`flex items-center gap-3 w-full px-3 py-2.5 sm:py-2 rounded-lg text-sm transition-all min-h-11 ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 font-medium"
-                    : "text-zinc-500 hover:bg-zinc-100"
+                    ? "bg-blue-50 dark:bg-blue-950 text-blue-700 font-medium"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
-                <svg className={`w-4 h-4 ${isActive ? "text-blue-600" : "text-zinc-400"}`} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 ${isActive ? "text-blue-600" : "text-zinc-400 dark:text-zinc-500"}`} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d={link.icon} />
                 </svg>
                 <span>{link.label}</span>
@@ -112,17 +112,17 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
           })}
         </nav>
 
-        <div className="border-t border-zinc-100 px-3 py-2 space-y-1">
+        <div className="border-t border-zinc-100 dark:border-zinc-800 px-3 py-2 space-y-1">
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-zinc-500 hover:bg-zinc-100 transition-colors"
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             {dark ? <Moon size={16} /> : <Sun size={16} />}
             <span>{dark ? "Dark" : "Light"}</span>
           </button>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
