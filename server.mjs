@@ -40,4 +40,26 @@ app.prepare().then(async () => {
   } catch (e) {
     console.error("[Queue] Start error:", e.message);
   }
+
+  // ─── Reporting-date reminders ───
+  // Checks every 6 hours whether any ReportingPeriod starts in exactly
+  // 4 days; runReportingReminders() itself dedupes so this is safe to
+  // call repeatedly.
+  const runReminders = async () => {
+    try {
+      const res = await fetch(`http://localhost:${port}/api/admin/reporting-reminders/run`, {
+        method: "POST",
+        headers: { "x-internal-cron-secret": process.env.INTERNAL_CRON_SECRET || "" },
+      });
+      const data = await res.json();
+      if (data?.data?.remindersSent) {
+        console.log(`[Reminders] Sent ${data.data.remindersSent} reporting-date reminder(s)`);
+      }
+    } catch (e) {
+      console.error("[Reminders] Run error:", e.message);
+    }
+  };
+  setInterval(runReminders, 6 * 60 * 60 * 1000); // every 6h
+  runReminders(); // fire once on boot
+  console.log("[Reminders] Reporting-date reminder scheduler started (every 6h)");
 });

@@ -171,6 +171,7 @@ model Application {
   status       ApplicationStatus  @default(PENDING)
   reviewedBy   String?
   notes        String?
+  reportingReminderSentAt DateTime?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
@@ -210,12 +211,13 @@ model ReportingPeriod {
   id        String   @id @default(cuid())
   year      Int
   month     Int      // 1-12
+  campus    Campus?
   startDate DateTime?
   endDate   DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([year, month])
+  @@unique([year, month, campus])
   @@map("reporting_periods")
 }
 

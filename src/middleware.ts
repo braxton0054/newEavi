@@ -25,7 +25,12 @@ export async function middleware(req: NextRequest) {
 
   // Only protect API routes
   if (pathname.startsWith("/api/")) {
-    const sessionRes = await fetch(new URL("/api/auth/me", req.url), {
+    // Fetch session check via internal URL — NOT req.url (which may be HTTPS
+    // through a reverse-proxy, causing SSL handshake failures on the internal
+    // HTTP server).  Use the internal base from AUTH_API_URL or fall back to
+    // localhost:4000.
+    const base = process.env.AUTH_API_URL || "http://localhost:4000";
+    const sessionRes = await fetch(new URL("/api/auth/me", base), {
       headers: { cookie: req.headers.get("cookie") || "" },
     });
 
