@@ -170,7 +170,7 @@ export default function CoursesPage() {
         <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Fee structure {feeStructures.length > 0 ? `(${feeStructures.length})` : ""}</label>
         {!showUpload ? (
           <div className="flex gap-2">
-            <select value={value} onChange={e => onChange(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+            <select value={value} onChange={e => onChange(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100">
               <option value="">None</option>
               {feeStructures.length > 0 && feeStructures.map(fs => (
                 <option key={fs.id} value={fs.id}>{fs.name}</option>
@@ -214,13 +214,13 @@ export default function CoursesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Course name *</label>
-              <input value={name} onChange={e => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. Diploma in ICT" />
+              <input value={name} onChange={e => setName(e.target.value)} required className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100" placeholder="e.g. Diploma in ICT" />
             </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Department</label>
               {!departmentCustom ? (
                 <div className="flex gap-2">
-                  <select value={department} onChange={e => { const val = e.target.value; if (val === "__new__") { setDepartmentCustom(true); setDepartment(""); } else { setDepartment(val); } }} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                  <select value={department} onChange={e => { const val = e.target.value; if (val === "__new__") { setDepartmentCustom(true); setDepartment(""); } else { setDepartment(val); } }} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100">
                     <option value="">Select department</option>
                     {depts.map(d => (
                       <option key={d} value={d}>{d}</option>
@@ -230,14 +230,14 @@ export default function CoursesPage() {
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <input value={newDepartment} onChange={e => setNewDepartment(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="New department name" autoFocus />
+                  <input value={newDepartment} onChange={e => setNewDepartment(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100" placeholder="New department name" autoFocus />
                   <button type="button" onClick={() => setDepartmentCustom(false)} className="text-[11px] text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 hover:underline whitespace-nowrap">Cancel</button>
                 </div>
               )}
             </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Minimum Grade *</label>
-              <select value={minGrade} onChange={e => setMinGrade(e.target.value)} required className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+              <select value={minGrade} onChange={e => setMinGrade(e.target.value)} required className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100">
                 <option value="">Select grade</option>
                 {EDUCATION_QUALIFICATIONS.map(g => (
                   <option key={g} value={g}>{g}</option>
@@ -282,13 +282,13 @@ export default function CoursesPage() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div>
                               <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Course name</label>
-                              <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                              <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100" />
                             </div>
                             <div>
                               <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Department</label>
                               {!editDepartmentCustom ? (
                                 <div className="flex gap-2">
-                                  <select value={editDepartment} onChange={e => { const val = e.target.value; if (val === "__new__") { setEditDepartmentCustom(true); setEditDepartment(""); } else { setEditDepartment(val); } }} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                                  <select value={editDepartment} onChange={e => { const val = e.target.value; if (val === "__new__") { setEditDepartmentCustom(true); setEditDepartment(""); } else { setEditDepartment(val); } }} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100">
                                     <option value="">Select department</option>
                                     {depts.map(d => (
                                       <option key={d} value={d}>{d}</option>
@@ -298,14 +298,14 @@ export default function CoursesPage() {
                                 </div>
                               ) : (
                                 <div className="flex gap-2">
-                                  <input value={editNewDepartment} onChange={e => setEditNewDepartment(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="New department name" autoFocus />
+                                  <input value={editNewDepartment} onChange={e => setEditNewDepartment(e.target.value)} className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100" placeholder="New department name" autoFocus />
                                   <button type="button" onClick={() => setEditDepartmentCustom(false)} className="text-[11px] text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 hover:underline whitespace-nowrap">Cancel</button>
                                 </div>
                               )}
                             </div>
                             <div>
                               <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Minimum Grade</label>
-                              <select value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                              <select value={editMinGrade} onChange={e => setEditMinGrade(e.target.value)} className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100">
                                 <option value="">Select grade</option>
                                 {EDUCATION_QUALIFICATIONS.map(g => (
                                   <option key={g} value={g}>{g}</option>

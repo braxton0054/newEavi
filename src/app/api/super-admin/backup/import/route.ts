@@ -121,9 +121,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    if (Array.isArray(data.whatsappSessions) && data.whatsappSessions.length > 0) {
-      for (const ws of data.whatsappSessions) {
-        await prisma.whatsappSession.upsert({
+    if (Array.isArray(data.whatsAppSessions) && data.whatsAppSessions.length > 0) {
+      for (const ws of data.whatsAppSessions) {
+        await prisma.whatsAppSession.upsert({
           where: { id: ws.id },
           create: ws,
           update: ws,

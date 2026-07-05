@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       admissionPdfTemplates,
       reportingPeriods,
       systemSettings,
-      whatsappSessions,
+      whatsAppSessions,
       notificationJobs,
     ] = await Promise.all([
       prisma.user.findMany({ select: { id: true, name: true, email: true, role: true, campus: true, createdAt: true } }),
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
       prisma.admissionPdfTemplate.findMany({ select: { id: true, name: true, mimeType: true, createdAt: true, updatedAt: true } }),
       prisma.reportingPeriod.findMany(),
       prisma.systemSetting.findMany(),
-      prisma.whatsappSession.findMany({ select: { id: true, campus: true, phoneNumber: true, status: true, lastActive: true, createdAt: true, updatedAt: true } }),
+      prisma.whatsAppSession.findMany({ select: { id: true, campus: true, phoneNumber: true, status: true, lastActive: true, createdAt: true, updatedAt: true } }),
       prisma.notificationJob.findMany(),
     ]);
 
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
         admissionPdfTemplates,
         reportingPeriods,
         systemSettings,
-        whatsappSessions,
+        whatsAppSessions,
         notificationJobs,
       },
     };

@@ -106,16 +106,16 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Student Name</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">First Name *</label>
-                <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">First Name *</label>
+                <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Middle Name</label>
-                <input name="middleName" value={form.middleName} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Middle Name</label>
+                <input name="middleName" value={form.middleName} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Last Name *</label>
-                <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Last Name *</label>
+                <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
               </div>
             </div>
           </div>
@@ -124,8 +124,8 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Contact &amp; Profile</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Gender</label>
-                <select name="gender" value={form.gender} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Gender</label>
+                <select name="gender" value={form.gender} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                   <option value="">Select</option>
                   <option value="MALE">Male</option>
                   <option value="FEMALE">Female</option>
@@ -133,12 +133,12 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
-                <input name="phone" value={form.phone} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Phone *</label>
+                <input name="phone" value={form.phone} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-                <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Email</label>
+                <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
               </div>
             </div>
           </div>
@@ -147,8 +147,8 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Academic Details</p>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Education Qualification *</label>
-                <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Education Qualification *</label>
+                <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                   <option value="">Select qualification</option>
                   {EDUCATION_QUALIFICATIONS.map(q => (
                     <option key={q} value={q}>{q}</option>
@@ -157,16 +157,16 @@ export default function ManualApplyForm({ defaultCampus, onSuccess }: Props) {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Campus *</label>
-                  <select name="preferredCampus" value={form.preferredCampus} onChange={handleChange} required disabled={!!defaultCampus} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-gray-100 disabled:text-gray-500">
+                  <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Campus *</label>
+                  <select name="preferredCampus" value={form.preferredCampus} onChange={handleChange} required disabled={!!defaultCampus} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500">
                     <option value="">Select campus</option>
                     <option value="MAIN">Main Campus</option>
                     <option value="WEST">West Campus</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Course *</label>
-                  <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                  <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-zinc-300">Course *</label>
+                  <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                     <option value="">Select course</option>
                     {courses.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>

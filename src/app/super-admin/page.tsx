@@ -278,24 +278,24 @@ export default function SuperAdminDashboard() {
                       {["firstName", "middleName", "lastName"].map((field) => (
                         <div key={field}>
                           <label className="block text-[11px] font-medium text-zinc-500 mb-1 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
-                          <input value={(editForm as any)[field]} onChange={e => setEditForm({...editForm, [field]: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                          <input value={(editForm as any)[field]} onChange={e => setEditForm({...editForm, [field]: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
                         </div>
                       ))}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                       <div>
                         <label className="block text-[11px] font-medium text-zinc-500 mb-1">Phone</label>
-                        <input value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                        <input value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-medium text-zinc-500 mb-1">Email</label>
-                        <input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                        <input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                       <div>
                         <label className="block text-[11px] font-medium text-zinc-500 mb-1">Gender</label>
-                        <select value={editForm.gender} onChange={e => setEditForm({...editForm, gender: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                        <select value={editForm.gender} onChange={e => setEditForm({...editForm, gender: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                           <option value="">Select</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
@@ -303,12 +303,12 @@ export default function SuperAdminDashboard() {
                       </div>
                       <div>
                         <label className="block text-[11px] font-medium text-zinc-500 mb-1">Education qualification</label>
-                        <input value={editForm.educationQualification} onChange={e => setEditForm({...editForm, educationQualification: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" placeholder="e.g. B+" />
+                        <input value={editForm.educationQualification} onChange={e => setEditForm({...editForm, educationQualification: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" placeholder="e.g. B+" />
                       </div>
                     </div>
                     <div className="mb-4">
                       <label className="block text-[11px] font-medium text-zinc-500 mb-1">Preferred campus</label>
-                      <select value={editForm.preferredCampus} onChange={e => setEditForm({...editForm, preferredCampus: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700">
+                      <select value={editForm.preferredCampus} onChange={e => setEditForm({...editForm, preferredCampus: e.target.value})} className="w-full rounded-lg border border-zinc-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                         <option value="MAIN">Main campus</option>
                         <option value="WEST">West campus</option>
                       </select>

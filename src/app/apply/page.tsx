@@ -141,21 +141,21 @@ export default function ApplyPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">First Name *</label>
-              <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+              <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Middle Name</label>
-              <input name="middleName" value={form.middleName} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+              <input name="middleName" value={form.middleName} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Last Name *</label>
-              <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+              <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Gender</label>
-              <select name="gender" value={form.gender} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none">
+              <select name="gender" value={form.gender} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                 <option value="">Select gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
@@ -164,18 +164,18 @@ export default function ApplyPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Phone Number *</label>
-              <input name="phone" value={form.phone} onChange={handleChange} required placeholder="e.g. 0712345678" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+              <input name="phone" value={form.phone} onChange={handleChange} required placeholder="e.g. 0712345678" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
               Email Address <span className="text-gray-400 dark:text-zinc-500 font-normal">(optional but recommended)</span>
             </label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none" />
+            <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Education Qualification *</label>
-            <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none">
+            <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
               <option value="">Select qualification</option>
               {EDUCATION_QUALIFICATIONS.map(q => (
                 <option key={q} value={q}>{q}</option>
@@ -185,7 +185,7 @@ export default function ApplyPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Preferred Campus *</label>
-              <select name="preferredCampus" value={form.preferredCampus} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none">
+              <select name="preferredCampus" value={form.preferredCampus} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                 <option value="">Select campus</option>
                 <option value="MAIN">Main Campus</option>
                 <option value="WEST">West Campus</option>
@@ -193,7 +193,7 @@ export default function ApplyPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Course *</label>
-              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none">
+              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                 <option value="">Select course</option>
                 {courses.map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
