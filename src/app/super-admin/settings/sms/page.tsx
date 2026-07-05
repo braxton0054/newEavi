@@ -35,7 +35,7 @@ export default function SmsSettingsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-1">Base URL</label>
-                <input type="text" value={f.smsBaseUrl} onChange={e => setField(campus, "smsBaseUrl", e.target.value)} placeholder="https://api.sms-gate.app/3rdparty/v1" className="w-full rounded-lg border border-zinc-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
+                <input type="text" value={f.smsBaseUrl} onChange={e => setField(campus, "smsBaseUrl", e.target.value)} placeholder={campus === "MAIN" ? "http://localhost:5051" : "http://localhost:5052"} className="w-full rounded-lg border border-zinc-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700" />
               </div>
               <div className="flex items-center gap-3">
                 <input type="checkbox" id={`smsEnabled-${campus}`} checked={f.smsEnabled} onChange={e => setField(campus, "smsEnabled", e.target.checked)} className="rounded border-zinc-300" />

@@ -127,6 +127,11 @@ export default function LoginPage() {
             "Sign In"
           )}
         </button>
+        <p className="text-center mt-2">
+          <Link href="/forgot-password" className="text-xs text-[#2d8a4e] hover:text-[#23743f] transition-colors">
+            Forgot password?
+          </Link>
+        </p>
       </form>
 
       {/* Back to home — subtle */}

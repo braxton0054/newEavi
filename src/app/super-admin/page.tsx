@@ -154,46 +154,46 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Bento Grid Stats */}
-        <div className="flex gap-3 mb-6 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none sm:flex-wrap sm:overflow-visible">
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-6">
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Total</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{totalStudents}</p>
-            <p className="text-[11px] text-zinc-400">all campuses</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{totalStudents}</p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">all campuses</p>
           </div>
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Approved</span>
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Approved</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{approvedCount}</p>
-            <p className="text-[11px] text-zinc-400">enrolled</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{approvedCount}</p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">enrolled</p>
           </div>
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Pending</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Pending</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{pendingCount}</p>
-            <p className="text-[11px] text-zinc-400">awaiting review</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{pendingCount}</p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">awaiting</p>
           </div>
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Campuses</span>
-              <div className="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Campuses</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{mainCount} <span className="text-sm font-normal text-zinc-400">/ {westCount}</span></p>
-            <p className="text-[11px] text-zinc-400">main / west</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{mainCount} <span className="text-xs sm:text-sm font-normal text-zinc-400">/ {westCount}</span></p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">main / west</p>
           </div>
         </div>
 

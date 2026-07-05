@@ -154,36 +154,36 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stat Cards */}
-        <div className="flex gap-2 sm:gap-3 mb-6 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none sm:flex-wrap sm:overflow-visible">
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Total</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
               </div>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{totalCount}</p>
-            <p className="text-[10px] sm:text-[11px] text-zinc-400">all registered</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{totalCount}</p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">all registered</p>
           </div>
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Approved</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Approved</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{approvedCount}</p>
-            <p className="text-[10px] sm:text-[11px] text-zinc-400">enrolled</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{approvedCount}</p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">enrolled</p>
           </div>
-          <div className="snap-start shrink-0 w-[140px] sm:w-auto sm:flex-1 sm:min-w-0 bg-white rounded-xl border border-zinc-100 p-3 sm:p-4 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Pending</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="bg-white rounded-xl border border-zinc-100 p-2.5 sm:p-4 flex flex-col gap-1 sm:gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[11px] font-semibold text-zinc-400 uppercase tracking-wider truncate">Pending</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <svg className="w-2.5 h-2.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-zinc-900">{pendingCount}</p>
-            <p className="text-[10px] sm:text-[11px] text-zinc-400">awaiting review</p>
+            <p className="text-lg sm:text-2xl font-bold text-zinc-900 leading-tight">{pendingCount}</p>
+            <p className="text-[9px] sm:text-[11px] text-zinc-400 truncate">awaiting</p>
           </div>
         </div>
 

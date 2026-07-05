@@ -93,6 +93,17 @@ model Verification {
   @@map("verifications")
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
 model FeeStructure {
   id        String   @id @default(cuid())
   name      String   // display name, e.g. "Diploma Fee Structure 2026"

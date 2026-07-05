@@ -153,10 +153,8 @@ async function doConnect(campus: string): Promise<string | null> {
 
     const sock = makeWASocket({
       logger,
-      printQRInTerminal: true,
       syncFullHistory: false,
-      markOnlineOnConnect: true,
-      shouldSyncHistoryMessage: () => false,
+      shouldSyncHistoryMessage: () => true,
       auth: {
         creds,
         keys: store,

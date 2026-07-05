@@ -2,11 +2,36 @@
   "name": "eavi-college",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "NODE_ENV=production node --import tsx/esm server.mjs",
-    "lint": "eslint"
+    "lint": "eslint",
+    "electron:dev": "NODE_ENV=development electron .",
+    "electron:start": "electron .",
+    "electron:build": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "ac.ke.eavi.desktop",
+    "productName": "EAVI College",
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist/electron"
+    },
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "electron/icon.png",
+      "artifactName": "EAVI-College-${version}.${ext}"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "electron/icon.png"
+    }
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1075.0",
@@ -15,7 +40,9 @@
     "@serwist/next": "^9.5.11",
     "@serwist/sw": "^9.5.11",
     "@whiskeysockets/baileys": "7.0.0-rc13",
+    "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.21",
+    "bufferutil": "^4.0.8",
     "fluent-ffmpeg": "^2.1.3",
     "jimp": "^1.6.1",
     "lucide-react": "^1.21.0",
@@ -28,17 +55,19 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "sharp": "^0.35.2",
-    "whatsapp-web.js": "^1.34.7",
-    "bufferutil": "^4.0.8"
+    "whatsapp-web.js": "^1.34.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "prisma": "^5.22.0",
