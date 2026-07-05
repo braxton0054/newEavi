@@ -80,8 +80,8 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
       >
         <div className="px-4 py-4 border-b border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-700 to-blue-600 flex items-center justify-center">
-              <span className="text-white font-semibold text-[10px] tracking-tight">EAVI</span>
+            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-blue-700">
+              <img src="/images/eavi-logo.jpg" alt="EAVI" className="w-full h-full object-cover" />
             </div>
             <div className="min-w-0">
               <h2 className="font-medium text-sm text-zinc-900 dark:text-zinc-100 leading-tight">{title}</h2>
