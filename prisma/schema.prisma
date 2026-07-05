@@ -229,6 +229,22 @@ model SystemSetting {
   @@map("system_settings")
 }
 
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  email     String
+  role      String
+  ipAddress String?
+  userAgent String?
+  status    String   @default("success") // success | failed
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@map("login_logs")
+}
+
 model NotificationJob {
   id          String   @id @default(cuid())
   studentId   String

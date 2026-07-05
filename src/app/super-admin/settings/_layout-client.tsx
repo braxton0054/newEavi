@@ -14,6 +14,8 @@ const navItems = [
   { href: "/super-admin/settings/fee-structures", label: "Fee Structures" },
   { href: "/super-admin/settings/whatsapp", label: "WhatsApp" },
   { href: "/super-admin/settings/credentials", label: "Credentials" },
+  { href: "/super-admin/settings/login-history", label: "Login History" },
+  { href: "/super-admin/settings/backup", label: "Backup" },
 ];
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

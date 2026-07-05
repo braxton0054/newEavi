@@ -35,4 +35,29 @@ export const auth = betterAuth({
       },
     },
   },
+  databaseHooks: {
+    session: {
+      create: {
+        after: async (session) => {
+          try {
+            const user = await prisma.user.findUnique({ where: { id: session.userId } });
+            if (user) {
+              await prisma.loginLog.create({
+                data: {
+                  userId: user.id,
+                  email: user.email,
+                  role: user.role,
+                  ipAddress: session.ipAddress || null,
+                  userAgent: session.userAgent || null,
+                  status: "success",
+                },
+              });
+            }
+          } catch (e) {
+            console.error("Failed to log login:", e);
+          }
+        },
+      },
+    },
+  },
 });
