@@ -3,6 +3,20 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
+function serializeForJson(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  if (Buffer.isBuffer(obj)) return obj.toString("base64");
+  if (Array.isArray(obj)) return obj.map(serializeForJson);
+  if (typeof obj === "object") {
+    const result: any = {};
+    for (const [k, v] of Object.entries(obj)) {
+      result[k] = serializeForJson(v);
+    }
+    return result;
+  }
+  return obj;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -13,7 +27,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Export all non-auth system data (skip Better Auth internal tables)
     const [
       users,
       courses,
@@ -26,35 +39,38 @@ export async function GET(req: NextRequest) {
       systemSettings,
       whatsAppSessions,
       notificationJobs,
+      loginLogs,
     ] = await Promise.all([
-      prisma.user.findMany({ select: { id: true, name: true, email: true, role: true, campus: true, createdAt: true } }),
+      prisma.user.findMany({ select: { id: true, name: true, email: true, role: true, campus: true, createdAt: true, updatedAt: true } }),
       prisma.course.findMany(),
       prisma.feeStructure.findMany(),
       prisma.campusSetting.findMany(),
       prisma.student.findMany(),
       prisma.application.findMany(),
-      prisma.admissionPdfTemplate.findMany({ select: { id: true, name: true, mimeType: true, createdAt: true, updatedAt: true } }),
+      prisma.admissionPdfTemplate.findMany(),
       prisma.reportingPeriod.findMany(),
       prisma.systemSetting.findMany(),
-      prisma.whatsAppSession.findMany({ select: { id: true, campus: true, phoneNumber: true, status: true, lastActive: true, createdAt: true, updatedAt: true } }),
+      prisma.whatsAppSession.findMany(),
       prisma.notificationJob.findMany(),
+      prisma.loginLog.findMany({ orderBy: { createdAt: "desc" } }),
     ]);
 
     const backup = {
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       data: {
         users,
         courses,
-        feeStructures,
-        campusSettings,
+        feeStructures: serializeForJson(feeStructures),
+        campusSettings: serializeForJson(campusSettings),
         students,
         applications,
-        admissionPdfTemplates,
+        admissionPdfTemplates: serializeForJson(admissionPdfTemplates),
         reportingPeriods,
         systemSettings,
-        whatsAppSessions,
+        whatsAppSessions: serializeForJson(whatsAppSessions),
         notificationJobs,
+        loginLogs,
       },
     };
 

@@ -3,6 +3,36 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
+function deserializeRecord(record: any): any {
+  if (!record || typeof record !== "object") return record;
+  const result: any = {};
+  for (const [k, v] of Object.entries(record)) {
+    // Base64 strings → Buffer for Prisma Bytes fields
+    if (typeof v === "string" && (
+      k === "pdfData" || k === "bursaryFormPdf" || k === "sessionData"
+    )) {
+      result[k] = Buffer.from(v, "base64");
+    } else {
+      result[k] = v;
+    }
+  }
+  return result;
+}
+
+async function upsertMany(model: any, records: any[]) {
+  let count = 0;
+  for (const raw of records) {
+    const record = deserializeRecord(raw);
+    await model.upsert({
+      where: { id: record.id },
+      create: record,
+      update: record,
+    });
+    count++;
+  }
+  return count;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -32,127 +62,66 @@ export async function POST(req: NextRequest) {
     const { data } = backup;
     let imported = 0;
 
-    // Import in dependency order
-    if (Array.isArray(data.feeStructures) && data.feeStructures.length > 0) {
-      for (const fs of data.feeStructures) {
-        await prisma.feeStructure.upsert({
-          where: { id: fs.id },
-          create: fs,
-          update: fs,
-        });
-        imported++;
-      }
+    // Import in dependency order (children before parents)
+
+    // FeeStructures (no dependencies)
+    if (Array.isArray(data.feeStructures)) {
+      imported += await upsertMany(prisma.feeStructure, data.feeStructures);
     }
 
-    if (Array.isArray(data.courses) && data.courses.length > 0) {
-      for (const c of data.courses) {
-        await prisma.course.upsert({
-          where: { id: c.id },
-          create: c,
-          update: c,
-        });
-        imported++;
-      }
+    // Courses (depends on FeeStructure via feeStructureId)
+    if (Array.isArray(data.courses)) {
+      imported += await upsertMany(prisma.course, data.courses);
     }
 
-    if (Array.isArray(data.campusSettings) && data.campusSettings.length > 0) {
-      for (const cs of data.campusSettings) {
-        await prisma.campusSetting.upsert({
-          where: { id: cs.id },
-          create: cs,
-          update: cs,
-        });
-        imported++;
-      }
+    // CampusSettings (no dependencies) — includes bursaryFormPdf binary
+    if (Array.isArray(data.campusSettings)) {
+      imported += await upsertMany(prisma.campusSetting, data.campusSettings);
     }
 
-    if (Array.isArray(data.students) && data.students.length > 0) {
-      for (const s of data.students) {
-        await prisma.student.upsert({
-          where: { id: s.id },
-          create: s,
-          update: s,
-        });
-        imported++;
-      }
+    // Students (no dependencies)
+    if (Array.isArray(data.students)) {
+      imported += await upsertMany(prisma.student, data.students);
     }
 
-    if (Array.isArray(data.applications) && data.applications.length > 0) {
-      for (const a of data.applications) {
-        await prisma.application.upsert({
-          where: { id: a.id },
-          create: a,
-          update: a,
-        });
-        imported++;
-      }
+    // Applications (depends on Student, User via reviewedBy)
+    if (Array.isArray(data.applications)) {
+      imported += await upsertMany(prisma.application, data.applications);
     }
 
-    if (Array.isArray(data.admissionPdfTemplates) && data.admissionPdfTemplates.length > 0) {
-      for (const t of data.admissionPdfTemplates) {
-        await prisma.admissionPdfTemplate.upsert({
-          where: { id: t.id },
-          create: t,
-          update: t,
-        });
-        imported++;
-      }
+    // AdmissionPdfTemplates (no dependencies) — includes pdfData binary
+    if (Array.isArray(data.admissionPdfTemplates)) {
+      imported += await upsertMany(prisma.admissionPdfTemplate, data.admissionPdfTemplates);
     }
 
-    if (Array.isArray(data.reportingPeriods) && data.reportingPeriods.length > 0) {
-      for (const rp of data.reportingPeriods) {
-        await prisma.reportingPeriod.upsert({
-          where: { id: rp.id },
-          create: rp,
-          update: rp,
-        });
-        imported++;
-      }
+    // ReportingPeriods (no dependencies)
+    if (Array.isArray(data.reportingPeriods)) {
+      imported += await upsertMany(prisma.reportingPeriod, data.reportingPeriods);
     }
 
-    if (Array.isArray(data.systemSettings) && data.systemSettings.length > 0) {
-      for (const ss of data.systemSettings) {
-        await prisma.systemSetting.upsert({
-          where: { id: ss.id },
-          create: ss,
-          update: ss,
-        });
-        imported++;
-      }
+    // SystemSettings (no dependencies)
+    if (Array.isArray(data.systemSettings)) {
+      imported += await upsertMany(prisma.systemSetting, data.systemSettings);
     }
 
-    if (Array.isArray(data.whatsAppSessions) && data.whatsAppSessions.length > 0) {
-      for (const ws of data.whatsAppSessions) {
-        await prisma.whatsAppSession.upsert({
-          where: { id: ws.id },
-          create: ws,
-          update: ws,
-        });
-        imported++;
-      }
+    // WhatsAppSessions (no dependencies) — includes sessionData binary
+    if (Array.isArray(data.whatsAppSessions)) {
+      imported += await upsertMany(prisma.whatsAppSession, data.whatsAppSessions);
     }
 
-    if (Array.isArray(data.notificationJobs) && data.notificationJobs.length > 0) {
-      for (const nj of data.notificationJobs) {
-        await prisma.notificationJob.upsert({
-          where: { id: nj.id },
-          create: nj,
-          update: nj,
-        });
-        imported++;
-      }
+    // NotificationJobs (no dependencies)
+    if (Array.isArray(data.notificationJobs)) {
+      imported += await upsertMany(prisma.notificationJob, data.notificationJobs);
     }
 
-    // Import users last (has foreign key dependencies from other tables)
-    if (Array.isArray(data.users) && data.users.length > 0) {
-      for (const u of data.users) {
-        await prisma.user.upsert({
-          where: { id: u.id },
-          create: u,
-          update: u,
-        });
-        imported++;
-      }
+    // LoginLogs (no dependencies)
+    if (Array.isArray(data.loginLogs)) {
+      imported += await upsertMany(prisma.loginLog, data.loginLogs);
+    }
+
+    // Users last (depended on by Applications and Sessions)
+    if (Array.isArray(data.users)) {
+      imported += await upsertMany(prisma.user, data.users);
     }
 
     return NextResponse.json({
