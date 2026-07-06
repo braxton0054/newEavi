@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ManualApplyForm from "@/components/ManualApplyForm";
+import ReportingDateReminder from "@/components/ReportingDateReminder";
 
 interface Student {
   id: string;
@@ -147,6 +148,8 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
       </header>
+
+      <ReportingDateReminder />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="mb-6">
