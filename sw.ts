@@ -25,3 +25,20 @@ installSerwist({
   navigationPreload: true,
   runtimeCaching: cacheRules,
 });
+
+// Force-clear all runtime caches on activation so stale JS doesn't linger after rebuilds
+// @ts-ignore — ExtendableEvent is available in SW context at runtime
+self.addEventListener("activate", (event: any) => {
+  event.waitUntil(
+    (async () => {
+      const cacheNames = await caches.keys();
+      // Delete every cache EXCEPT the precache one (Serwist manages that)
+      const precacheName = cacheNames.find((n) => n.includes("precache"));
+      await Promise.all(
+        cacheNames
+          .filter((n) => n !== precacheName)
+          .map((n) => caches.delete(n))
+      );
+    })()
+  );
+});
