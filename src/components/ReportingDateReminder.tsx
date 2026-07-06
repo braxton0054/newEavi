@@ -1,14 +1,25 @@
 "use client";
 import { useState, useEffect } from "react";
 
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
 export default function ReportingDateReminder() {
   const [missing, setMissing] = useState(false);
+  const [monthName, setMonthName] = useState("");
+  const [year, setYear] = useState(0);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     fetch("/api/admin/reporting-check")
       .then(r => r.json())
-      .then(d => setMissing(d.missing))
+      .then(d => {
+        setMissing(d.missing);
+        setMonthName(MONTHS[(d.month || 1) - 1] || "");
+        setYear(d.year || 0);
+      })
       .catch(() => setMissing(false))
       .finally(() => setChecking(false));
   }, []);
@@ -22,9 +33,9 @@ export default function ReportingDateReminder() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Reporting date not set</p>
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Reporting date not set for {monthName} {year}</p>
           <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-            No reporting period is configured for the current month.{" "}
+            No reporting period is configured for {monthName} {year}.{" "}
             <a href="/super-admin/settings/reporting" className="underline font-medium hover:text-amber-900 dark:hover:text-amber-200">
               Set it now
             </a>{" "}
