@@ -35,11 +35,12 @@ export async function POST(req: NextRequest) {
       data: { used: true },
     });
 
-    // Update password via Better Auth's Account table
-    const bcryptHash = await import("bcryptjs").then(m => m.hash(password, 10));
+    // Update password via Better Auth's hashing (not bcrypt — Better Auth uses its own format)
+    const { hashPassword } = await import("better-auth/crypto");
+    const betterHash = await hashPassword(password);
     await prisma.account.updateMany({
       where: { userId: (await prisma.user.findUnique({ where: { email }, select: { id: true } }))!.id },
-      data: { password: bcryptHash },
+      data: { password: betterHash },
     });
 
     return NextResponse.json({ message: "Password reset successful. You can now login." });
