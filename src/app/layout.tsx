@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: "EAVI Admin",
   },
   icons: {
+    icon: "/favicon.ico",
     apple: "/icon-192.png",
   },
   other: {

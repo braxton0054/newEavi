@@ -7,6 +7,7 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "NODE_ENV=production node --import tsx/esm server.mjs",
+    "seed": "npx tsx prisma/seed.ts",
     "lint": "eslint",
     "electron:dev": "NODE_ENV=development electron .",
     "electron:start": "electron .",

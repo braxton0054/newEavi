@@ -47,7 +47,7 @@ export default function CredentialsPage() {
       try {
         const res = await fetch("/api/admin/credentials", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ newEmail: email }),
+          body: JSON.stringify({ newEmail: email, currentPassword }),
         });
         if (res.ok) {
           setCurrentEmail(email);

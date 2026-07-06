@@ -58,17 +58,25 @@ export default function FeeStructuresPage() {
     e.preventDefault();
     if (files.length === 0) return;
     setUploading(true);
-    try {
-      for (const file of files) {
+    let success = 0;
+    let fail = 0;
+    let lastError = "";
+    for (const file of files) {
+      try {
         await handleSingleUpload(file);
+        success++;
+      } catch (err) {
+        fail++;
+        lastError = `${file.name}: ${(err as Error).message}`;
+        console.warn(lastError);
       }
-      setFiles([]);
-      await fetchStructures();
-    } catch (err) {
-      alert((err as Error).message);
-    } finally {
-      setUploading(false);
     }
+    setFiles([]);
+    await fetchStructures();
+    if (fail > 0) {
+      alert(`${success} uploaded, ${fail} failed.\n\nLast error: ${lastError}\n\nTip: Large PDFs (>2MB) may hit size limits.`);
+    }
+    setUploading(false);
   }
 
   async function handleRename(id: string, newName: string) {

@@ -157,12 +157,12 @@ export default function AdminSettingsPage() {
     let emailOk = true;
     let pwOk = true;
 
-    // Change email (no password needed — Better Auth uses the session)
+    // Change email — sends currentPassword for verification
     if (credEmail !== currentEmail) {
       try {
         const res = await fetch("/api/admin/credentials", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ newEmail: credEmail }),
+          body: JSON.stringify({ newEmail: credEmail, currentPassword: credCurrentPw }),
         });
         if (res.ok) {
           setCurrentEmail(credEmail);
@@ -198,116 +198,120 @@ export default function AdminSettingsPage() {
   return (
     <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       {message && (
-        <div className={`p-4 rounded-lg ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>{message.text}</div>
+        <div className={`p-4 rounded-lg border ${
+          message.type === "success"
+            ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+            : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+        }`}>{message.text}</div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Email Configuration</h2>
+      <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4">Email Configuration</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gmail Address</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="campus@example.com" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Gmail Address</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="campus@example.com" className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">App Password{hasAppPassword && <span className="ml-2 text-xs text-green-600">(configured)</span>}</label>
-              <input type="password" value={appPassword} onChange={e => setAppPassword(e.target.value)} placeholder={hasAppPassword ? "Leave empty to keep current" : "16-character app password"} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-              <p className="text-xs text-gray-400 mt-1">Generate from Google Account &gt; App Passwords</p>
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">App Password{hasAppPassword && <span className="ml-2 text-xs text-green-600 dark:text-green-400">(configured)</span>}</label>
+              <input type="password" value={appPassword} onChange={e => setAppPassword(e.target.value)} placeholder={hasAppPassword ? "Leave empty to keep current" : "16-character app password"} className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
+              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">Generate from Google Account &gt; App Passwords</p>
             </div>
           </div>
-          <button onClick={() => handleSave("Email", { email, appPassword })} disabled={saving === "Email"} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+          <button onClick={() => handleSave("Email", { email, appPassword })} disabled={saving === "Email"} className="mt-4 rounded-lg bg-blue-600 dark:bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50">
             {saving === "Email" ? "Saving..." : "Save Email Settings"}
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">SMS Configuration</h2>
-          <p className="text-xs text-gray-400 mb-4">Configure sms-gate.app credentials. Get these from the SMS Gateway app on your phone.</p>
+        <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4">SMS Configuration</h2>
+          <p className="text-xs text-gray-400 dark:text-zinc-500 mb-4">Configure sms-gate.app credentials. Get these from the SMS Gateway app on your phone.</p>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">API Key{hasSmsApiKey && <span className="ml-2 text-xs text-green-600">(configured)</span>}</label>
-              <input type="text" value={smsApiKey} onChange={e => setSmsApiKey(e.target.value)} placeholder={hasSmsApiKey ? "Leave empty to keep current" : "API Key"} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">API Key{hasSmsApiKey && <span className="ml-2 text-xs text-green-600 dark:text-green-400">(configured)</span>}</label>
+              <input type="text" value={smsApiKey} onChange={e => setSmsApiKey(e.target.value)} placeholder={hasSmsApiKey ? "Leave empty to keep current" : "API Key"} className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">API Secret{hasSmsApiSecret && <span className="ml-2 text-xs text-green-600">(configured)</span>}</label>
-              <input type="password" value={smsApiSecret} onChange={e => setSmsApiSecret(e.target.value)} placeholder={hasSmsApiSecret ? "Leave empty to keep current" : "API Secret"} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">API Secret{hasSmsApiSecret && <span className="ml-2 text-xs text-green-600 dark:text-green-400">(configured)</span>}</label>
+              <input type="password" value={smsApiSecret} onChange={e => setSmsApiSecret(e.target.value)} placeholder={hasSmsApiSecret ? "Leave empty to keep current" : "API Secret"} className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Base URL</label>
-              <input type="text" value={smsBaseUrl} onChange={e => setSmsBaseUrl(e.target.value)} placeholder="https://api.sms-gate.app/3rdparty/v1" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Base URL</label>
+              <input type="text" value={smsBaseUrl} onChange={e => setSmsBaseUrl(e.target.value)} placeholder="http://localhost:5051" className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div className="flex items-center gap-3">
-              <input type="checkbox" id="smsEnabled" checked={smsEnabled} onChange={e => setSmsEnabled(e.target.checked)} className="rounded border-gray-300" />
-              <label htmlFor="smsEnabled" className="text-sm font-medium text-gray-700">Enable SMS</label>
+              <input type="checkbox" id="smsEnabled" checked={smsEnabled} onChange={e => setSmsEnabled(e.target.checked)} className="rounded border-gray-300 dark:border-zinc-600" />
+              <label htmlFor="smsEnabled" className="text-sm font-medium text-gray-700 dark:text-zinc-300">Enable SMS</label>
             </div>
           </div>
-          <button onClick={() => handleSave("SMS", { email, smsApiKey, smsApiSecret, smsBaseUrl, smsEnabled })} disabled={saving === "SMS"} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+          <button onClick={() => handleSave("SMS", { email, smsApiKey, smsApiSecret, smsBaseUrl, smsEnabled })} disabled={saving === "SMS"} className="mt-4 rounded-lg bg-blue-600 dark:bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50">
             {saving === "SMS" ? "Saving..." : "Save SMS Settings"}
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Admission Number Configuration</h2>
+        <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4">Admission Number Configuration</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Admission Number Format</label>
-              <input type="text" value={admissionFormat} onChange={e => setAdmissionFormat(e.target.value)} placeholder={`EAVI/${user?.campus || "CAMPUS"}/${new Date().getFullYear()}/`} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-              <p className="text-xs text-gray-400 mt-1">The prefix before the auto-increment number. e.g. EAVI/MAIN/{new Date().getFullYear()}/</p>
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Admission Number Format</label>
+              <input type="text" value={admissionFormat} onChange={e => setAdmissionFormat(e.target.value)} placeholder={`EAVI/${user?.campus || "CAMPUS"}/${new Date().getFullYear()}/`} className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
+              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">The prefix before the auto-increment number. e.g. EAVI/MAIN/{new Date().getFullYear()}/</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Starting Number</label>
-              <input type="number" value={admissionStart} onChange={e => setAdmissionStart(Number(e.target.value))} min="1" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-              <p className="text-xs text-gray-400 mt-1">The next admission number to use. Set based on where manual admissions have reached.</p>
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Starting Number</label>
+              <input type="number" value={admissionStart} onChange={e => setAdmissionStart(Number(e.target.value))} min="1" className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
+              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">The next admission number to use. Set based on where manual admissions have reached.</p>
             </div>
           </div>
-          <button onClick={() => handleSave("Admission", { email, admissionFormat, admissionStart })} disabled={saving === "Admission"} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+          <button onClick={() => handleSave("Admission", { email, admissionFormat, admissionStart })} disabled={saving === "Admission"} className="mt-4 rounded-lg bg-blue-600 dark:bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50">
             {saving === "Admission" ? "Saving..." : "Save Admission Settings"}
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">WhatsApp Configuration</h2>
+        <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4">WhatsApp Configuration</h2>
           {waLoading ? (
-            <p className="text-sm text-gray-400">Checking WhatsApp status...</p>
+            <p className="text-sm text-gray-400 dark:text-zinc-500">Checking WhatsApp status...</p>
           ) : (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className={`inline-block w-3 h-3 rounded-full ${waConnected ? "bg-green-500" : "bg-gray-300"}`} />
-              <span className="text-sm font-medium">{waConnected ? "Connected" : "Not Connected"}</span>
+              <span className={`inline-block w-3 h-3 rounded-full ${waConnected ? "bg-green-500" : "bg-gray-300 dark:bg-zinc-600"}`} />
+              <span className="text-sm font-medium text-gray-900 dark:text-zinc-100">{waConnected ? "Connected" : "Not Connected"}</span>
             </div>
-            {waConnected && waPhoneNumber && <p className="text-xs text-gray-500 mt-1">WhatsApp: {waPhoneNumber}</p>}
+            {waConnected && waPhoneNumber && <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1">WhatsApp: {waPhoneNumber}</p>}
             {waQr && <div className="flex justify-center py-4"><img src={waQr} alt="WhatsApp QR Code" className="w-48 h-48" /></div>}
-            {waConnecting && !waQr && <p className="text-sm text-gray-500 text-center">Generating QR code...</p>}
+            {waConnecting && !waQr && <p className="text-sm text-gray-500 dark:text-zinc-400 text-center">Generating QR code...</p>}
             <div className="flex gap-3">
               {!waConnected && <button onClick={handleConnectWhatsApp} disabled={waConnecting} className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50">{waConnecting ? "Connecting..." : "Connect WhatsApp"}</button>}
               {waConnected && <button onClick={handleDisconnectWhatsApp} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Disconnect</button>}
             </div>
-            <p className="text-xs text-gray-400">Scan the QR code with WhatsApp to connect. Session encrypted and stored in the database.</p>
+            <p className="text-xs text-gray-400 dark:text-zinc-500">Scan the QR code with WhatsApp to connect. Session encrypted and stored in the database.</p>
           </div>
           )}
         </div>
 
         {/* Login Credentials */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Login Credentials</h2>
-          <p className="text-xs text-gray-400 mb-4">Change your login email and/or password for this account. Email changes take effect immediately — use new email on next login.</p>
+        <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-1">Login Credentials</h2>
+          <p className="text-xs text-gray-400 dark:text-zinc-500 mb-4">Change your login email and/or password for this account. Email changes take effect immediately — use new email on next login.</p>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Login Email</label>
-              <input type="email" value={credEmail} onChange={e => setCredEmail(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Login Email</label>
+              <input type="email" value={credEmail} onChange={e => setCredEmail(e.target.value)} className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-              <input type="password" value={credCurrentPw} onChange={e => setCredCurrentPw(e.target.value)} placeholder="Required to make changes" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Current Password</label>
+              <input type="password" value={credCurrentPw} onChange={e => setCredCurrentPw(e.target.value)} placeholder="Required to make changes" className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Password <span className="text-gray-400 font-normal">(leave blank to keep current)</span></label>
-              <input type="password" value={credNewPw} onChange={e => setCredNewPw(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">New Password <span className="text-gray-400 dark:text-zinc-500 font-normal">(leave blank to keep current)</span></label>
+              <input type="password" value={credNewPw} onChange={e => setCredNewPw(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-              <input type="password" value={credNewPw2} onChange={e => setCredNewPw2(e.target.value)} placeholder="Confirm new password" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Confirm New Password</label>
+              <input type="password" value={credNewPw2} onChange={e => setCredNewPw2(e.target.value)} placeholder="Confirm new password" className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100" />
             </div>
-            <button onClick={handleChangeCredentials} disabled={credSaving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+            <button onClick={handleChangeCredentials} disabled={credSaving} className="rounded-lg bg-blue-600 dark:bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50">
               {credSaving ? "Saving..." : "Save Credentials"}
             </button>
           </div>
