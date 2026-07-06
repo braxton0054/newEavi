@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { audit } from "@/lib/audit";
-import bcrypt from "bcryptjs";
+import { verifyPassword } from "better-auth/crypto";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
@@ -24,14 +24,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Current password is required to change email" }, { status: 400 });
     }
 
-    // Verify current password against stored hash
+    // Verify current password using Better Auth's own password verification
     const account = await prisma.account.findFirst({
-      where: { userId: user.id, providerId: "email" },
+      where: { userId: user.id, providerId: "credential" },
     });
     if (!account?.password) {
       return NextResponse.json({ error: "No password set on this account" }, { status: 400 });
     }
-    const valid = await bcrypt.compare(currentPassword, account.password);
+    const valid = await verifyPassword({ hash: account.password, password: currentPassword });
     if (!valid) {
       return NextResponse.json({ error: "Current password is incorrect" }, { status: 403 });
     }
