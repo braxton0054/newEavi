@@ -49,8 +49,14 @@ export default function FeeStructuresPage() {
       body: JSON.stringify({ name, pdfData }),
     });
     if (!res.ok) {
-      const d = await res.json();
-      throw new Error(d.error || "Upload failed");
+      let msg = "Upload failed";
+      try {
+        const d = await res.json();
+        msg = d.error || `HTTP ${res.status}`;
+      } catch {
+        msg = `HTTP ${res.status} — server returned HTML (possibly rate-limited)`;
+      }
+      throw new Error(msg);
     }
   }
 
