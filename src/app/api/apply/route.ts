@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { firstName, middleName, lastName, gender, phone, email, educationQualification, preferredCampus, course } = body;
 
-    if (!firstName || !lastName || !phone || !preferredCampus || !course) {
+    if (!firstName || !lastName || !gender || !phone || !preferredCampus || !course) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
