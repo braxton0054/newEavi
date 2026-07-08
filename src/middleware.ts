@@ -8,7 +8,6 @@ const publicPaths = [
   "/api/courses",
   "/api/files",
   "/api/upload",
-  "/api/seed",
   "/api/admin/whatsapp/ping",   // uses x-cron-secret header for cron pingers
   "/api/fee-structures",
 ];

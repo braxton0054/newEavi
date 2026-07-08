@@ -1,13 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { audit } from "@/lib/audit";
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: new Headers() });
-    // No session required for seed — it's a one-off setup endpoint
+    // SECURITY: require a seed secret header — this is a setup endpoint, never public
+    const seedSecret = req.headers.get("x-seed-secret");
+    const expected = process.env.SEED_SECRET;
+    if (!expected || seedSecret !== expected) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const admins = [
       { email: "super@eavi-college.edu", password: "admin123", name: "Super Admin", role: "SUPER_ADMIN" as const },
       { email: "main@eavi-college.edu", password: "admin123", name: "Main Campus Admin", role: "ADMIN" as const, campus: "MAIN" as const },
@@ -116,11 +120,11 @@ export async function POST() {
       }
     }
 
-    // Audit log (fire-and-forget — seed often runs without a real session)
+    // Audit log (fire-and-forget — seed runs without a real session)
     audit({
-      userId: session?.user?.id || "seed-script",
-      email: session?.user?.email || "seed@system",
-      role: session?.user?.role || "SYSTEM",
+      userId: "seed-script",
+      email: "seed@system",
+      role: "SYSTEM",
       campus: null,
       action: "seed.run",
       target: "database",
