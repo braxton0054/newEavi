@@ -116,8 +116,8 @@ export default function Home() {
   const isActive = pressing || keyPressing;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-zinc-900 dark:to-zinc-950 flex flex-col">
-      <header className="bg-white dark:bg-zinc-950 border-b-2 border-[#d81e6f]/20 shadow-sm relative">
+    <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-950 flex flex-col">
+      <header className="bg-white dark:bg-zinc-950 border-b-2 border-[#d81e6f]/20 relative">
         {/* Dark mode toggle */}
         <button
           onClick={toggleTheme}
@@ -193,11 +193,11 @@ export default function Home() {
               />
             </div>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1a3d63] tracking-wide">
+          <h1 className="text-xl sm:text-2xl font-medium text-[#1a3d63]">
             EAST AFRICA VISION INSTITUTE
           </h1>
           <div className="mt-3 bg-[#d81e6f] px-5 py-1.5 rounded-sm">
-            <span className="text-white text-xs sm:text-sm font-semibold tracking-wider uppercase">
+            <span className="text-white text-xs sm:text-sm font-medium">
               Leading the Leaders
             </span>
           </div>
@@ -213,14 +213,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/apply"
-              className="rounded-lg bg-[#d81e6f] px-6 py-3 font-semibold text-white hover:bg-[#b8185e] transition-colors text-center shadow-sm"
+              className="rounded-lg bg-[#d81e6f] px-6 py-3 font-medium text-white hover:bg-[#b8185e] transition-colors text-center"
             >
               Apply Now
             </Link>
           </div>
 
           {/* Welcome text below the button */}
-          <p className="text-gray-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
             Welcome to the EAVI College Admission Portal. Apply for admission,
             check your application status, and manage your academic journey.
           </p>
@@ -229,11 +229,11 @@ export default function Home() {
 
       <footer className="bg-[#1a3d63] text-white">
         <div className="max-w-2xl mx-auto px-4 py-8 text-center text-sm space-y-1">
-          <p className="font-semibold tracking-wide">EAST AFRICA VISION INSTITUTE</p>
+          <p className="font-medium">EAST AFRICA VISION INSTITUTE</p>
           <div className="w-8 h-0.5 bg-[#d81e6f] mx-auto my-3 rounded-full" />
-          <p className="text-gray-300">Main Campus — Eldoret · West Campus — Eldoret</p>
-          <p className="text-gray-300">Main: 0726022044 | West: 0748022044 | Email: admissions@eavicollege.ac.ke</p>
-          <p className="text-gray-400 text-xs mt-4">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>
+          <p className="text-zinc-300">Main Campus — Eldoret · West Campus — Eldoret</p>
+          <p className="text-zinc-300">Main: 0726022044 | West: 0748022044 | Email: admissions@eavicollege.ac.ke</p>
+          <p className="text-zinc-400 text-xs mt-4">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>
         </div>
       </footer>
     </div>

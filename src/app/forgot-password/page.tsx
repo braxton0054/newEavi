@@ -60,15 +60,15 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-zinc-200 p-6">
           <div className="text-center mb-5">
             <div className="w-12 aspect-square relative mx-auto mb-3">
-              <Image src="/images/eavi-logo.jpg" alt="EAVI" fill className="object-cover shadow-sm" />
+              <Image src="/images/eavi-logo.jpg" alt="EAVI" fill className="object-cover" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Reset Password</h2>
-            <p className="text-xs text-gray-500 mt-1">
+            <h2 className="text-lg font-medium text-zinc-900">Reset Password</h2>
+            <p className="text-xs text-zinc-500 mt-1">
               {step === "email" && "Enter your email to receive a reset code"}
               {step === "otp" && "Check your SMS or email for the reset code"}
               {step === "reset" && "Enter the code and your new password"}
@@ -86,13 +86,13 @@ export default function ForgotPasswordPage() {
           {step === "email" && (
             <form onSubmit={requestOtp} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                <label className="block text-sm font-medium text-zinc-700 mb-1.5">Email</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                   required placeholder="you@example.com"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#2d8a4e]/25 focus:border-[#2d8a4e] outline-none" />
+                  className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
               </div>
               <button type="submit" disabled={loading}
-                className="w-full rounded-lg bg-[#2d8a4e] px-4 py-2.5 font-semibold text-white hover:bg-[#23743f] disabled:opacity-50 transition-colors min-h-[44px]">
+                className="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800 disabled:opacity-50 transition-colors min-h-[44px]">
                 {loading ? "Sending..." : "Send Reset Code"}
               </button>
             </form>
@@ -101,17 +101,17 @@ export default function ForgotPasswordPage() {
           {step === "otp" && (
             <form onSubmit={e => { e.preventDefault(); setStep("reset"); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Reset Code (OTP)</label>
+                <label className="block text-sm font-medium text-zinc-700 mb-1.5">Reset Code (OTP)</label>
                 <input type="text" value={otp} onChange={e => setOtp(e.target.value)}
                   required placeholder="Enter 6-digit code" maxLength={6}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-center text-lg tracking-[0.5em] focus:ring-2 focus:ring-[#2d8a4e]/25 focus:border-[#2d8a4e] outline-none" />
+                  className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 text-sm text-center text-lg tracking-[0.5em] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
               </div>
               <button type="submit" disabled={otp.length < 6}
-                className="w-full rounded-lg bg-[#2d8a4e] px-4 py-2.5 font-semibold text-white hover:bg-[#23743f] disabled:opacity-50 transition-colors min-h-[44px]">
+                className="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800 disabled:opacity-50 transition-colors min-h-[44px]">
                 Continue
               </button>
               <button type="button" onClick={() => { setStep("email"); setOtp(""); setError(""); setMessage(""); }}
-                className="w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2">
+                className="w-full text-center text-xs text-zinc-400 hover:text-zinc-600 transition-colors mt-2">
                 Resend code
               </button>
             </form>
@@ -119,23 +119,23 @@ export default function ForgotPasswordPage() {
 
           {step === "reset" && (
             <form onSubmit={verifyOtp} className="space-y-4">
-              <div className="text-center text-sm text-gray-500 mb-2">
-                Code: <strong className="text-gray-800 tracking-wider">{otp}</strong>
+              <div className="text-center text-sm text-zinc-500 mb-2">
+                Code: <strong className="text-zinc-800">{otp}</strong>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
+                <label className="block text-sm font-medium text-zinc-700 mb-1.5">New Password</label>
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)}
                   required minLength={6} placeholder="At least 6 characters"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#2d8a4e]/25 focus:border-[#2d8a4e] outline-none" />
+                  className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
+                <label className="block text-sm font-medium text-zinc-700 mb-1.5">Confirm Password</label>
                 <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)}
                   required minLength={6} placeholder="Repeat new password"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#2d8a4e]/25 focus:border-[#2d8a4e] outline-none" />
+                  className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none" />
               </div>
               <button type="submit" disabled={loading}
-                className="w-full rounded-lg bg-[#2d8a4e] px-4 py-2.5 font-semibold text-white hover:bg-[#23743f] disabled:opacity-50 transition-colors min-h-[44px]">
+                className="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800 disabled:opacity-50 transition-colors min-h-[44px]">
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
             </form>
@@ -144,14 +144,14 @@ export default function ForgotPasswordPage() {
           {step === "done" && (
             <div className="text-center">
               <Link href="/login"
-                className="inline-block rounded-lg bg-[#2d8a4e] px-4 py-2.5 font-semibold text-white hover:bg-[#23743f] transition-colors min-h-[44px] leading-[44px]">
+                className="inline-block rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800 transition-colors min-h-[44px] leading-[44px]">
                 Back to Login
               </Link>
             </div>
           )}
 
-          <p className="text-center text-xs text-gray-400 mt-4">
-            <Link href="/login" className="hover:text-gray-600 transition-colors">Back to login</Link>
+          <p className="text-center text-xs text-zinc-400 mt-4">
+            <Link href="/login" className="hover:text-zinc-600 transition-colors">Back to login</Link>
           </p>
         </div>
       </div>

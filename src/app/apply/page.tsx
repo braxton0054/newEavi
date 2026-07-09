@@ -71,24 +71,24 @@ export default function ApplyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
       {/* EAVI Brand Header */}
-      <header className="bg-white dark:bg-zinc-950 border-b-4 border-[#d81e6f] shadow-sm">
+      <header className="bg-white dark:bg-zinc-950 border-b-4 border-[#d81e6f]">
         <div className="max-w-2xl mx-auto px-4 py-5 flex flex-col items-center text-center">
           <div className="w-16 sm:w-20 md:w-24 aspect-square relative mx-auto mb-3">
             <Image
               src="/images/eavi-logo.jpg"
               alt="East Africa Vision Institute Logo"
               fill
-              className="rounded-full shadow-md object-cover"
+              className="rounded-full object-cover"
               priority
             />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1a3d63] tracking-wide">
+          <h1 className="text-xl sm:text-2xl font-medium text-[#1a3d63]">
             EAST AFRICA VISION INSTITUTE
           </h1>
-          <div className="mt-2 bg-[#2d8a4e] px-4 py-1 rounded-sm">
-            <span className="text-white text-xs sm:text-sm font-semibold tracking-wider uppercase">
+          <div className="mt-2 bg-blue-700 px-4 py-1 rounded-sm">
+            <span className="text-white text-xs sm:text-sm font-medium">
               Leading the Leaders
             </span>
           </div>
@@ -101,12 +101,12 @@ export default function ApplyPage() {
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Intro */}
-        <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-5 mb-6 text-center shadow-sm">
+        <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 mb-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-1 h-6 bg-[#d81e6f] rounded-full" />
-            <h2 className="text-lg sm:text-xl font-bold text-[#1a3d63]">Apply for Admission</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-[#1a3d63]">Apply for Admission</h2>
           </div>
-          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
             Apply for admission to East Africa Vision Institute. Fill in your details below and we will process your application shortly. Our admissions team will contact you via phone or email with the next steps.
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function ApplyPage() {
 
         {suggestions && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-            <p className="text-sm font-semibold text-amber-800 mb-2">Courses you can apply for:</p>
+            <p className="text-sm font-medium text-amber-800 mb-2">Courses you can apply for:</p>
             <ul className="space-y-1.5">
               {suggestions.map(s => (
                 <li key={s.id}>
@@ -137,25 +137,25 @@ export default function ApplyPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 p-4 sm:p-6 md:p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 sm:p-6 md:p-8 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">First Name *</label>
-              <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">First Name *</label>
+              <input name="firstName" value={form.firstName} onChange={handleChange} required className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Middle Name</label>
-              <input name="middleName" value={form.middleName} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Middle Name</label>
+              <input name="middleName" value={form.middleName} onChange={handleChange} className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Last Name *</label>
-              <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Last Name *</label>
+              <input name="lastName" value={form.lastName} onChange={handleChange} required className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Gender</label>
-              <select name="gender" value={form.gender} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Gender</label>
+              <select name="gender" value={form.gender} onChange={handleChange} required className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                 <option value="">Select gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
@@ -163,19 +163,19 @@ export default function ApplyPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Phone Number *</label>
-              <input name="phone" value={form.phone} onChange={handleChange} required placeholder="e.g. 0712345678" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Phone Number *</label>
+              <input name="phone" value={form.phone} onChange={handleChange} required placeholder="e.g. 0712345678" className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-              Email Address <span className="text-gray-400 dark:text-zinc-500 font-normal">(optional but recommended)</span>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+              Email Address <span className="text-zinc-400 dark:text-zinc-500 font-normal">(optional but recommended)</span>
             </label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
+            <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Education Qualification *</label>
-            <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Education Qualification *</label>
+            <select name="educationQualification" value={form.educationQualification} onChange={handleChange} required className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
               <option value="">Select qualification</option>
               {EDUCATION_QUALIFICATIONS.map(q => (
                 <option key={q} value={q}>{q}</option>
@@ -184,16 +184,16 @@ export default function ApplyPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Preferred Campus *</label>
-              <select name="preferredCampus" value={form.preferredCampus} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Preferred Campus *</label>
+              <select name="preferredCampus" value={form.preferredCampus} onChange={handleChange} required className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                 <option value="">Select campus</option>
                 <option value="MAIN">Main Campus</option>
                 <option value="WEST">West Campus</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Course *</label>
-              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#2d8a4e] focus:border-[#2d8a4e] outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Course *</label>
+              <select name="course" value={form.course} onChange={handleChange} required className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-700 focus:border-blue-700 outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700">
                 <option value="">Select course</option>
                 {courses.map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
@@ -201,7 +201,7 @@ export default function ApplyPage() {
               </select>
             </div>
           </div>
-          <button type="submit" disabled={submitting} className="w-full rounded-lg bg-[#d81e6f] px-4 py-3 font-semibold text-white hover:bg-[#b8185e] disabled:opacity-50 transition-colors shadow-sm">
+          <button type="submit" disabled={submitting} className="w-full rounded-lg bg-[#d81e6f] px-4 py-3 font-medium text-white hover:bg-[#b8185e] disabled:opacity-50 transition-colors">
             {submitting ? "Submitting..." : "Submit Application"}
           </button>
         </form>
@@ -210,10 +210,10 @@ export default function ApplyPage() {
       {/* Footer */}
       <footer className="bg-[#1a3d63] text-white mt-12">
         <div className="max-w-2xl mx-auto px-4 py-6 text-center text-sm space-y-1">
-          <p className="font-semibold">East Africa Vision Institute</p>
-          <p className="text-gray-300">Main Campus — Eldoret | West Campus — Eldoret</p>
-          <p className="text-gray-300">Main: 0726022044 | West: 0748022044 | Email: admissions@eavicollege.ac.ke</p>
-          <p className="text-gray-400 text-xs mt-2">© {new Date().getFullYear()} EAVI. All rights reserved.</p>
+          <p className="font-medium">East Africa Vision Institute</p>
+          <p className="text-zinc-300">Main Campus — Eldoret | West Campus — Eldoret</p>
+          <p className="text-zinc-300">Main: 0726022044 | West: 0748022044 | Email: admissions@eavicollege.ac.ke</p>
+          <p className="text-zinc-400 text-xs mt-2">© {new Date().getFullYear()} EAVI. All rights reserved.</p>
         </div>
       </footer>
     </div>

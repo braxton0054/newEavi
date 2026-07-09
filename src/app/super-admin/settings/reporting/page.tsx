@@ -88,7 +88,7 @@ export default function ReportingDatesPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Reporting Dates</h1>
+          <h1 className="text-base font-medium text-zinc-900 dark:text-zinc-100">Reporting Dates</h1>
           <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">Set reporting start and end dates per month. Shared across all campuses.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -114,9 +114,9 @@ export default function ReportingDatesPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 uppercase tracking-wider w-32">Month</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Report Start</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Report End</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 w-32">Month</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500">Report Start</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500">Report End</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100">
@@ -149,7 +149,7 @@ export default function ReportingDatesPage() {
           <div className="sm:hidden space-y-2">
             {periods.map(p => (
               <div key={p.month} className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4">
-                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-3">{MONTHS[p.month - 1]}</p>
+                <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-3">{MONTHS[p.month - 1]}</p>
                 <div className="space-y-2">
                   <div>
                     <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 dark:text-zinc-500 mb-1">Report Start</label>

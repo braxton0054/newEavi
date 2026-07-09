@@ -46,10 +46,10 @@ export default function LoginPage() {
 
   const formContent = (
     <>
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 text-center mb-1">
+      <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 text-center mb-1">
         Admin Login
       </h2>
-      <p className="text-xs text-gray-500 text-center mb-5">
+      <p className="text-xs text-zinc-500 text-center mb-5">
         Sign in to access the admission portal
       </p>
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1.5">
             Email
           </label>
           <input
@@ -77,13 +77,13 @@ export default function LoginPage() {
             required
             autoComplete="email"
             placeholder="you@example.com"
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-[#2d8a4e]/25 focus:border-[#2d8a4e] outline-none transition-shadow"
+            className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none transition-shadow"
           />
         </div>
 
         {/* Password with show/hide toggle */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label htmlFor="password" className="block text-sm font-medium text-zinc-700 mb-1.5">
             Password
           </label>
           <div className="relative">
@@ -95,12 +95,12 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
               placeholder="Enter your password"
-              className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 pr-10 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-[#2d8a4e]/25 focus:border-[#2d8a4e] outline-none transition-shadow"
+              className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 pr-10 text-sm text-zinc-900 placeholder:text-zinc-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-700 outline-none transition-shadow"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 transition-colors"
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
@@ -113,7 +113,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-[#2d8a4e] px-4 py-2.5 font-semibold text-white hover:bg-[#23743f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] flex items-center justify-center gap-2"
+          className="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
@@ -128,15 +128,15 @@ export default function LoginPage() {
           )}
         </button>
         <p className="text-center mt-2">
-          <Link href="/forgot-password" className="text-xs text-[#2d8a4e] hover:text-[#23743f] transition-colors">
+          <Link href="/forgot-password" className="text-xs text-blue-700 hover:text-blue-800 transition-colors">
             Forgot password?
           </Link>
         </p>
       </form>
 
       {/* Back to home — subtle */}
-      <p className="text-center text-xs text-gray-400 mt-4">
-        <Link href="/" className="hover:text-gray-600 transition-colors">
+      <p className="text-center text-xs text-zinc-400 mt-4">
+        <Link href="/" className="hover:text-zinc-600 transition-colors">
           Back to home
         </Link>
       </p>
@@ -159,23 +159,23 @@ export default function LoginPage() {
               priority
             />
           </div>
-          <h1 className="text-xl font-bold tracking-wide leading-snug">
+          <h1 className="text-xl font-medium leading-snug">
             EAST AFRICA VISION INSTITUTE
           </h1>
           <div className="mt-3 bg-[#d81e6f] px-4 py-1 rounded-sm inline-block">
-            <span className="text-white text-xs font-semibold tracking-widest uppercase">
+            <span className="text-white text-xs font-mediumst">
               Leading the Leaders
             </span>
           </div>
-          <p className="mt-4 text-sm text-gray-300 italic leading-relaxed">
+          <p className="mt-4 text-sm text-zinc-300 italic leading-relaxed">
             Nurturing quality and affordable education
           </p>
-          <p className="mt-6 text-xs text-gray-400 leading-relaxed">
+          <p className="mt-6 text-xs text-zinc-400 leading-relaxed">
             Welcome to the EAVI College Admission Portal. Apply for programs,
             check application status, and manage academic records across all
             campuses.
           </p>
-          <div className="mt-8 pt-6 border-t border-white/10 text-xs text-gray-500 space-y-1">
+          <div className="mt-8 pt-6 border-t border-white/10 text-xs text-zinc-500 space-y-1">
             <p>Main Campus — Eldoret</p>
             <p>West Campus — Eldoret</p>
           </div>
@@ -183,7 +183,7 @@ export default function LoginPage() {
       </div>
 
       {/* ─── Right panel: form (all sizes) ─── */}
-      <div className="flex-1 flex flex-col bg-gray-50 dark:bg-zinc-900 min-h-screen">
+      <div className="flex-1 flex flex-col bg-zinc-50 dark:bg-zinc-900 min-h-screen">
         {/* Mobile branding (visible below lg) */}
         <div className="lg:hidden pt-10 pb-2 px-4 flex flex-col items-center text-center">
           <div className="w-[64px] aspect-square relative mx-auto mb-3.5">
@@ -191,17 +191,17 @@ export default function LoginPage() {
               src="/images/eavi-logo.jpg"
               alt="East Africa Vision Institute Logo"
               fill
-              className="shadow-md object-cover"
+              className="object-cover"
               priority
             />
           </div>
-          <h1 className="text-sm font-bold text-[#1a3d63] tracking-wide leading-tight">
+          <h1 className="text-sm font-medium text-[#1a3d63] leading-tight">
             EAST AFRICA VISION INSTITUTE
           </h1>
           <p className="text-xs text-[#d81e6f] italic mt-1 font-medium">
             Leading the Leaders
           </p>
-          <p className="text-[11px] text-gray-400 italic mt-0.5">
+          <p className="text-[11px] text-zinc-400 italic mt-0.5">
             Nurturing quality and affordable education
           </p>
         </div>
@@ -209,19 +209,19 @@ export default function LoginPage() {
         {/* Form area — vertically centered */}
         <div className="flex-1 flex items-center justify-center px-4 py-6">
           <div className="w-full max-w-sm">
-            <div className="bg-white dark:bg-zinc-950 rounded-xl border border-gray-200 dark:border-zinc-800 p-6 shadow-sm">
+            <div className="bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6">
               {formContent}
             </div>
 
             {/* Campus info — mobile only */}
-            <p className="lg:hidden text-center text-[11px] text-gray-400 mt-4">
+            <p className="lg:hidden text-center text-[11px] text-zinc-400 mt-4">
               Main Campus — Eldoret &middot; West Campus — Eldoret
             </p>
           </div>
         </div>
 
         {/* Footer — visible on all sizes, always at bottom */}
-        <div className="px-4 py-5 text-center text-[11px] text-gray-400 leading-relaxed border-t border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 lg:border-none lg:bg-transparent lg:dark:bg-transparent">
+        <div className="px-4 py-5 text-center text-[11px] text-zinc-400 leading-relaxed border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 lg:border-none lg:bg-transparent lg:dark:bg-transparent">
           <p>East Africa Vision Institute Main Campus — Eldoret | West Campus — Eldoret</p>
           <p className="mt-0.5">Main: 0726022044 | West: 0748022044 | Email: admissions@eavicollege.ac.ke</p>
           <p className="mt-0.5">&copy; {new Date().getFullYear()} EAVI. All rights reserved.</p>

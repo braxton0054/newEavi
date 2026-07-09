@@ -38,7 +38,7 @@ export default function ReportingDateReminder() {
             No reporting period is configured for {monthName} {year}.{" "}
             <a href="/super-admin/settings/reporting" className="underline font-medium hover:text-amber-900 dark:hover:text-amber-200">
               Set it now
-            </a>{" "}
+            </a>{""}
             so admission letters show the correct reporting date.
           </p>
         </div>

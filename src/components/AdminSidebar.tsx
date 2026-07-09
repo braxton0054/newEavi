@@ -61,7 +61,7 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-3 left-3 z-40 lg:hidden bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-700 p-3 shadow-sm hover:shadow-md transition-shadow"
+        className="fixed top-3 left-3 z-40 lg:hidden bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-700 p-3 hover:transition-shadow"
         aria-label="Open menu"
       >
         <svg className="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ export default function AdminSidebar({ role, campus, email }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-full w-56 bg-white dark:bg-zinc-950 border-r border-zinc-100 dark:border-zinc-800 z-50 flex flex-col transition-all duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto shadow-sm ${
+        className={`fixed top-0 left-0 h-full w-56 bg-white dark:bg-zinc-950 border-r border-zinc-100 dark:border-zinc-800 z-50 flex flex-col transition-all duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
